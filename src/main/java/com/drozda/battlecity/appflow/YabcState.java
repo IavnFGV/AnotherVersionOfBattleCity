@@ -1,54 +1,123 @@
 package com.drozda.battlecity.appflow;
 
-import com.benjiweber.statemachine.BiTransitionTo;
-import com.benjiweber.statemachine.PentaTransition;
-import com.benjiweber.statemachine.TransitionTo;
-import com.benjiweber.statemachine.TriTransitionTo;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.List;
+
+import static java.util.Arrays.asList;
 
 /**
- * Created by GFH on 18.09.2015.
+ * Created by GFH on 20.09.2015.
  */
-public class YabcState implements AppState {
+public enum YabcState {
 
-    protected int hash = 0;
-
-    @Override
-    public boolean equals(Object obj) {
-//        if (super.equals(obj))
-//            return true;
-        if (obj == this) return true;
-        if (obj instanceof AppState) {
-            return this.getClass() == obj.getClass();
-        } else return false;
-    }
-
-    @Override
-    public int hashCode() {
-        if (hash == 0) {
-            long bits = 7L;
-            bits = 31L * bits + this.getClass().getName().hashCode();
-            hash = (int) (bits ^ (bits >> 32));
+    MainMenu {
+        @Override
+        public List<YabcState> getAllowedTransitions() {
+            return asList(new YabcState[]{Battle, Designer, LevelPicker, HallOfFame,
+                    Settings});
         }
-        return hash;
+
+        @Override
+        public void initialize() {
+
+            log.debug("Loading FXML for main view from: {}", getFxmlFile());
+            FXMLLoader loader = new FXMLLoader();
+            Parent rootNode = null;
+            try {
+                rootNode = loader.load(getClass().getResourceAsStream(getFxmlFile()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            yabcFrame = new YabcAppModel.YabcFrame(rootNode, loader.getController());
+        }
+    },
+    Battle {
+        @Override
+        public List<YabcState> getAllowedTransitions() {
+            return asList(new YabcState[]{MainMenu, Battle, Designer, LevelPicker,
+                    Settings});
+        }
+    },
+    Designer {
+        @Override
+        public List<YabcState> getAllowedTransitions() {
+            return asList(new YabcState[]{MainMenu, Battle});
+        }
+    },
+    LevelPicker {
+        @Override
+        public List<YabcState> getAllowedTransitions() {
+            return asList(new YabcState[]{MainMenu, Battle, Designer});
+        }
+    },
+    HallOfFame {
+        @Override
+        public List<YabcState> getAllowedTransitions() {
+            return asList(new YabcState[]{MainMenu});
+        }
+    },
+    Settings {
+        @Override
+        public List<YabcState> getAllowedTransitions() {
+            return asList(new YabcState[]{MainMenu, Battle});
+        }
+    };
+
+    private static final Logger log = LoggerFactory.getLogger(YabcState.class);
+
+    protected String fxmlBase = "/com/drozda/fx/fxml/";
+    protected YabcAppModel.YabcFrame yabcFrame;
+    protected boolean initialized;
+
+    public YabcAppModel.YabcFrame getYabcFrame() {
+        if (!isInitialized()) {
+            initialize();
+        }
+        return yabcFrame;
     }
 
-    public static class MainMenu extends YabcState implements PentaTransition<Battle, Designer, LevelPicker, HallOfFame,
-            Settings> {
+    public abstract List<YabcState> getAllowedTransitions();
+
+    public boolean canTransition(YabcState newState) {
+        if (newState == null) {
+            throw new IllegalArgumentException("newState can not be null");
+        }
+        return getAllowedTransitions().contains(newState);
     }
 
-    public static class Battle extends YabcState implements PentaTransition<MainMenu, Battle, Designer, LevelPicker,
-            Settings> {
+    public YabcState tryTransitionIgnoreWrong(YabcState newState) {
+        if (!canTransition(newState)) {
+            return this;
+        } else {
+            return newState;
+        }
     }
 
-    public static class Designer extends YabcState implements BiTransitionTo<MainMenu, Battle> {
+    public YabcState tryTransition(YabcState newState) {
+        if (!canTransition(newState)) {
+            throw new IllegalArgumentException("Cant make transition from " + this + "to " + newState);
+        } else {
+            return newState;
+        }
     }
 
-    public static class LevelPicker extends YabcState implements TriTransitionTo<MainMenu, Battle, Designer> {
+    public String getFxmlFile() {
+        return fxmlBase + this.toString() + ".fxml";
     }
 
-    public static class HallOfFame extends YabcState implements TransitionTo<MainMenu> {
+    public boolean isInitialized() {
+        return initialized;
     }
 
-    public static class Settings extends YabcState implements BiTransitionTo<MainMenu, Battle> {
+    public void initialize() {
     }
+
+
+
+
 }

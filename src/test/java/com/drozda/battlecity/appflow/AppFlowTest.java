@@ -7,12 +7,17 @@ import org.junit.Test;
  */
 
 public class AppFlowTest {
-    @Test
-    public void testFlow() {
-        YabcState state = new YabcState.Battle();
-        System.out.println(state.tryTransition(YabcState.MainMenu::new).ignoreIfInvalid().getClass());
-        System.out.println(state.tryTransition(YabcState.MainMenu::new).ignoreIfInvalid().getClass());
-//        System.out.println(state.transition(AppState.Battle::new));
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEnumYabcState() {
+        YabcState yabcState = YabcState.Designer;
+
+        System.out.println(yabcState.getAllowedTransitions());
+        System.out.println(yabcState.tryTransitionIgnoreWrong(YabcState.HallOfFame));
+        System.out.println(yabcState.canTransition(YabcState.HallOfFame));
+        System.out.println(yabcState.tryTransition(YabcState.HallOfFame));
+
     }
 
 }

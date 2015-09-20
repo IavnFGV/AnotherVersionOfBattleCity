@@ -1,9 +1,14 @@
 package com.drozda.battlecity.appflow;
 
-import com.benjiweber.statemachine.NextState;
+
+import com.drozda.fx.controller.BaseApp;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.StringProperty;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,12 +23,51 @@ public class YabcAppModel {
 
     public static Map<YabcContextTypes, Object> appContext = new EnumMap(YabcContextTypes.class);
     private static final Logger log = LoggerFactory.getLogger(YabcAppModel.class);
+    private static Stage mainStage;
+
+    private static StringProperty mainStageTitle;
+
+    private static BaseApp baseApp;
+
+    public static BaseApp getBaseApp() {
+        return baseApp;
+    }
+
+    public static Stage getMainStage() {
+        return mainStage;
+    }
+
+    public static void startGame() throws Exception {
+
+        //     setState();
+
+        // initializing baseview
+
+        String fxmlFile = "/com/drozda/fx/fxml/BaseApp.fxml";
+        log.debug("Loading FXML for main view from: {}", fxmlFile);
+        FXMLLoader loader = new FXMLLoader();
+        Parent rootNode = loader.load(YabcAppModel.class.getResourceAsStream(fxmlFile));
+        log.debug("Showing JFX scene");
+        Scene scene = new Scene(rootNode);
+        baseApp=loader.getController();
+        setState(YabcState.MainMenu);
+
+        mainStage.setTitle("Hello JavaFX and Maven");
+        mainStage.setScene(scene);
+        mainStage.sizeToScene();
+        mainStage.show();
+    }
+
+    public static void setMainStage(Stage mainStage) {
+        YabcAppModel.mainStage = mainStage;
+        mainStageTitle = mainStage.titleProperty();
+    }
 
     static {
         appContext.put(YabcContextTypes.ADDITIONAL, new HashMap<String, Object>());
     }
 
-    private static ObjectProperty<YabcUser> currentUser = new SimpleObjectProperty<>(new YabcUser());
+    private static ObjectProperty<YabcUser> currentUser = new SimpleObjectProperty(new YabcUser());
 
     public static YabcUser getCurrentUser() {
         return currentUser.get();
@@ -37,7 +81,7 @@ public class YabcAppModel {
         currentUser.set(aCurrentUser);
     }
 
-    private static ObjectProperty<YabcState> state = new SimpleObjectProperty<>(new YabcState.MainMenu());
+    private static ObjectProperty<YabcState> state = new SimpleObjectProperty();
 
     public static YabcState getState() {
         return state.get();
@@ -47,13 +91,17 @@ public class YabcAppModel {
         return state;
     }
 
-    public static void setState(final NextState newState) {
-        YabcState yabcState = (YabcState) state.get().tryTransition(newState).ignoreIfInvalid();
-        state.set(yabcState);
+    public static void setState(YabcState newState) {
+        if (state.get() == null) {
+            state.set(newState);
+        } else {
+            YabcState yabcState = state.get().tryTransitionIgnoreWrong(newState);
+            state.set(yabcState);
+        }
     }
 
     public static void startBattle() {
-        setState(YabcState.Battle::new);
+        setState(YabcState.Battle);
     }
 
     private static Map<String, Object> getAdditionalSettings() {
@@ -89,17 +137,17 @@ public class YabcAppModel {
     }
 
     public static class YabcFrame<T> {
-        private Scene scene;
+        private Parent root;
 
         private T controller;
 
-        public YabcFrame(Scene scene, T controller) {
-            this.scene = scene;
+        public YabcFrame(Parent root, T controller) {
+            this.root = root;
             this.controller = controller;
         }
 
-        public Scene getScene() {
-            return scene;
+        public Parent getRoot() {
+            return root;
         }
 
         public T getController() {
@@ -108,7 +156,7 @@ public class YabcAppModel {
 
     }
 
-    public void initFrame(Class<? extends YabcState> aClass) {
+    public static void initFrame(YabcState aState) {
 
     }
 
