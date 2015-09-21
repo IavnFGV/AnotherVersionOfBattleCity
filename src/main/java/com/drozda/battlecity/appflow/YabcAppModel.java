@@ -1,9 +1,12 @@
 package com.drozda.battlecity.appflow;
 
 
+import com.drozda.YabcLocalization;
 import com.drozda.fx.controller.BaseApp;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,18 +17,51 @@ import org.slf4j.LoggerFactory;
 
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
 
 /**
  * Created by GFH on 18.09.2015.
  */
 public class YabcAppModel {
 
+    private static ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
+    //  eSingleThreadScheduledExecutor()nw;
+
     public static Map<YabcContextTypes, Object> appContext = new EnumMap(YabcContextTypes.class);
     private static final Logger log = LoggerFactory.getLogger(YabcAppModel.class);
     private static Stage mainStage;
 
     private static StringProperty mainStageTitle;
+
+    private static StringProperty messageString = new SimpleStringProperty();
+
+    private static String getDefaultString() {
+        return format(YabcLocalization.getString("statusbar.helloLabel"),
+                YabcAppModel.getCurrentUser().getName(), YabcAppModel.getCurrentUser().getTeam());
+    }
+
+    public static String getMessageString() {
+        return messageString.get();
+    }
+
+    public static StringProperty messageStringProperty() {
+        return messageString;
+    }
+
+    public static void setMessageString(String messageString) {
+        YabcAppModel.messageString.set(messageString);
+        if (!getDefaultString().equals(getMessageString())) {
+            service.schedule(() -> Platform.runLater(() -> YabcAppModel.setDefaultMessage()), 2, TimeUnit
+                    .SECONDS);
+        }
+    }
 
     private static BaseApp baseApp;
 
@@ -49,13 +85,19 @@ public class YabcAppModel {
         Parent rootNode = loader.load(YabcAppModel.class.getResourceAsStream(fxmlFile));
         log.debug("Showing JFX scene");
         Scene scene = new Scene(rootNode);
-        baseApp=loader.getController();
+        baseApp = loader.getController();
         setState(YabcState.MainMenu);
 
         mainStage.setTitle("Hello JavaFX and Maven");
         mainStage.setScene(scene);
         mainStage.sizeToScene();
+        setDefaultMessage();
         mainStage.show();
+
+    }
+
+    private static void setDefaultMessage() {
+        YabcAppModel.messageString.set(getDefaultString());
     }
 
     public static void setMainStage(Stage mainStage) {
@@ -116,6 +158,10 @@ public class YabcAppModel {
         return false;
     }
 
+    public static void stop() {
+        service.shutdown();
+    }
+
     public enum YabcContextTypes {
         APPFLOW,
         STATESTACK,
@@ -133,6 +179,14 @@ public class YabcAppModel {
         }
 
         public YabcUser() {
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getTeam() {
+            return team;
         }
     }
 
@@ -160,8 +214,14 @@ public class YabcAppModel {
 
     }
 
+    private static List<YabcState> allowedToChangeUserStates = asList(YabcState.Designer, YabcState.HallOfFame,
+            YabcState.LevelPicker, YabcState.MainMenu, YabcState.Settings);
+
     public static void changeUser() {
         log.info("try to change user");
     }
 
+    public static Boolean changeUserPredicate(YabcState state) {
+        return allowedToChangeUserStates.contains(state);
+    }
 }

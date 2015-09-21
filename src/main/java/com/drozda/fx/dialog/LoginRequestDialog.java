@@ -4,6 +4,7 @@ import com.drozda.YabcLocalization;
 import com.drozda.battlecity.model.Triple;
 import impl.org.controlsfx.i18n.Localization;
 import javafx.scene.control.*;
+import javafx.scene.control.Dialog;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.textfield.CustomPasswordField;

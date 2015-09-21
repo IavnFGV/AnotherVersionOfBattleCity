@@ -1,8 +1,6 @@
 package com.drozda.battlecity.appflow;
 
-import com.drozda.fx.controller.MainMenu;
-import com.drozda.fx.dialog.LoginRequestDialog;
-import com.drozda.fx.skeleton.MainApp;
+import com.drozda.fx.dialog.Dialog;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import org.slf4j.Logger;
@@ -17,7 +15,7 @@ public class StateChangeListener implements ChangeListener<YabcState> {
 
     @Override
     public void changed(ObservableValue<? extends YabcState> observable, YabcState oldValue, YabcState newValue) {
-        if(oldValue==null){ // application initialization
+        if (oldValue == null) { // application initialization
             YabcAppModel.getBaseApp().setSubScene(YabcState.MainMenu.getYabcFrame().getRoot());
             return;
         }
@@ -25,19 +23,13 @@ public class StateChangeListener implements ChangeListener<YabcState> {
         if (oldValue.equals(YabcState.MainMenu)) {
             if (newValue.equals(YabcState.Battle)) {
                 if (YabcAppModel.needLogin()) {
-                    loginRequest();
+                    loginRequest(oldValue);
                 }
             }
         }
     }
 
-    private void loginRequest() {
-
-        LoginRequestDialog dlg = new LoginRequestDialog(null);
-
-        // LoginDialog dlg = new LoginDialog(null, null);
-        // configureSampleDialog(dlg, "");
-        dlg.showAndWait().ifPresent(result -> log.info("Result is " + result));
-        YabcAppModel.changeUser();
+    private void loginRequest(YabcState state) {
+        Dialog.ShowLoginDialog(YabcAppModel::changeUserPredicate, state);
     }
 }

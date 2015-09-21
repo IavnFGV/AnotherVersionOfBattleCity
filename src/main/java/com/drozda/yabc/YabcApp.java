@@ -2,13 +2,7 @@ package com.drozda.yabc;
 
 import com.drozda.battlecity.appflow.StateChangeListener;
 import com.drozda.battlecity.appflow.YabcAppModel;
-import com.drozda.battlecity.appflow.YabcState;
-import com.drozda.fx.controller.BaseApp;
-import com.drozda.fx.controller.MainMenu;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +13,7 @@ import org.slf4j.LoggerFactory;
 public class YabcApp extends Application {
 
     private static final Logger log = LoggerFactory.getLogger(YabcApp.class);
-   // public Stage stage;
+    // public Stage stage;
 
 
     @Override
@@ -46,7 +40,6 @@ public class YabcApp extends Application {
 //        ((BaseApp)(loader.getController())).getBorderPane().setCenter(rootNode1);
 
 
-
 //        YabcAppModel.setMainStage(primaryStage);
 
 
@@ -61,7 +54,13 @@ public class YabcApp extends Application {
         launch(args);
     }
 
+    @Override
     public void init() {
         YabcAppModel.stateProperty().addListener(new StateChangeListener());
+    }
+
+    @Override
+    public void stop() {
+        YabcAppModel.stop();
     }
 }
