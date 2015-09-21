@@ -20,4 +20,33 @@ public class AppFlowTest {
 
     }
 
+
+    enum TestEnum {
+        en1 {
+            @Override
+            void init() {
+                testString = "en1";
+            }
+        }, en2 {
+            @Override
+            void init() {
+                testString = "en2";
+            }
+        };
+        protected String testString;
+
+        public String getTest() {
+            return testString;
+        }
+
+        abstract void init();
+        {init();}
+    }
+
+    @Test
+    public void testEnum(){
+        TestEnum testEnum = TestEnum.en1;
+        System.out.println(testEnum.getTest());
+    }
+
 }
