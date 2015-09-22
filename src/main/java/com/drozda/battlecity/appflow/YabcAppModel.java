@@ -2,6 +2,7 @@ package com.drozda.battlecity.appflow;
 
 
 import com.drozda.YabcLocalization;
+import com.drozda.battlecity.model.YabcUser;
 import com.drozda.fx.controller.BaseApp;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -30,30 +31,31 @@ import static java.util.Arrays.asList;
  * Created by GFH on 18.09.2015.
  */
 public class YabcAppModel {
-
-    private static ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
-    //  eSingleThreadScheduledExecutor()nw;
-
-    public static Map<YabcContextTypes, Object> appContext = new EnumMap(YabcContextTypes.class);
     private static final Logger log = LoggerFactory.getLogger(YabcAppModel.class);
+    public static Map<YabcContextTypes, Object> appContext = new EnumMap(YabcContextTypes.class);
+    //  eSingleThreadScheduledExecutor()nw;
+    private static String KEY_UNKNOWN_IS_NORMAL = "UNKNOWN_IS_NORMAL";
+    private static ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
     private static Stage mainStage;
 
     private static StringProperty mainStageTitle;
 
     private static StringProperty messageString = new SimpleStringProperty();
+    private static BaseApp baseApp;
 
     private static String getDefaultString() {
         return format(YabcLocalization.getString("statusbar.helloLabel"),
-                YabcAppModel.getCurrentUser().getName(), YabcAppModel.getCurrentUser().getTeam());
+                YabcAppModel.getCurrentUser().getLogin(), YabcAppModel.getCurrentUser().getTeam());
     }
+
+    private static CustomFeatures customFeatures = new DefaultFeatures();
 
     public static String getMessageString() {
         return messageString.get();
     }
 
-    public static StringProperty messageStringProperty() {
-        return messageString;
-    }
+    private static ObjectProperty<YabcUser> currentUser = new SimpleObjectProperty(customFeatures.getLastUser());
+    private static ObjectProperty<YabcState> state = new SimpleObjectProperty();
 
     public static void setMessageString(String messageString) {
         YabcAppModel.messageString.set(messageString);
@@ -63,7 +65,16 @@ public class YabcAppModel {
         }
     }
 
-    private static BaseApp baseApp;
+    private static List<YabcState> allowedToChangeUserStates = asList(YabcState.Designer, YabcState.HallOfFame,
+            YabcState.LevelPicker, YabcState.MainMenu, YabcState.Settings);
+
+    static {
+        appContext.put(YabcContextTypes.ADDITIONAL, new HashMap<String, Object>());
+    }
+
+    public static StringProperty messageStringProperty() {
+        return messageString;
+    }
 
     public static BaseApp getBaseApp() {
         return baseApp;
@@ -71,6 +82,15 @@ public class YabcAppModel {
 
     public static Stage getMainStage() {
         return mainStage;
+    }
+
+    private static void setDefaultMessage() {
+        YabcAppModel.messageString.set(getDefaultString());
+    }
+
+    public static void setMainStage(Stage mainStage) {
+        YabcAppModel.mainStage = mainStage;
+        mainStageTitle = mainStage.titleProperty();
     }
 
     public static void startGame() throws Exception {
@@ -96,41 +116,12 @@ public class YabcAppModel {
 
     }
 
-    private static void setDefaultMessage() {
-        YabcAppModel.messageString.set(getDefaultString());
-    }
-
-    public static void setMainStage(Stage mainStage) {
-        YabcAppModel.mainStage = mainStage;
-        mainStageTitle = mainStage.titleProperty();
-    }
-
-    static {
-        appContext.put(YabcContextTypes.ADDITIONAL, new HashMap<String, Object>());
-    }
-
-    private static ObjectProperty<YabcUser> currentUser = new SimpleObjectProperty(new YabcUser());
-
-    public static YabcUser getCurrentUser() {
-        return currentUser.get();
-    }
-
     public static ObjectProperty<YabcUser> currentUserProperty() {
         return currentUser;
     }
 
-    public static void setCurrentUser(YabcUser aCurrentUser) {
-        currentUser.set(aCurrentUser);
-    }
-
-    private static ObjectProperty<YabcState> state = new SimpleObjectProperty();
-
     public static YabcState getState() {
         return state.get();
-    }
-
-    public static ObjectProperty<YabcState> stateProperty() {
-        return state;
     }
 
     public static void setState(YabcState newState) {
@@ -142,24 +133,49 @@ public class YabcAppModel {
         }
     }
 
+    public static YabcUser getCurrentUser() {
+        return currentUser.get();
+    }
+
+    public static ObjectProperty<YabcState> stateProperty() {
+        return state;
+    }
+
     public static void startBattle() {
         setState(YabcState.Battle);
+    }
+
+    public static void setCurrentUser(YabcUser aCurrentUser) {
+        currentUser.set(aCurrentUser);
+    }
+
+    public static boolean isUnknownNormal() {//if UNKNOWN and it is not normal
+        return (boolean) getAdditionalSettings().getOrDefault(KEY_UNKNOWN_IS_NORMAL, false);
     }
 
     private static Map<String, Object> getAdditionalSettings() {
         return (Map<String, Object>) (appContext.get(YabcContextTypes.ADDITIONAL));
     }
 
-    public static boolean needLogin() {
-        if (getCurrentUser().name.equals("UNKNOWN") && (getAdditionalSettings().getOrDefault("UNKNOWN_IS_NORMAL", false)
-                .equals(false))) { //if UNKNOWN and it is not normal
-            return true;
-        }
-        return false;
-    }
-
     public static void stop() {
         service.shutdown();
+    }
+
+    public static void initFrame(YabcState aState) {
+
+    }
+
+    public static void changeUser() {
+        log.info("try to change user");
+    }
+
+    public static Boolean changeUserPredicate(YabcState state) {
+        return allowedToChangeUserStates.contains(state);
+    }
+
+    public static void clearUser() { // if we play under one login and then want to play as UNKNOWN -  we have to
+        // handle  results correct
+        getAdditionalSettings().put(KEY_UNKNOWN_IS_NORMAL, true);
     }
 
     public enum YabcContextTypes {
@@ -167,27 +183,6 @@ public class YabcAppModel {
         STATESTACK,
         ADDITIONAL
 
-    }
-
-    public static class YabcUser {
-        private String name = "UNKNOWN";
-        private String team = "UNKNOWN";
-
-        public YabcUser(String name, String team) {
-            this.name = name;
-            this.team = team;
-        }
-
-        public YabcUser() {
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getTeam() {
-            return team;
-        }
     }
 
     public static class YabcFrame<T> {
@@ -210,18 +205,5 @@ public class YabcAppModel {
 
     }
 
-    public static void initFrame(YabcState aState) {
 
-    }
-
-    private static List<YabcState> allowedToChangeUserStates = asList(YabcState.Designer, YabcState.HallOfFame,
-            YabcState.LevelPicker, YabcState.MainMenu, YabcState.Settings);
-
-    public static void changeUser() {
-        log.info("try to change user");
-    }
-
-    public static Boolean changeUserPredicate(YabcState state) {
-        return allowedToChangeUserStates.contains(state);
-    }
 }

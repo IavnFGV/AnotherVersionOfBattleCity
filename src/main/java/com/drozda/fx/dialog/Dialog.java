@@ -25,7 +25,7 @@ public class Dialog {
                 return;
             }
         }
-        LoginRequestDialog dlg = new LoginRequestDialog(null);
+        LoginDialog dlg = new LoginDialog(YabcAppModel.getCurrentUser(), YabcAppModel.isUnknownNormal());
         dlg.showAndWait().ifPresent(result -> log.info("Result is " + result));
         YabcAppModel.changeUser();
     }

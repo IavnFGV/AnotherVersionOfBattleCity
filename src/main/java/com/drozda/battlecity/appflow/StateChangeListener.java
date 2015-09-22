@@ -22,7 +22,7 @@ public class StateChangeListener implements ChangeListener<YabcState> {
 
         if (oldValue.equals(YabcState.MainMenu)) {
             if (newValue.equals(YabcState.Battle)) {
-                if (YabcAppModel.needLogin()) {
+                if (!YabcAppModel.isUnknownNormal()) {
                     loginRequest(oldValue);
                 }
             }
