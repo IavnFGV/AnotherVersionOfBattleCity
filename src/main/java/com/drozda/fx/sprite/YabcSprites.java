@@ -1,0 +1,18 @@
+package com.drozda.fx.sprite;
+
+import javafx.scene.image.ImageView;
+
+/**
+ * Created by GFH on 24.09.2015.
+ */
+public enum YabcSprites {
+    TILE_BRICK, TILE_EMPTY, TILE_FOREST, TILE_ICE, TILE_STEEL, TILE_WATER,
+    TANK_FIRST_PLAYER, TANK_SECOND_PLAYER,
+    TANK_SIMPLE_ENEMY, TANK_FAST_ENEMY, TANK_POWER_ENEMY, TANK_ARMOR_ENEMY,
+    TANK_SIMPLE_ENEMY_X, TANK_FAST_ENEMY_X, TANK_POWER_ENEMY_X, TANK_ARMOR_ENEMY_X,
+    BONUS_HELMET, BONUS_CLOCK, BONUS_SPADE, BONUS_STAR, BONUS_GRANADE, BONUS_TANK, BONUS_GUN;
+
+    public ImageView getView() {
+        return null;
+    }
+}

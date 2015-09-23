@@ -1,18 +1,18 @@
-package com.drozda.battlecity.model;
+package com.drozda.model;
 
 /**
  * Created by GFH on 22.09.2015.
  */
 public class LoginDialogResponse {
-    private final YabcUser userInfo;
+    private final AppUser userInfo;
     private final boolean unknownNormal;
 
     public LoginDialogResponse(String left, String middle, Integer right, boolean unknownNormal) {
-        this.userInfo = new YabcUser(left, middle, right);
+        this.userInfo = new AppUser(left, middle, right);
         this.unknownNormal = unknownNormal;
     }
 
-    public YabcUser getUserInfo() {
+    public AppUser getUserInfo() {
         return userInfo;
     }
 

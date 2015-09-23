@@ -1,9 +1,9 @@
-package com.drozda.battlecity.appflow;
+package com.drozda.appflow;
 
 
 import com.drozda.YabcLocalization;
-import com.drozda.battlecity.model.YabcUser;
 import com.drozda.fx.controller.BaseApp;
+import com.drozda.model.AppUser;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -30,8 +30,8 @@ import static java.util.Arrays.asList;
 /**
  * Created by GFH on 18.09.2015.
  */
-public class YabcAppModel {
-    private static final Logger log = LoggerFactory.getLogger(YabcAppModel.class);
+public class AppModel {
+    private static final Logger log = LoggerFactory.getLogger(AppModel.class);
     public static Map<YabcContextTypes, Object> appContext = new EnumMap(YabcContextTypes.class);
     //  eSingleThreadScheduledExecutor()nw;
     private static String KEY_UNKNOWN_IS_NORMAL = "UNKNOWN_IS_NORMAL";
@@ -42,31 +42,16 @@ public class YabcAppModel {
 
     private static StringProperty messageString = new SimpleStringProperty();
     private static BaseApp baseApp;
-
-    private static String getDefaultString() {
+    private static CustomFeatures customFeatures = new DefaultFeatures();    private static String getDefaultString() {
         return format(YabcLocalization.getString("statusbar.helloLabel"),
-                YabcAppModel.getCurrentUser().getLogin(), YabcAppModel.getCurrentUser().getTeam());
+                AppModel.getCurrentUser().getLogin(), AppModel.getCurrentUser().getTeam());
     }
-
-    private static CustomFeatures customFeatures = new DefaultFeatures();
-
-    public static String getMessageString() {
+    private static ObjectProperty<AppUser> currentUser = new SimpleObjectProperty(customFeatures.getLastUser());
+    private static ObjectProperty<AppState> state = new SimpleObjectProperty();    public static String getMessageString() {
         return messageString.get();
     }
-
-    private static ObjectProperty<YabcUser> currentUser = new SimpleObjectProperty(customFeatures.getLastUser());
-    private static ObjectProperty<YabcState> state = new SimpleObjectProperty();
-
-    public static void setMessageString(String messageString) {
-        YabcAppModel.messageString.set(messageString);
-        if (!getDefaultString().equals(getMessageString())) {
-            service.schedule(() -> Platform.runLater(() -> YabcAppModel.setDefaultMessage()), 2, TimeUnit
-                    .SECONDS);
-        }
-    }
-
-    private static List<YabcState> allowedToChangeUserStates = asList(YabcState.Designer, YabcState.HallOfFame,
-            YabcState.LevelPicker, YabcState.MainMenu, YabcState.Settings);
+    private static List<AppState> allowedToChangeUserStates = asList(AppState.Designer, AppState.HallOfFame,
+            AppState.LevelPicker, AppState.MainMenu, AppState.Settings);
 
     static {
         appContext.put(YabcContextTypes.ADDITIONAL, new HashMap<String, Object>());
@@ -74,6 +59,12 @@ public class YabcAppModel {
 
     public static StringProperty messageStringProperty() {
         return messageString;
+    }    public static void setMessageString(String messageString) {
+        AppModel.messageString.set(messageString);
+        if (!getDefaultString().equals(getMessageString())) {
+            service.schedule(() -> Platform.runLater(() -> AppModel.setDefaultMessage()), 2, TimeUnit
+                    .SECONDS);
+        }
     }
 
     public static BaseApp getBaseApp() {
@@ -84,12 +75,8 @@ public class YabcAppModel {
         return mainStage;
     }
 
-    private static void setDefaultMessage() {
-        YabcAppModel.messageString.set(getDefaultString());
-    }
-
     public static void setMainStage(Stage mainStage) {
-        YabcAppModel.mainStage = mainStage;
+        AppModel.mainStage = mainStage;
         mainStageTitle = mainStage.titleProperty();
     }
 
@@ -102,11 +89,11 @@ public class YabcAppModel {
         String fxmlFile = "/com/drozda/fx/fxml/BaseApp.fxml";
         log.debug("Loading FXML for main view from: {}", fxmlFile);
         FXMLLoader loader = new FXMLLoader();
-        Parent rootNode = loader.load(YabcAppModel.class.getResourceAsStream(fxmlFile));
+        Parent rootNode = loader.load(AppModel.class.getResourceAsStream(fxmlFile));
         log.debug("Showing JFX scene");
         Scene scene = new Scene(rootNode);
         baseApp = loader.getController();
-        setState(YabcState.MainMenu);
+        setState(AppState.MainMenu);
 
         mainStage.setTitle("Hello JavaFX and Maven");
         mainStage.setScene(scene);
@@ -116,37 +103,31 @@ public class YabcAppModel {
 
     }
 
-    public static ObjectProperty<YabcUser> currentUserProperty() {
+    public static ObjectProperty<AppUser> currentUserProperty() {
         return currentUser;
     }
 
-    public static YabcState getState() {
+    public static AppState getState() {
         return state.get();
+    }    private static void setDefaultMessage() {
+        AppModel.messageString.set(getDefaultString());
     }
 
-    public static void setState(YabcState newState) {
+    public static void setState(AppState newState) {
         if (state.get() == null) {
             state.set(newState);
         } else {
-            YabcState yabcState = state.get().tryTransitionIgnoreWrong(newState);
-            state.set(yabcState);
+            AppState appState = state.get().tryTransitionIgnoreWrong(newState);
+            state.set(appState);
         }
     }
 
-    public static YabcUser getCurrentUser() {
-        return currentUser.get();
-    }
-
-    public static ObjectProperty<YabcState> stateProperty() {
+    public static ObjectProperty<AppState> stateProperty() {
         return state;
     }
 
     public static void startBattle() {
-        setState(YabcState.Battle);
-    }
-
-    public static void setCurrentUser(YabcUser aCurrentUser) {
-        currentUser.set(aCurrentUser);
+        setState(AppState.Battle);
     }
 
     public static boolean isUnknownNormal() {//if UNKNOWN and it is not normal
@@ -159,9 +140,11 @@ public class YabcAppModel {
 
     public static void stop() {
         service.shutdown();
+    }    public static AppUser getCurrentUser() {
+        return currentUser.get();
     }
 
-    public static void initFrame(YabcState aState) {
+    public static void initFrame(AppState aState) {
 
     }
 
@@ -169,8 +152,10 @@ public class YabcAppModel {
         log.info("try to change user");
     }
 
-    public static Boolean changeUserPredicate(YabcState state) {
+    public static Boolean changeUserPredicate(AppState state) {
         return allowedToChangeUserStates.contains(state);
+    }    public static void setCurrentUser(AppUser aCurrentUser) {
+        currentUser.set(aCurrentUser);
     }
 
     public static void clearUser() { // if we play under one login and then want to play as UNKNOWN -  we have to
@@ -204,6 +189,18 @@ public class YabcAppModel {
         }
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

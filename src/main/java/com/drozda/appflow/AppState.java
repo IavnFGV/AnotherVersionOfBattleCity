@@ -1,4 +1,4 @@
-package com.drozda.battlecity.appflow;
+package com.drozda.appflow;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,7 +13,7 @@ import static java.util.Arrays.asList;
 /**
  * Created by GFH on 20.09.2015.
  */
-public enum YabcState {
+public enum AppState {
 
     MainMenu {
 
@@ -28,8 +28,8 @@ public enum YabcState {
         }
 
         @Override
-        public List<YabcState> getAllowedTransitions() {
-            return asList(new YabcState[]{Battle, Designer, LevelPicker, HallOfFame,
+        public List<AppState> getAllowedTransitions() {
+            return asList(new AppState[]{Battle, Designer, LevelPicker, HallOfFame,
                     Settings});
         }
     },
@@ -45,8 +45,8 @@ public enum YabcState {
         }
 
         @Override
-        public List<YabcState> getAllowedTransitions() {
-            return asList(new YabcState[]{MainMenu, Battle, Designer, LevelPicker,
+        public List<AppState> getAllowedTransitions() {
+            return asList(new AppState[]{MainMenu, Battle, Designer, LevelPicker,
                     Settings});
         }
     },
@@ -62,8 +62,8 @@ public enum YabcState {
         }
 
         @Override
-        public List<YabcState> getAllowedTransitions() {
-            return asList(new YabcState[]{MainMenu, Battle});
+        public List<AppState> getAllowedTransitions() {
+            return asList(new AppState[]{MainMenu, Battle});
         }
     },
     LevelPicker {
@@ -78,8 +78,8 @@ public enum YabcState {
         }
 
         @Override
-        public List<YabcState> getAllowedTransitions() {
-            return asList(new YabcState[]{MainMenu, Battle, Designer});
+        public List<AppState> getAllowedTransitions() {
+            return asList(new AppState[]{MainMenu, Battle, Designer});
         }
     },
     HallOfFame {
@@ -94,8 +94,8 @@ public enum YabcState {
         }
 
         @Override
-        public List<YabcState> getAllowedTransitions() {
-            return asList(new YabcState[]{MainMenu});
+        public List<AppState> getAllowedTransitions() {
+            return asList(new AppState[]{MainMenu});
         }
     },
     Settings {
@@ -110,51 +110,22 @@ public enum YabcState {
         }
 
         @Override
-        public List<YabcState> getAllowedTransitions() {
-            return asList(new YabcState[]{MainMenu, Battle});
+        public List<AppState> getAllowedTransitions() {
+            return asList(new AppState[]{MainMenu, Battle});
         }
     };
 
-    protected final Logger log = LoggerFactory.getLogger(YabcState.class);
+    protected final Logger log = LoggerFactory.getLogger(AppState.class);
 
     protected String fxmlBase = "/com/drozda/fx/fxml/";
-    protected YabcAppModel.YabcFrame yabcFrame;
+    protected AppModel.YabcFrame yabcFrame;
     protected boolean initialized;
 
-    public YabcAppModel.YabcFrame getYabcFrame() {
+    public AppModel.YabcFrame getYabcFrame() {
         if (!isInitialized()) {
             initialize();
         }
         return yabcFrame;
-    }
-
-    public abstract List<YabcState> getAllowedTransitions();
-
-    public boolean canTransition(YabcState newState) {
-        if (newState == null) {
-            throw new IllegalArgumentException("newState can not be null");
-        }
-        return getAllowedTransitions().contains(newState);
-    }
-
-    public YabcState tryTransitionIgnoreWrong(YabcState newState) {
-        if (!canTransition(newState)) {
-            return this;
-        } else {
-            return newState;
-        }
-    }
-
-    public YabcState tryTransition(YabcState newState) {
-        if (!canTransition(newState)) {
-            throw new IllegalArgumentException("Cant make transition from " + this + "to " + newState);
-        } else {
-            return newState;
-        }
-    }
-
-    public String getFxmlFile() {
-        return fxmlBase + this.toString() + ".fxml";
     }
 
     public boolean isInitialized() {
@@ -170,7 +141,36 @@ public enum YabcState {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        yabcFrame = new YabcAppModel.YabcFrame(rootNode, loader.getController());
+        yabcFrame = new AppModel.YabcFrame(rootNode, loader.getController());
+    }
+
+    public String getFxmlFile() {
+        return fxmlBase + this.toString() + ".fxml";
+    }
+
+    public AppState tryTransitionIgnoreWrong(AppState newState) {
+        if (!canTransition(newState)) {
+            return this;
+        } else {
+            return newState;
+        }
+    }
+
+    public boolean canTransition(AppState newState) {
+        if (newState == null) {
+            throw new IllegalArgumentException("newState can not be null");
+        }
+        return getAllowedTransitions().contains(newState);
+    }
+
+    public abstract List<AppState> getAllowedTransitions();
+
+    public AppState tryTransition(AppState newState) {
+        if (!canTransition(newState)) {
+            throw new IllegalArgumentException("Cant make transition from " + this + "to " + newState);
+        } else {
+            return newState;
+        }
     }
 
     public abstract Object getController();

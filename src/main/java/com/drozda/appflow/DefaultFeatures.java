@@ -1,4 +1,4 @@
-package com.drozda.battlecity.appflow;
+package com.drozda.appflow;
 
 /**
  * Created by GFH on 23.09.2015.

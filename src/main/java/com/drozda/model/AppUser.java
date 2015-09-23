@@ -1,15 +1,15 @@
-package com.drozda.battlecity.model;
+package com.drozda.model;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 /**
  * Created by GFH on 20.09.2015.
  */
-public class YabcUser {
+public class AppUser {
 
     private final ImmutableTriple<String, String, Integer> triple;
 
-    public YabcUser(String left, String middle, Integer right) {
+    public AppUser(String left, String middle, Integer right) {
         this.triple = new ImmutableTriple(left, middle, right);
     }
 
@@ -32,12 +32,12 @@ public class YabcUser {
 
     @Override
     public boolean equals(Object obj) {
-        return triple.equals(((YabcUser) (obj)).triple);
+        return triple.equals(((AppUser) (obj)).triple);
     }
 
     @Override
     public String toString() {
-        return "YabcUser{" +
+        return "AppUser{" +
                 "triple=" + triple +
                 '}';
     }

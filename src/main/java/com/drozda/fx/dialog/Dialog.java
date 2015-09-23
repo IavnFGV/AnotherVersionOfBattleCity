@@ -1,8 +1,8 @@
 package com.drozda.fx.dialog;
 
 import com.drozda.YabcLocalization;
-import com.drozda.battlecity.appflow.YabcAppModel;
-import com.drozda.battlecity.appflow.YabcState;
+import com.drozda.appflow.AppModel;
+import com.drozda.appflow.AppState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,16 +17,16 @@ public class Dialog {
     private static final Logger log = LoggerFactory.getLogger(Dialog.class);
 
 
-    public static void ShowLoginDialog(Predicate<YabcState> canShow, YabcState state) {
+    public static void ShowLoginDialog(Predicate<AppState> canShow, AppState state) {
         if (canShow != null && state != null) {
             if (!canShow.test(state)) {
-                YabcAppModel.setMessageString(format(YabcLocalization.getString("statusbar.cant.change.user"),
-                        YabcAppModel.getState()));
+                AppModel.setMessageString(format(YabcLocalization.getString("statusbar.cant.change.user"),
+                        AppModel.getState()));
                 return;
             }
         }
-        LoginDialog dlg = new LoginDialog(YabcAppModel.getCurrentUser(), YabcAppModel.isUnknownNormal());
+        LoginDialog dlg = new LoginDialog(AppModel.getCurrentUser(), AppModel.isUnknownNormal());
         dlg.showAndWait().ifPresent(result -> log.info("Result is " + result));
-        YabcAppModel.changeUser();
+        AppModel.changeUser();
     }
 }

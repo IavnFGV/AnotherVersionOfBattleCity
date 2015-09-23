@@ -1,9 +1,9 @@
 package com.drozda.fx.dialog;
 
 import com.drozda.YabcLocalization;
-import com.drozda.battlecity.appflow.CustomFeatures;
-import com.drozda.battlecity.model.LoginDialogResponse;
-import com.drozda.battlecity.model.YabcUser;
+import com.drozda.appflow.CustomFeatures;
+import com.drozda.model.AppUser;
+import com.drozda.model.LoginDialogResponse;
 import impl.org.controlsfx.i18n.Localization;
 import javafx.scene.control.*;
 import javafx.scene.control.Dialog;
@@ -24,7 +24,7 @@ public class LoginDialog extends Dialog<LoginDialogResponse> {
     private final CheckBox cbUnknowIsNormal;
 
 
-    public LoginDialog(YabcUser initialUserInfo, boolean initialUnknowNormal) {
+    LoginDialog(AppUser initialUserInfo, boolean initialUnknowNormal) {
         DialogPane dialogPane = this.getDialogPane();
         this.setTitle(Localization.getString("login.dlg.title"));
         dialogPane.setHeaderText(Localization.getString("login.dlg.header"));

@@ -1,7 +1,7 @@
 package com.drozda.yabc;
 
-import com.drozda.battlecity.appflow.StateChangeListener;
-import com.drozda.battlecity.appflow.YabcAppModel;
+import com.drozda.appflow.AppModel;
+import com.drozda.appflow.StateChangeListener;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -10,18 +10,26 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by GFH on 19.09.2015.
  */
-public class YabcApp extends Application {
+public class FullApp extends Application {
 
-    private static final Logger log = LoggerFactory.getLogger(YabcApp.class);
+    private static final Logger log = LoggerFactory.getLogger(FullApp.class);
     // public Stage stage;
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void init() {
+        AppModel.stateProperty().addListener(new StateChangeListener());
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
 
-        YabcAppModel.setMainStage(primaryStage);
-        YabcAppModel.startGame();
+        AppModel.setMainStage(primaryStage);
+        AppModel.startGame();
 //        String fxmlFile = "/com/drozda/fx/fxml/BaseApp.fxml";
 //        log.debug("Loading FXML for main view from: {}", fxmlFile);
 //        FXMLLoader loader = new FXMLLoader();
@@ -40,7 +48,7 @@ public class YabcApp extends Application {
 //        ((BaseApp)(loader.getController())).getBorderPane().setCenter(rootNode1);
 
 
-//        YabcAppModel.setMainStage(primaryStage);
+//        AppModel.setMainStage(primaryStage);
 
 
 //        primaryStage.setTitle("Hello JavaFX and Maven");
@@ -50,17 +58,8 @@ public class YabcApp extends Application {
 
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    @Override
-    public void init() {
-        YabcAppModel.stateProperty().addListener(new StateChangeListener());
-    }
-
     @Override
     public void stop() {
-        YabcAppModel.stop();
+        AppModel.stop();
     }
 }

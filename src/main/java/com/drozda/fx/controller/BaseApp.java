@@ -1,7 +1,7 @@
 package com.drozda.fx.controller;
 
 import com.drozda.YabcLocalization;
-import com.drozda.battlecity.appflow.YabcAppModel;
+import com.drozda.appflow.AppModel;
 import com.drozda.fx.dialog.Dialog;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,21 +26,20 @@ public class BaseApp implements Initializable {
     @FXML
     private SubScene subScene;
     private StatusBar statusBar = new StatusBar();
+    private HyperlinkLabel helloLabel = new HyperlinkLabel();
 
     {
         statusBar.setText("");
     }
 
-    private HyperlinkLabel helloLabel = new HyperlinkLabel();
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         borderPane.setBottom(statusBar);
-        helloLabel.textProperty().bind(YabcAppModel.messageStringProperty());
+        helloLabel.textProperty().bind(AppModel.messageStringProperty());
         helloLabel.setOnAction(event -> {
             Hyperlink link = (Hyperlink) event.getSource();
             if (link != null && link.getText().equals(YabcLocalization.getString("statusbar.relogin"))) {
-                Dialog.ShowLoginDialog(YabcAppModel::changeUserPredicate, YabcAppModel.getState());
+                Dialog.ShowLoginDialog(AppModel::changeUserPredicate, AppModel.getState());
             }
         });
 

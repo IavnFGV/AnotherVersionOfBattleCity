@@ -1,5 +1,6 @@
 package com.drozda.battlecity.appflow;
 
+import com.drozda.appflow.AppState;
 import org.junit.Test;
 
 /**
@@ -11,15 +12,20 @@ public class AppFlowTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testEnumYabcState() {
-        YabcState yabcState = YabcState.Designer;
+        AppState appState = AppState.Designer;
 
-        System.out.println(yabcState.getAllowedTransitions());
-        System.out.println(yabcState.tryTransitionIgnoreWrong(YabcState.HallOfFame));
-        System.out.println(yabcState.canTransition(YabcState.HallOfFame));
-        System.out.println(yabcState.tryTransition(YabcState.HallOfFame));
+        System.out.println(appState.getAllowedTransitions());
+        System.out.println(appState.tryTransitionIgnoreWrong(AppState.HallOfFame));
+        System.out.println(appState.canTransition(AppState.HallOfFame));
+        System.out.println(appState.tryTransition(AppState.HallOfFame));
 
     }
 
+    @Test
+    public void testEnum() {
+        TestEnum testEnum = TestEnum.en1;
+        System.out.println(testEnum.getTest());
+    }
 
     enum TestEnum {
         en1 {
@@ -35,18 +41,15 @@ public class AppFlowTest {
         };
         protected String testString;
 
+        {
+            init();
+        }
+
         public String getTest() {
             return testString;
         }
 
         abstract void init();
-        {init();}
-    }
-
-    @Test
-    public void testEnum(){
-        TestEnum testEnum = TestEnum.en1;
-        System.out.println(testEnum.getTest());
     }
 
 }
