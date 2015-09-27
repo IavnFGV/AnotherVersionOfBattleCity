@@ -1,9 +1,8 @@
 package com.drozda.battlecity;
 
 
+import com.drozda.battlecity.modifier.StateModifier;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -18,7 +17,7 @@ import static java.util.Arrays.asList;
 /**
  * Created by GFH on 26.09.2015.
  */
-public class GameUnit extends Observable {
+public class GameUnit extends Observable implements CanChangeState, CanPause {
     private static final Logger log = LoggerFactory.getLogger(GameUnit.class);
     protected static Map<State, Long> defaultTimeInState = new EnumMap<>(State.class);
 
@@ -27,7 +26,6 @@ public class GameUnit extends Observable {
         defaultTimeInState.put(State.ACTIVE, 0L);
         defaultTimeInState.put(State.EXPLODING, ONE_SECOND / 6);
         defaultTimeInState.put(State.DEAD, 0L);
-
     }
 
     protected List<State> defaultStateFlow = asList(State.CREATING, State.ACTIVE, State.EXPLODING, State.DEAD);
@@ -38,7 +36,7 @@ public class GameUnit extends Observable {
     private LongProperty heartBeats = new SimpleLongProperty();
     private ListProperty<BonusUnit.BonusType> bonusList = new SimpleListProperty<>();
     private List<State> stateFlow = new LinkedList(); //TODO maybe we can use LinkedHashMap??
-
+    private StateModifier<GameUnit> stateModifier = new StateModifier<>(this);
     public GameUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long>
             timeInState) {
         this.setBounds(new BoundingBox(minX, minY, width, height));
@@ -51,8 +49,10 @@ public class GameUnit extends Observable {
                 this.timeInState.putIfAbsent(state, defaultTimeInState.get(state));
             }
         }
+    }
 
-
+    public void heartBeat(long currentTime) {
+        this.heartBeats.set(currentTime);
     }
 
     public Bounds getBounds() {
@@ -68,18 +68,29 @@ public class GameUnit extends Observable {
         return bounds;
     }
 
-    public State getCurrentState() {
-        return currentState.get();
-    }
-
-    public void setCurrentState(State currentState) {
-        this.currentState.set(currentState);
-    }
-
     public ObjectProperty<State> currentStateProperty() {
         return currentState;
     }
 
+    @Override
+    public State getCurrentState() {
+        return currentState.get();
+    }
+
+    public void initialize(long startTime) {
+        log.debug("GameUnit.initialize with parameters " + "startTime = [" + startTime + "]");
+        this.setCurrentState(stateFlow.get(0));
+        heartBeats.removeListener(stateModifier);
+        heartBeats.setValue(startTime);
+        heartBeats.addListener(stateModifier);
+    }
+
+    @Override
+    public void setCurrentState(State currentState) {
+        this.currentState.set(currentState);
+    }
+
+    @Override
     public boolean isPause() {
         return pause.get();
     }
@@ -104,10 +115,6 @@ public class GameUnit extends Observable {
         return bonusList;
     }
 
-    protected Long getTimeInState(State state) {
-        return timeInState.get(state);
-    }
-
     public enum State {
         CREATING,
         ACTIVE,
@@ -115,50 +122,21 @@ public class GameUnit extends Observable {
         DEAD;
     }
 
-    protected abstract class HeartBeatListener implements ChangeListener<Number> {
-        @Override
-        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-            log.info("HeartBeatListener.changed");
-            log.info("observable = [" + observable + "], oldValue = [" + oldValue + "], newValue = [" + newValue + "]");
-            if (isPause()) {
-                return;
-            }
-            long deltaTime = newValue.longValue() - oldValue.longValue();
-            perform(deltaTime);
-        }
 
-        public abstract void perform(long deltaTime);
+    @Override
+    public Long getTimeInState(State state) {
+        return timeInState.get(state);
     }
 
-    protected class StateChanger extends HeartBeatListener {
-        private long timeInCurrentState;
-
-        @Override
-        public void perform(long deltaTime) {
-            log.info("StateChanger.perform");
-            log.info("deltaTime = [" + deltaTime + "]");
-            timeInCurrentState += deltaTime;
-            if (timeIsUp()) {
-                goToNextState();
-            }
-        }
-
-        private boolean timeIsUp() {
-            log.debug("StateChanger.timeIsUp");
-            long timeInState = getTimeInState(getCurrentState());
-            if ((timeInState > 0) && (timeInState <= timeInCurrentState)) {
-                return true;
-            }
-            return false;
-        }
-
-        private void goToNextState() {
-            int curIndex = stateFlow.indexOf(currentState);
-            if (curIndex < stateFlow.size() - 1) {
-                setCurrentState(stateFlow.get(curIndex + 1));
-                setChanged();
-            }
+    @Override
+    public void goToNextState() {
+        int curIndex = stateFlow.indexOf(getCurrentState());
+        if (curIndex < stateFlow.size() - 1) {
+            setCurrentState(stateFlow.get(curIndex + 1));
+            setChanged();
         }
     }
+
+
 
 }
