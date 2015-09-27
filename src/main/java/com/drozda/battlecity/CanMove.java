@@ -1,0 +1,17 @@
+package com.drozda.battlecity;
+
+import javafx.geometry.Bounds;
+
+/**
+ * Created by GFH on 27.09.2015.
+ */
+public interface CanMove {
+
+    boolean getEngineOn();
+
+    MoveableUnit.Direction getDirection();
+
+    Bounds getBounds();
+
+    long getVelocity();
+}

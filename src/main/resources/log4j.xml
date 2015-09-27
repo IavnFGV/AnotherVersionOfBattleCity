@@ -14,9 +14,13 @@
         <level value="DEBUG"/>
     </logger>
 
+    <logger name="com.drozda.battlecity.modifier">
+        <level value="FATAL"/>
+    </logger>
+
     <root>
-        <priority value ="WARN" />
-        <appender-ref ref="console" />
+        <priority value="WARN"/>
+        <appender-ref ref="console"/>
     </root>
 
 </log4j:configuration>

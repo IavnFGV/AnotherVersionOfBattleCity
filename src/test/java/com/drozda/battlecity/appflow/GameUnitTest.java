@@ -24,12 +24,15 @@ public class GameUnitTest {
         testUnit.initialize(0l);
         GameUnit.State lastState = testUnit.getCurrentState();
 
-        for (long i = 0; i < 5 * ONE_SECOND; i += ONE_SECOND / 2) {
+        for (long i = 0; i < 5 * ONE_SECOND; i += ONE_SECOND / 10) {
             testUnit.heartBeat(i);
             GameUnit.State newState = testUnit.getCurrentState();
             if (newState != lastState) {
                 System.out.println("newState is " + newState);
                 lastState = newState;
+                if (newState == GameUnit.State.ACTIVE) {
+                    testUnit.setCurrentState(GameUnit.State.EXPLODING);
+                }
             }
         }
     }

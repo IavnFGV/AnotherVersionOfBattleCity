@@ -1,7 +1,7 @@
 package com.drozda.battlecity;
 
 
-import com.drozda.battlecity.modifier.StateModifier;
+import com.drozda.battlecity.modifier.StateFlowModifier;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.geometry.BoundingBox;
@@ -36,7 +36,7 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
     private LongProperty heartBeats = new SimpleLongProperty();
     private ListProperty<BonusUnit.BonusType> bonusList = new SimpleListProperty<>();
     private List<State> stateFlow = new LinkedList(); //TODO maybe we can use LinkedHashMap??
-    private StateModifier<GameUnit> stateModifier = new StateModifier<>(this);
+    private StateFlowModifier<GameUnit> stateFlowModifier = new StateFlowModifier<>(this);
     public GameUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long>
             timeInState) {
         this.setBounds(new BoundingBox(minX, minY, width, height));
@@ -72,22 +72,17 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
         return currentState;
     }
 
-    @Override
-    public State getCurrentState() {
-        return currentState.get();
-    }
-
     public void initialize(long startTime) {
         log.debug("GameUnit.initialize with parameters " + "startTime = [" + startTime + "]");
         this.setCurrentState(stateFlow.get(0));
-        heartBeats.removeListener(stateModifier);
+        heartBeats.removeListener(stateFlowModifier);
         heartBeats.setValue(startTime);
-        heartBeats.addListener(stateModifier);
+        heartBeats.addListener(stateFlowModifier);
     }
 
     @Override
-    public void setCurrentState(State currentState) {
-        this.currentState.set(currentState);
+    public State getCurrentState() {
+        return currentState.get();
     }
 
     @Override
@@ -97,6 +92,11 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
 
     public void setPause(boolean pause) {
         this.pause.set(pause);
+    }
+
+    @Override
+    public void setCurrentState(State currentState) {
+        this.currentState.set(currentState);
     }
 
     public BooleanProperty pauseProperty() {
@@ -113,6 +113,21 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
 
     public ListProperty<BonusUnit.BonusType> bonusListProperty() {
         return bonusList;
+    }
+
+    @Override
+    public String toString() {
+        return "GameUnit{" +
+                "defaultStateFlow=" + defaultStateFlow +
+                ", bounds=" + bounds +
+                ", timeInState=" + timeInState +
+                ", currentState=" + currentState +
+                ", pause=" + pause +
+                ", heartBeats=" + heartBeats +
+                ", bonusList=" + bonusList +
+                ", stateFlow=" + stateFlow +
+                ", stateFlowModifier=" + stateFlowModifier +
+                "} " + super.toString();
     }
 
     public enum State {
@@ -136,7 +151,6 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
             setChanged();
         }
     }
-
 
 
 }

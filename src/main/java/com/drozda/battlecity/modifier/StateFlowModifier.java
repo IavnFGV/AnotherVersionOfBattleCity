@@ -8,18 +8,18 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by GFH on 27.09.2015.
  */
-public class StateModifier<T extends CanPause & CanChangeState> extends NumberListenerModifier {
-    private static final Logger log = LoggerFactory.getLogger(StateModifier.class);
+public class StateFlowModifier<T extends CanPause & CanChangeState> extends NumberListenerModifier {
+    private static final Logger log = LoggerFactory.getLogger(StateFlowModifier.class);
 
     private long timeInCurrentState;
 
-    public StateModifier(T gameUnit) {
+    public StateFlowModifier(T gameUnit) {
         super(gameUnit);
     }
 
     @Override
     public void perform(long deltaTime) {
-        log.info("StateModifier.perform");
+        log.info("StateFlowModifier.perform");
         log.info("deltaTime = [" + deltaTime + "]");
         timeInCurrentState += deltaTime;
         if (timeIsUp()) {
@@ -28,7 +28,7 @@ public class StateModifier<T extends CanPause & CanChangeState> extends NumberLi
     }
 
     private boolean timeIsUp() {
-        log.debug("StateModifier.timeIsUp");
+        log.debug("StateFlowModifier.timeIsUp");
         long timeInState = getTimeInState();
         if ((timeInState > 0) && (timeInState <= timeInCurrentState)) {
             return true;
@@ -38,6 +38,7 @@ public class StateModifier<T extends CanPause & CanChangeState> extends NumberLi
 
     private void goToNextState() {
         gameUnit().goToNextState();
+        timeInCurrentState = 0;
     }
 
     private long getTimeInState() {
