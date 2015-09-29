@@ -10,11 +10,11 @@ import java.util.function.Consumer;
  */
 public class MovingModifier<T extends CanPause & CanMove & CanChangeState> extends NumberListenerModifier {
     private long moveAccumulator = 0l;
-    private Consumer<MoveManager.ConsumerRequest> boundsConsumer;
+    private Consumer<MoveManager.ConsumerNewPositionRequest> boundsConsumer;
 
     private HasGameUnits playground = StaticServices.getPlayground();
 
-    public MovingModifier(T gameUnit, Consumer<MoveManager.ConsumerRequest> boundsConsumer) {
+    public MovingModifier(T gameUnit, Consumer<MoveManager.ConsumerNewPositionRequest> boundsConsumer) {
         super(gameUnit);
         this.boundsConsumer = boundsConsumer;
     }
@@ -43,7 +43,7 @@ public class MovingModifier<T extends CanPause & CanMove & CanChangeState> exten
                     newX = (newX + deltaPosition);
                     break;
             }
-            boundsConsumer.accept(new MoveManager.ConsumerRequest(gameUnit(), newX, newY, playground));
+            boundsConsumer.accept(new MoveManager.ConsumerNewPositionRequest(gameUnit(), newX, newY, playground));
         }
     }
 

@@ -9,8 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.round;
 
 /**
  * Created by GFH on 27.09.2015.
@@ -19,13 +24,13 @@ public class MoveManager {
     private static final Logger log = LoggerFactory.getLogger(MoveManager.class);
     private static Set<TileUnit.TileType> rideTiles = EnumSet.of(TileUnit.TileType.FOREST, TileUnit.TileType.ICE);
 
-    public static void confirmNewPosition(ConsumerRequest consumerRequest) {
-        log.debug("MoveManager.confirmNewPosition with parameters " + "consumerRequest = [" + consumerRequest + "]");
+    public static void confirmNewPosition(ConsumerNewPositionRequest consumerNewPositionRequest) {
+        log.debug("MoveManager.confirmNewPosition with parameters " + "consumerNewPositionRequest = [" + consumerNewPositionRequest + "]");
 
-        Object unit = consumerRequest.unit;
-        double newValueX = consumerRequest.newValueX;
-        double newValueY = consumerRequest.newValueY;
-        HasGameUnits world = consumerRequest.world;
+        Object unit = consumerNewPositionRequest.unit;
+        double newValueX = consumerNewPositionRequest.newValueX;
+        double newValueY = consumerNewPositionRequest.newValueY;
+        HasGameUnits world = consumerNewPositionRequest.world;
 
         MoveableUnit activeUnit = (MoveableUnit) unit;
         Bounds newFixedBounds = new BoundingBox(newValueX + 1,
@@ -76,27 +81,6 @@ public class MoveManager {
         activeUnit.setBounds(new BoundingBox(newPosition.getX(), newPosition.getY(), activeUnit.getBounds().getWidth(),
                 activeUnit.getBounds().getHeight()));
     }
-//    public void fixPosition(ActiveUnit activeUnit, Double newX, Double newY) {
-//        Predicate<GameUnit> onlyTank = gameUnit -> (gameUnit instanceof TankUnit);
-//        Predicate<GameUnit> notMe = gameUnit -> (gameUnit != activeUnit);
-//        Predicate<GameUnit> onlyTankAndNotMe = onlyTank.and(notMe);
-//        List<GameUnit> tanks = world.getUnitList().stream().filter(onlyTankAndNotMe).collect(Collectors.toList());
-//        if (tanks.size() == 0) {// no more tanks
-//            activeUnit.setX(newX);
-//            activeUnit.setY(newY);
-//            return;
-//        }
-//        if (!tanks.stream().map(gameUnit -> {
-//            Bounds newBounds = new BoundingBox(newX + 1,
-//                    newY + 1,
-//                    activeUnit.getWidth() - 2,
-//                    activeUnit.getHeight() - 2);
-//            return newBounds.intersects(gameUnit.getBounds());
-//        }).anyMatch(b -> (b == true))) {
-//            activeUnit.setX(newX);
-//            activeUnit.setY(newY);
-//        }
-//    }
 
     private static Boolean canRide(GameUnit unit) {
         Boolean result = false;
@@ -106,13 +90,79 @@ public class MoveManager {
         return result;
     }
 
-    public static class ConsumerRequest {
+    private static void fixPosition(ConsumerFixPositionRequest consumerFixPositionRequest) {
+        MoveableUnit gameUnit = (MoveableUnit) consumerFixPositionRequest.unit;
+
+        long cellSize = round(gameUnit.getBounds().getWidth() / 2);
+
+        double newX = gameUnit.getBounds().getMinX();
+        double newY = gameUnit.getBounds().getMinY();
+
+        Long x = nearest(newX, cellSize);
+        Long y = nearest(newY, cellSize);
+
+        if (abs(newX - x) < (cellSize / 2 + 1)) {
+            newX = Double.valueOf(x);
+        }
+        if (abs(newY - y) < (cellSize / 2 + 1)) {
+            newY = Double.valueOf(y);
+        }
+//        setNewBounds(new BoundingBox(newX, newY, cellSize * 2, cellSize * 2));
+        //   if (collisionManager != null) {
+        //        collisionManager.fixPosition(this, newX, newY);
+        //   }
+        fixPosition(gameUnit, newX, newY, consumerFixPositionRequest.world);
+    }
+
+    private static long nearest(double num, long base) {
+        return (round(num / (base * 1.)) * base);
+    }
+
+    public static void fixPosition(//ConsumerFixPositionRequest consumerFixPositionRequest
+                                   MoveableUnit activeUnit, Double newValueX, Double newValueY,
+                                   HasGameUnits world
+    ) {
+//        Object unit = consumerFixPositionRequest.unit;
+//        double newValueX = consumerFixPositionRequest.newValueX;
+//        double newValueY = consumerFixPositionRequest.newValueY;
+//        HasGameUnits world = consumerFixPositionRequest.world;
+
+        // MoveableUnit activeUnit = (MoveableUnit) unit;
+
+        Predicate<GameUnit> onlyTank = gameUnit -> (gameUnit instanceof TankUnit);
+        Predicate<GameUnit> notMe = gameUnit -> (gameUnit != activeUnit);
+        Predicate<GameUnit> onlyTankAndNotMe = onlyTank.and(notMe);
+        List<GameUnit> tanks = world.getUnitList().stream().filter(onlyTankAndNotMe).collect(Collectors.toList());
+        if (tanks.size() == 0) {// no more tanks
+            activeUnit.setBounds(
+                    new BoundingBox(
+                            newValueX, newValueY,
+                            activeUnit.getBounds().getWidth(),
+                            activeUnit.getBounds().getHeight()));
+            return;
+        }
+        if (!tanks.stream().map(gameUnit -> {
+            Bounds newBounds = new BoundingBox(newValueX + 1,
+                    newValueY + 1,
+                    activeUnit.getBounds().getWidth() - 2,
+                    activeUnit.getBounds().getHeight() - 2);
+            return newBounds.intersects(gameUnit.getBounds());
+        }).anyMatch(b -> (b == true))) {
+            activeUnit.setBounds(
+                    new BoundingBox(
+                            newValueX, newValueY,
+                            activeUnit.getBounds().getWidth(),
+                            activeUnit.getBounds().getHeight()));
+        }
+    }
+
+    public static class ConsumerNewPositionRequest {
         Object unit;
         double newValueX;
         double newValueY;
         HasGameUnits world;
 
-        public ConsumerRequest(Object unit, double newValueX, double newValueY, HasGameUnits world) {
+        public ConsumerNewPositionRequest(Object unit, double newValueX, double newValueY, HasGameUnits world) {
             if (!(unit instanceof MoveableUnit)) {
                 log.error("unit is not instanceof MoveableUnit");
                 throw new RuntimeException("unit is not instanceof MoveableUnit");
@@ -125,10 +175,29 @@ public class MoveManager {
 
         @Override
         public String toString() {
-            return "ConsumerRequest{" +
+            return "ConsumerNewPositionRequest{" +
                     "unit=" + unit +
                     ", newValueX=" + newValueX +
                     ", newValueY=" + newValueY +
+                    ", world=" + world +
+                    '}';
+        }
+    }
+
+    public static class ConsumerFixPositionRequest {
+
+        Object unit;
+        HasGameUnits world;
+
+        public ConsumerFixPositionRequest(Object unit, HasGameUnits world) {
+            this.unit = unit;
+            this.world = world;
+        }
+
+        @Override
+        public String toString() {
+            return "ConsumerFixPositionRequest{" +
+                    "unit=" + unit +
                     ", world=" + world +
                     '}';
         }

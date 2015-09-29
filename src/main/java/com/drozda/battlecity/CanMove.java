@@ -13,5 +13,7 @@ public interface CanMove {
 
     Bounds getBounds();
 
+    void setBounds(Bounds bounds);
+
     long getVelocity();
 }

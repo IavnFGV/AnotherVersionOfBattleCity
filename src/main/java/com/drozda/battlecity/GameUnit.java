@@ -37,6 +37,7 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
     private ListProperty<BonusUnit.BonusType> bonusList = new SimpleListProperty<>();
     private List<State> stateFlow = new LinkedList(); //TODO maybe we can use LinkedHashMap??
     private StateFlowModifier<GameUnit> stateFlowModifier = new StateFlowModifier<>(this);
+
     public GameUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long>
             timeInState) {
         this.setBounds(new BoundingBox(minX, minY, width, height));
@@ -81,11 +82,6 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
     }
 
     @Override
-    public State getCurrentState() {
-        return currentState.get();
-    }
-
-    @Override
     public boolean isPause() {
         return pause.get();
     }
@@ -95,8 +91,8 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
     }
 
     @Override
-    public void setCurrentState(State currentState) {
-        this.currentState.set(currentState);
+    public State getCurrentState() {
+        return currentState.get();
     }
 
     public BooleanProperty pauseProperty() {
@@ -113,6 +109,11 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
 
     public ListProperty<BonusUnit.BonusType> bonusListProperty() {
         return bonusList;
+    }
+
+    @Override
+    public void setCurrentState(State currentState) {
+        this.currentState.set(currentState);
     }
 
     @Override
