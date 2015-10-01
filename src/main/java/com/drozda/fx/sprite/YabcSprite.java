@@ -1,19 +1,19 @@
 package com.drozda.fx.sprite;
 
-import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 
 /**
  * Created by GFH on 24.09.2015.
  */
-public enum YabcSprites {
+public enum YabcSprite {
+
     TILE_BRICK, TILE_EMPTY, TILE_FOREST, TILE_ICE, TILE_STEEL, TILE_WATER,
-    TANK_FIRST_PLAYER, TANK_SECOND_PLAYER,
+    TANK_FIRST_PLAYER_1L, TANK_FIRST_PLAYER_2L, TANK_FIRST_PLAYER_3L, TANK_FIRST_PLAYER_4L,
+    TANK_SECOND_PLAYER_1L, TANK_SECOND_PLAYER_2L, TANK_SECOND_PLAYER_3L, TANK_SECOND_PLAYER_4L,
     TANK_SIMPLE_ENEMY, TANK_FAST_ENEMY, TANK_POWER_ENEMY, TANK_ARMOR_ENEMY,
     TANK_SIMPLE_ENEMY_X, TANK_FAST_ENEMY_X, TANK_POWER_ENEMY_X, TANK_ARMOR_ENEMY_X,
     BONUS_HELMET, BONUS_CLOCK, BONUS_SPADE, BONUS_STAR, BONUS_GRENADE, BONUS_TANK, BONUS_GUN,
     BULLET_PLAYER, BULLET_ENEMY;
+    private static Image baseImage = new Image(YabcSprite.class.getResource("BattleCity.png").toExternalForm());
 
-    public ImageView getView() {
-        return null;
-    }
 }
