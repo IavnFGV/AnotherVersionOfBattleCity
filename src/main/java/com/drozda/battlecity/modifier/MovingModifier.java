@@ -1,34 +1,31 @@
 package com.drozda.battlecity.modifier;
 
-import com.drozda.battlecity.*;
-import com.drozda.battlecity.manager.MoveManager;
-
-import java.util.function.Consumer;
+import com.drozda.battlecity.CanMove;
+import com.drozda.battlecity.CanPause;
+import com.drozda.battlecity.HasGameUnits;
+import com.drozda.battlecity.StaticServices;
 
 /**
  * Created by GFH on 27.09.2015.
  */
-public class MovingModifier<T extends CanPause & CanMove & CanChangeState> extends NumberListenerModifier {
+public abstract class MovingModifier<T extends CanPause & CanMove> extends NumberListenerModifier {
     private long moveAccumulator = 0l;
-    private Consumer<MoveManager.ConsumerNewPositionRequest> boundsConsumer;
+    private HasGameUnits playground;
 
-    private HasGameUnits playground = StaticServices.getPlayground();
 
-    public MovingModifier(T gameUnit, Consumer<MoveManager.ConsumerNewPositionRequest> boundsConsumer) {
-        super(gameUnit);
-        this.boundsConsumer = boundsConsumer;
+    public MovingModifier(CanPause gameUnit, HasGameUnits playground) {
+        super(gameUnit, playground);
+        this.playground = playground;
     }
-
     @Override
-    public void perform(long deltaTime) {
+    protected void perform(long deltaTime) {
         moveAccumulator += deltaTime;
-        if (gameUnit().getEngineOn() &&
-                (moveAccumulator >= StaticServices.ONE_SECOND / 64) &&
-                gameUnit().getCurrentState() == GameUnit.State.ACTIVE) {
+        if (gameUnit().canMove() &&
+                (moveAccumulator >= StaticServices.ONE_SECOND / 64)) {
             moveAccumulator = 0l;
             double newX = gameUnit().getBounds().getMinX();
             double newY = gameUnit().getBounds().getMinY();
-            double deltaPosition = (Double.valueOf(gameUnit().getVelocity()));
+            double deltaPosition = (gameUnit().getVelocity());
             switch (gameUnit().getDirection()) {
                 case UP:
                     newY = (newY - deltaPosition);
@@ -43,11 +40,13 @@ public class MovingModifier<T extends CanPause & CanMove & CanChangeState> exten
                     newX = (newX + deltaPosition);
                     break;
             }
-            boundsConsumer.accept(new MoveManager.ConsumerNewPositionRequest(gameUnit(), newX, newY, playground));
+            confirmNewPosition(gameUnit(), newX, newY, playground);
         }
     }
 
-    private T gameUnit() {
+    protected T gameUnit() {
         return (T) gameUnit;
     }
+
+    abstract protected void confirmNewPosition(T gameUnit, double newX, double newY, HasGameUnits playground);
 }

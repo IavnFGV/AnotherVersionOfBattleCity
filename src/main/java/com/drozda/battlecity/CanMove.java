@@ -7,7 +7,9 @@ import javafx.geometry.Bounds;
  */
 public interface CanMove {
 
-    boolean getEngineOn();
+    //  boolean getEngineOn();
+
+    boolean canMove();
 
     MoveableUnit.Direction getDirection();
 

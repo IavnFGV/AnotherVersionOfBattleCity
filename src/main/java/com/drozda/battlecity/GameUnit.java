@@ -28,18 +28,18 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
         defaultTimeInState.put(State.DEAD, 0L);
     }
 
+    private final StateFlowModifier<GameUnit> stateFlowModifier;
     protected List<State> defaultStateFlow = asList(State.CREATING, State.ACTIVE, State.EXPLODING, State.DEAD);
     protected ObjectProperty<Bounds> bounds = new SimpleObjectProperty<>(new BoundingBox(0, 0, 0, 0));
+    protected LongProperty heartBeats = new SimpleLongProperty();
     private Map<State, Long> timeInState = new EnumMap<>(State.class);
     private ObjectProperty<State> currentState = new SimpleObjectProperty<>();
     private BooleanProperty pause = new SimpleBooleanProperty();
-    private LongProperty heartBeats = new SimpleLongProperty();
     private ListProperty<BonusUnit.BonusType> bonusList = new SimpleListProperty<>();
     private List<State> stateFlow = new LinkedList(); //TODO maybe we can use LinkedHashMap??
-    private StateFlowModifier<GameUnit> stateFlowModifier = new StateFlowModifier<>(this);
 
     public GameUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long>
-            timeInState) {
+            timeInState, HasGameUnits playground) {
         this.setBounds(new BoundingBox(minX, minY, width, height));
         if (stateFlow == null) {
             this.stateFlow.addAll(defaultStateFlow);
@@ -50,6 +50,7 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
                 this.timeInState.putIfAbsent(state, defaultTimeInState.get(state));
             }
         }
+        stateFlowModifier = new StateFlowModifier<>(this, playground);
     }
 
     public void heartBeat(long currentTime) {
@@ -90,13 +91,13 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
         this.pause.set(pause);
     }
 
+    public BooleanProperty pauseProperty() {
+        return pause;
+    }
+
     @Override
     public State getCurrentState() {
         return currentState.get();
-    }
-
-    public BooleanProperty pauseProperty() {
-        return pause;
     }
 
     public ObservableList<BonusUnit.BonusType> getBonusList() {
@@ -109,11 +110,6 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
 
     public ListProperty<BonusUnit.BonusType> bonusListProperty() {
         return bonusList;
-    }
-
-    @Override
-    public void setCurrentState(State currentState) {
-        this.currentState.set(currentState);
     }
 
     @Override
@@ -136,6 +132,11 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
         ACTIVE,
         EXPLODING,
         DEAD;
+    }
+
+    @Override
+    public void setCurrentState(State currentState) {
+        this.currentState.set(currentState);
     }
 
 

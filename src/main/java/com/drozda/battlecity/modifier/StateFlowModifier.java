@@ -2,6 +2,7 @@ package com.drozda.battlecity.modifier;
 
 import com.drozda.battlecity.CanChangeState;
 import com.drozda.battlecity.CanPause;
+import com.drozda.battlecity.HasGameUnits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,12 +14,12 @@ public class StateFlowModifier<T extends CanPause & CanChangeState> extends Numb
 
     private long timeInCurrentState;
 
-    public StateFlowModifier(T gameUnit) {
-        super(gameUnit);
+    public StateFlowModifier(CanPause gameUnit, HasGameUnits playground) {
+        super(gameUnit, playground);
     }
 
     @Override
-    public void perform(long deltaTime) {
+    protected void perform(long deltaTime) {
         log.info("StateFlowModifier.perform");
         log.info("deltaTime = [" + deltaTime + "]");
         timeInCurrentState += deltaTime;
