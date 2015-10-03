@@ -7,8 +7,8 @@ import com.drozda.model.LoginDialogResponse;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.SubScene;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import org.controlsfx.control.HyperlinkLabel;
 import org.controlsfx.control.StatusBar;
@@ -23,11 +23,12 @@ public class BaseApp implements Initializable {
 
     @FXML
     private BorderPane borderPane;
-
     @FXML
-    private SubScene subScene;
-    private StatusBar statusBar = new StatusBar();
+    private AnchorPane anchorPane;
     private HyperlinkLabel helloLabel = new HyperlinkLabel();
+    //@FXML
+    //private SubScene subScene;
+    private StatusBar statusBar = new StatusBar();
 
     {
         statusBar.setText("");
@@ -49,7 +50,12 @@ public class BaseApp implements Initializable {
     }
 
     public void setSubScene(Parent parent) {
-        subScene.setRoot(parent);
+        borderPane.setCenter(parent);
+        //subScene.setRoot(parent);
+        // subPane.setNodeOrientation();
+        // subPane.getChildren().add(parent);
+        //    anchorPane.getChildren().clear();
+        //   anchorPane.getChildren().add(parent);
     }
 
     public BorderPane getBorderPane() {
