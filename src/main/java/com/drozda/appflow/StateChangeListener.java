@@ -14,7 +14,7 @@ public class StateChangeListener implements ChangeListener<AppState> {
 
     private static final Logger log = LoggerFactory.getLogger(StateChangeListener.class);
 
-    private boolean reverseState;
+    private boolean disableBattleToMainMenu;
 
     @Override
     public void changed(ObservableValue<? extends AppState> observable, AppState oldValue, AppState newValue) {
@@ -26,7 +26,7 @@ public class StateChangeListener implements ChangeListener<AppState> {
             while (AppModel.isLoginRequired()) {
                 LoginDialogResponse loginDialogResponse = loginRequest(oldValue);
                 if (loginDialogResponse == null) {
-                    toggleReverseState();
+                    setDisableBattleToMainMenu(true);
                     AppModel.setState(oldValue);
                     break;
                 }
@@ -40,8 +40,9 @@ public class StateChangeListener implements ChangeListener<AppState> {
 
         }
         if (oldValue.equals(AppState.Battle) && newValue.equals(AppState.MainMenu)) {
-            if (toggleReverseState()) {
+            if (isDisableBattleToMainMenu()) {
                 log.debug("FUCK1111!!!");
+                setDisableBattleToMainMenu(false);
                 return;
             }
             log.debug("FUCK!!!");
@@ -53,8 +54,11 @@ public class StateChangeListener implements ChangeListener<AppState> {
         return Dialog.ShowLoginDialog(AppModel::changeUserPredicate, state, AppModel::changeUser);
     }
 
-    private boolean toggleReverseState() {// if we have to go to prev state without checking old and new values
-        reverseState = !reverseState;
-        return !reverseState;
+    private boolean isDisableBattleToMainMenu() {
+        return disableBattleToMainMenu;
+    }
+
+    private void setDisableBattleToMainMenu(boolean disableBattleToMainMenu) {
+        this.disableBattleToMainMenu = disableBattleToMainMenu;
     }
 }

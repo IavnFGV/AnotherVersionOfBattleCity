@@ -1,7 +1,6 @@
 package com.drozda.battlecity.appflow;
 
 import com.drozda.appflow.AppState;
-import org.junit.Test;
 
 /**
  * Created by GFH on 18.09.2015.
@@ -10,7 +9,7 @@ import org.junit.Test;
 public class AppFlowTest {
 
 
-    @Test(expected = IllegalArgumentException.class)
+    //    @Test(expected = IllegalArgumentException.class)
     public void testEnumYabcState() {
         AppState appState = AppState.Designer;
 
@@ -21,7 +20,7 @@ public class AppFlowTest {
 
     }
 
-    @Test
+    //    @Test
     public void testEnum() {
         TestEnum testEnum = TestEnum.en1;
         System.out.println(testEnum.getTest());

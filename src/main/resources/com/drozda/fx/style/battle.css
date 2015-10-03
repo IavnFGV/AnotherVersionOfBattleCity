@@ -1,0 +1,75 @@
+.playground-border-left, .playground-border-top, .playground-border-bottom,
+.playground-border-right, #disable-second-player {
+    -fx-background-color: #636363;
+}
+
+.playground-border-left {
+    -fx-pref-width: 32;
+    -fx-max-width: 32;
+    -fx-min-width: 32;
+    -fx-pref-height: 480; /*15*32*/
+    -fx-max-height: 480; /*15*32*/
+    -fx-min-height: 480; /*15*32*/
+}
+
+.playground-border-right {
+    -fx-pref-width: 64;
+    -fx-max-width: 64;
+    -fx-min-width: 64;
+    -fx-pref-height: 480; /*15*32*/
+    -fx-max-height: 480; /*15*32*/
+    -fx-min-height: 480; /*15*32*/
+}
+
+.playground-border-top {
+    -fx-pref-width: 512; /*16*32*/
+    -fx-max-width: 512; /*16*32*/
+    -fx-min-width: 512; /*16*32*/
+    -fx-pref-height: 32;
+    -fx-max-height: 32;
+    -fx-min-height: 32;
+}
+
+.playground-border-bottom {
+    -fx-pref-width: 512; /*16*32*/
+    -fx-max-width: 512; /*16*32*/
+    -fx-min-width: 512; /*16*32*/
+    -fx-pref-height: 32;
+    -fx-max-height: 32;
+    -fx-min-height: 32;
+}
+
+.playground-back {
+    -fx-background-color: #000000;
+    -fx-pref-width: 512; /*16*32*/
+    -fx-max-width: 512; /*16*32*/
+    -fx-min-width: 512; /*16*32*/
+    -fx-pref-height: 480; /*15*32*/
+    -fx-max-height: 480; /*15*32*/
+    -fx-min-height: 480; /*15*32*/
+}
+
+#enemy-counter {
+    -fx-translate-x: 16;
+    -fx-translate-y: 48;
+    -fx-pref-width: 32;
+    -fx-max-width: 32;
+    -fx-min-width: 32;
+    -fx-pref-height: 160; /*15*32*/
+    -fx-max-height: 160; /*15*32*/
+    -fx-min-height: 160; /*15*32*/
+}
+
+#first-player-counter {
+    -fx-translate-x: 20;
+    -fx-translate-y: 272;
+}
+
+#stats-back {
+    /*-fx-background-image: url("../images/graphics.png");*/
+    -fx-background-position: 102 323, center;
+}
+
+#disable-second-player {
+
+}

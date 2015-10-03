@@ -1,7 +1,6 @@
 package com.drozda.battlecity.appflow;
 
 import com.drozda.battlecity.unit.GameUnit;
-import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +11,7 @@ import static com.drozda.battlecity.StaticServices.ONE_SECOND;
  * Created by GFH on 27.09.2015.
  */
 public class GameUnitTest {
-    @Test
+    //    @Test
     public void testGameUnit() {
         class TestUnit extends GameUnit {
             public TestUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long> timeInState) {

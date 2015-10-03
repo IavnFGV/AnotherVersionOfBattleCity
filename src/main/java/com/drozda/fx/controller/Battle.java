@@ -5,7 +5,7 @@ import com.drozda.battlecity.manager.PlaygroundManager;
 import com.drozda.battlecity.unit.GameUnit;
 import com.drozda.battlecity.unit.TileUnit;
 import javafx.fxml.FXML;
-import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
 
 /**
  * Created by GFH on 21.09.2015.
@@ -13,8 +13,9 @@ import javafx.scene.control.TextArea;
 public class Battle {
     PlaygroundManager playgroundManager = new PlaygroundManager();
     Playground curPlayground;
+
     @FXML
-    private TextArea textArea;
+    private BorderPane borderPane;
 
     @FXML
     private void initialize() {
@@ -25,7 +26,7 @@ public class Battle {
                 s += ((TileUnit) g).getTileType() + " ";
             }
         }
-        textArea.setText(s);
+//        borderPane.getStylesheets().add("/com/drozda/fx/style/battle.css");
     }
 
 }
