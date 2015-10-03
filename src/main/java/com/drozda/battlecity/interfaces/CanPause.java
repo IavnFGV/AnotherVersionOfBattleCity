@@ -1,4 +1,4 @@
-package com.drozda.battlecity;
+package com.drozda.battlecity.interfaces;
 
 /**
  * Created by GFH on 27.09.2015.

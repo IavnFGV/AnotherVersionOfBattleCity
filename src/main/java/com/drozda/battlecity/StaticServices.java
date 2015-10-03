@@ -1,5 +1,7 @@
 package com.drozda.battlecity;
 
+import com.drozda.battlecity.interfaces.HasGameUnits;
+
 import java.util.Locale;
 
 /**
@@ -16,6 +18,7 @@ public class StaticServices {
     }
 
     public static void initPlayground() { //TODO STUB/ REPLACE
-        playground = new Playground();
+        //     playground=
+        //  playground = new Playground();
     }
 }

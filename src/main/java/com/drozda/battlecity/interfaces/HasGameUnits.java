@@ -1,5 +1,6 @@
-package com.drozda.battlecity;
+package com.drozda.battlecity.interfaces;
 
+import com.drozda.battlecity.unit.GameUnit;
 import javafx.collections.ObservableList;
 
 /**

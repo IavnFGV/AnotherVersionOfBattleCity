@@ -1,5 +1,7 @@
-package com.drozda.battlecity;
+package com.drozda.battlecity.unit;
 
+import com.drozda.battlecity.interfaces.Destroyable;
+import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.MovingModifier;
 import com.drozda.battlecity.modifier.PositionFixingModifier;
 import com.drozda.battlecity.modifier.TankMovingModifier;

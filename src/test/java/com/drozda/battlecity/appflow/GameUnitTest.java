@@ -1,6 +1,6 @@
 package com.drozda.battlecity.appflow;
 
-import com.drozda.battlecity.GameUnit;
+import com.drozda.battlecity.unit.GameUnit;
 import org.junit.Test;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public class GameUnitTest {
     public void testGameUnit() {
         class TestUnit extends GameUnit {
             public TestUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long> timeInState) {
-                super(minX, minY, width, height, stateFlow, timeInState, );
+                super(minX, minY, width, height, stateFlow, timeInState, null);
             }
         }
 

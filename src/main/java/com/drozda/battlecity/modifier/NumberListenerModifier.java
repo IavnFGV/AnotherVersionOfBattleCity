@@ -1,7 +1,7 @@
 package com.drozda.battlecity.modifier;
 
-import com.drozda.battlecity.CanPause;
-import com.drozda.battlecity.HasGameUnits;
+import com.drozda.battlecity.interfaces.CanPause;
+import com.drozda.battlecity.interfaces.HasGameUnits;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import org.slf4j.Logger;

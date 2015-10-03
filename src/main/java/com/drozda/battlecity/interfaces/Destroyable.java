@@ -1,4 +1,6 @@
-package com.drozda.battlecity;
+package com.drozda.battlecity.interfaces;
+
+import com.drozda.battlecity.unit.BulletUnit;
 
 /**
  * Created by GFH on 30.09.2015.

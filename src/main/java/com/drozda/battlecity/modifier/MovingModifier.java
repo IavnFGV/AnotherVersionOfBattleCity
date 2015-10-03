@@ -1,9 +1,9 @@
 package com.drozda.battlecity.modifier;
 
-import com.drozda.battlecity.CanMove;
-import com.drozda.battlecity.CanPause;
-import com.drozda.battlecity.HasGameUnits;
 import com.drozda.battlecity.StaticServices;
+import com.drozda.battlecity.interfaces.CanMove;
+import com.drozda.battlecity.interfaces.CanPause;
+import com.drozda.battlecity.interfaces.HasGameUnits;
 
 /**
  * Created by GFH on 27.09.2015.

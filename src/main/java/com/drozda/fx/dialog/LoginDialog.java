@@ -1,7 +1,6 @@
 package com.drozda.fx.dialog;
 
 import com.drozda.YabcLocalization;
-import com.drozda.appflow.CustomFeatures;
 import com.drozda.model.AppUser;
 import com.drozda.model.LoginDialogResponse;
 import impl.org.controlsfx.i18n.Localization;
@@ -77,7 +76,7 @@ public class LoginDialog extends Dialog<LoginDialogResponse> {
         String teamCation = YabcLocalization.getString("login.dlg.team.caption");
         String passwordCaption = Localization.getString("login.dlg.pswd.caption");
 
-        if (initialUserInfo != null && !initialUserInfo.equals(CustomFeatures.DEFAULT_USER)) {
+        if (initialUserInfo != null) {
             this.txUserName.setText(initialUserInfo.getLogin());
             this.txTeam.setText(initialUserInfo.getTeam());
             this.txPassword.setText("pass");

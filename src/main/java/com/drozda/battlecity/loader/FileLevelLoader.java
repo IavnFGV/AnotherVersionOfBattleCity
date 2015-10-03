@@ -1,7 +1,7 @@
 package com.drozda.battlecity.loader;
 
-import com.drozda.battlecity.LoadableCells;
-import com.drozda.battlecity.TileUnit;
+import com.drozda.battlecity.interfaces.LoadableCells;
+import com.drozda.battlecity.unit.TileUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

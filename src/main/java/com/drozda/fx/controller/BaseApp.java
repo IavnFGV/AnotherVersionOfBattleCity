@@ -3,6 +3,7 @@ package com.drozda.fx.controller;
 import com.drozda.YabcLocalization;
 import com.drozda.appflow.AppModel;
 import com.drozda.fx.dialog.Dialog;
+import com.drozda.model.LoginDialogResponse;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -39,7 +40,8 @@ public class BaseApp implements Initializable {
         helloLabel.setOnAction(event -> {
             Hyperlink link = (Hyperlink) event.getSource();
             if (link != null && link.getText().equals(YabcLocalization.getString("statusbar.relogin"))) {
-                Dialog.ShowLoginDialog(AppModel::changeUserPredicate, AppModel.getState());
+                LoginDialogResponse loginDialogResponse = Dialog.ShowLoginDialog(AppModel::changeUserPredicate,
+                        AppModel.getState(), AppModel::changeUser);
             }
         });
 

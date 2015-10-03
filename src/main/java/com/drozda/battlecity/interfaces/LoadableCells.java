@@ -1,4 +1,6 @@
-package com.drozda.battlecity;
+package com.drozda.battlecity.interfaces;
+
+import com.drozda.battlecity.unit.TileUnit;
 
 /**
  * Created by GFH on 01.10.2015.

@@ -1,4 +1,7 @@
-package com.drozda.battlecity;
+package com.drozda.battlecity.unit;
+
+import com.drozda.battlecity.interfaces.Destroyable;
+import com.drozda.battlecity.interfaces.HasGameUnits;
 
 import java.util.List;
 import java.util.Map;

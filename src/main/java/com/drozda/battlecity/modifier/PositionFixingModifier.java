@@ -1,6 +1,11 @@
 package com.drozda.battlecity.modifier;
 
-import com.drozda.battlecity.*;
+import com.drozda.battlecity.interfaces.CanMove;
+import com.drozda.battlecity.interfaces.CanPause;
+import com.drozda.battlecity.interfaces.HasGameUnits;
+import com.drozda.battlecity.unit.GameUnit;
+import com.drozda.battlecity.unit.MoveableUnit;
+import com.drozda.battlecity.unit.TankUnit;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.BoundingBox;

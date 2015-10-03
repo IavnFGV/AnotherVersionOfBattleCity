@@ -1,8 +1,6 @@
 package com.drozda.fx.skeleton;
 
 import javafx.fxml.FXML;
-import javafx.geometry.BoundingBox;
-import javafx.geometry.Bounds;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +33,7 @@ public class HelloController
             }
             builder.append(lastName);
         }
+
 
         if (builder.length() > 0) {
             String name = builder.toString();

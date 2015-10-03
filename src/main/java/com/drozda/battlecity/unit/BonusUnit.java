@@ -1,4 +1,4 @@
-package com.drozda.battlecity;
+package com.drozda.battlecity.unit;
 
 /**
  * Created by GFH on 26.09.2015.

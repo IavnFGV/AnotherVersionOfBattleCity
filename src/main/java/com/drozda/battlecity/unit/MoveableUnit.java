@@ -1,5 +1,7 @@
-package com.drozda.battlecity;
+package com.drozda.battlecity.unit;
 
+import com.drozda.battlecity.interfaces.CanMove;
+import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.MovingModifier;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;

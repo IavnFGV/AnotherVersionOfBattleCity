@@ -1,8 +1,8 @@
 package com.drozda.battlecity.modifier;
 
-import com.drozda.battlecity.CanChangeState;
-import com.drozda.battlecity.CanPause;
-import com.drozda.battlecity.HasGameUnits;
+import com.drozda.battlecity.interfaces.CanChangeState;
+import com.drozda.battlecity.interfaces.CanPause;
+import com.drozda.battlecity.interfaces.HasGameUnits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

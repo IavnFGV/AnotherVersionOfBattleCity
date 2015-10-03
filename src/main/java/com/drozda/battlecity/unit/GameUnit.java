@@ -1,6 +1,9 @@
-package com.drozda.battlecity;
+package com.drozda.battlecity.unit;
 
 
+import com.drozda.battlecity.interfaces.CanChangeState;
+import com.drozda.battlecity.interfaces.CanPause;
+import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.StateFlowModifier;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
@@ -95,13 +98,13 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
         return pause;
     }
 
+    public ObservableList<BonusUnit.BonusType> getBonusList() {
+        return bonusList.get();
+    }
+
     @Override
     public State getCurrentState() {
         return currentState.get();
-    }
-
-    public ObservableList<BonusUnit.BonusType> getBonusList() {
-        return bonusList.get();
     }
 
     public void setBonusList(ObservableList<BonusUnit.BonusType> bonusList) {
@@ -133,6 +136,7 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
         EXPLODING,
         DEAD;
     }
+
 
     @Override
     public void setCurrentState(State currentState) {
