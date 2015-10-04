@@ -45,12 +45,6 @@ public class AppModel {
     private static BaseApp baseApp;
     private static CustomFeatures customFeatures = new DefaultFeatures();
     private static ObjectProperty<AppUser> currentUser = new SimpleObjectProperty(customFeatures.getLastUser());
-
-    private static String getDefaultString() {
-        return format(YabcLocalization.getString("statusbar.helloLabel"),
-                AppModel.getCurrentUser().getLogin(), AppModel.getCurrentUser().getTeam());
-    }
-
     private static ObjectProperty<AppState> state = new SimpleObjectProperty();
     private static List<AppState> allowedToChangeUserStates = asList(AppState.Designer, AppState.HallOfFame,
             AppState.LevelPicker, AppState.MainMenu, AppState.Settings);
@@ -58,10 +52,6 @@ public class AppModel {
     static {
         appContext.put(YabcContextTypes.ADDITIONAL, new HashMap<String, Object>());
         currentUser.addListener((observable, oldValue, newValue) -> setDefaultMessage());
-    }
-
-    public static String getMessageString() {
-        return messageString.get();
     }
 
     public static StringProperty messageStringProperty() {
@@ -79,12 +69,10 @@ public class AppModel {
     public static void setMainStage(Stage mainStage) {
         AppModel.mainStage = mainStage;
         mainStageTitle = mainStage.titleProperty();
-    }    public static void setMessageString(String messageString) {
-        AppModel.messageString.set(messageString);
-        if (!getDefaultString().equals(getMessageString())) {
-            service.schedule(() -> Platform.runLater(() -> AppModel.setDefaultMessage()), 2, TimeUnit
-                    .SECONDS);
-        }
+    }
+
+    public static String getMessageString() {
+        return messageString.get();
     }
 
     public static void startGame() throws Exception {
@@ -106,12 +94,36 @@ public class AppModel {
         mainStage.setScene(scene);
         mainStage.sizeToScene();
         setDefaultMessage();
+        mainStage.setResizable(false);
         mainStage.show();
 
     }
 
+    private static void setDefaultMessage() {
+        AppModel.messageString.set(getDefaultString());
+    }
+
+    private static String getDefaultString() {
+        return format(YabcLocalization.getString("statusbar.helloLabel"),
+                AppModel.getCurrentUser().getLogin(), AppModel.getCurrentUser().getTeam());
+    }
+
+    public static AppUser getCurrentUser() {
+        return currentUser.get();
+    }
+
+    public static void setCurrentUser(AppUser aCurrentUser) {
+        currentUser.set(aCurrentUser);
+    }
+
     public static ObjectProperty<AppUser> currentUserProperty() {
         return currentUser;
+    }    public static void setMessageString(String messageString) {
+        AppModel.messageString.set(messageString);
+        if (!getDefaultString().equals(getMessageString())) {
+            service.schedule(() -> Platform.runLater(() -> AppModel.setDefaultMessage()), 2, TimeUnit
+                    .SECONDS);
+        }
     }
 
     public static AppState getState() {
@@ -140,8 +152,6 @@ public class AppModel {
             return true;
         }
         return false;
-    }    private static void setDefaultMessage() {
-        AppModel.messageString.set(getDefaultString());
     }
 
     public static boolean isLoggedIn() {
@@ -203,8 +213,6 @@ public class AppModel {
         STATESTACK,
         ADDITIONAL
 
-    }    public static AppUser getCurrentUser() {
-        return currentUser.get();
     }
 
     public static class YabcFrame<T> {
@@ -228,9 +236,12 @@ public class AppModel {
     }
 
 
-    public static void setCurrentUser(AppUser aCurrentUser) {
-        currentUser.set(aCurrentUser);
-    }
+
+
+
+
+
+
 
 
 

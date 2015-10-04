@@ -10,8 +10,11 @@ import javafx.scene.Parent;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import org.controlsfx.control.HyperlinkLabel;
 import org.controlsfx.control.StatusBar;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -21,10 +24,14 @@ import java.util.ResourceBundle;
  */
 public class BaseApp implements Initializable {
 
+    private static final Logger log = LoggerFactory.getLogger(BaseApp.class);
+
     @FXML
     private BorderPane borderPane;
     @FXML
-    private AnchorPane anchorPane;
+    private AnchorPane centerAnchorPane;
+    @FXML
+    private Pane leftPane;
     private HyperlinkLabel helloLabel = new HyperlinkLabel();
     //@FXML
     //private SubScene subScene;
@@ -43,14 +50,28 @@ public class BaseApp implements Initializable {
             if (link != null && link.getText().equals(YabcLocalization.getString("statusbar.relogin"))) {
                 LoginDialogResponse loginDialogResponse = Dialog.ShowLoginDialog(AppModel::changeUserPredicate,
                         AppModel.getState(), AppModel::changeUser);
+                log.info(statusBar.getHeight() + "");
             }
         });
 
         statusBar.getLeftItems().addAll(helloLabel);
+        log.info(statusBar.getPrefHeight() + "");
+        borderPane.getStylesheets().add("/com/drozda/fx/style/baseapp.css");
+//        borderPane.centerProperty().addListener((observable, oldValue, newValue) -> {
+//            leftPane.setMaxSize(0, 0);
+//            leftPane.setMinSize(0, 0);
+//            leftPane.setPrefSize(0,0);
+//borderPane.autosize();
+//        });
+//        borderPane.setLeft(null);
     }
 
     public void setSubScene(Parent parent) {
-        borderPane.setCenter(parent);
+        centerAnchorPane.getChildren().clear();
+        centerAnchorPane.getChildren().add(parent);
+        Pane pane = (Pane) parent;
+        centerAnchorPane.setPrefSize(pane.getPrefWidth(), pane.getPrefHeight());
+        //   borderPane.setCenter(parent);
         //subScene.setRoot(parent);
         // subPane.setNodeOrientation();
         // subPane.getChildren().add(parent);

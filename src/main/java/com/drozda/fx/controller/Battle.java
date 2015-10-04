@@ -26,7 +26,7 @@ public class Battle {
                 s += ((TileUnit) g).getTileType() + " ";
             }
         }
-//        borderPane.getStylesheets().add("/com/drozda/fx/style/battle.css");
+        borderPane.getStylesheets().add("/com/drozda/fx/style/battle.css");
     }
 
 }

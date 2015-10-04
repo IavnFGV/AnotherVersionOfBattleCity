@@ -1,0 +1,8 @@
+.baseapp-size {
+    -fx-pref-width: 512;
+    -fx-max-width: 512;
+    -fx-min-width: 512;
+    -fx-pref-height: 510; /*15*32+30*/
+    -fx-max-height: 510; /*15*32+30*/
+    -fx-min-height: 510; /*15*32+30*/
+}

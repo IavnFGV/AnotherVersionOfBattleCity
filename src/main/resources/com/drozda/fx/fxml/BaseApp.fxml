@@ -3,9 +3,10 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity"
-            minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
-            xmlns="http://javafx.com/javafx/8.0.40" fx:controller="com.drozda.fx.controller.BaseApp">
+            minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="baseapp-size"
+            stylesheets="@../style/baseapp.css" xmlns="http://javafx.com/javafx/8.0.40"
+            fx:controller="com.drozda.fx.controller.BaseApp">
    <center>
-       <AnchorPane fx:id="anchorPane" BorderPane.alignment="CENTER"/>
+       <AnchorPane fx:id="centerAnchorPane" BorderPane.alignment="CENTER"/>
    </center>
 </BorderPane>
