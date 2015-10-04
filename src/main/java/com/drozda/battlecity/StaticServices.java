@@ -1,7 +1,6 @@
 package com.drozda.battlecity;
 
 import com.drozda.battlecity.interfaces.HasGameUnits;
-import com.drozda.battlecity.unit.Playground;
 
 import java.util.Locale;
 
