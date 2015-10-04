@@ -1,8 +1,8 @@
 package com.drozda.battlecity.manager;
 
-import com.drozda.battlecity.Playground;
 import com.drozda.battlecity.loader.FileLevelLoader;
 import com.drozda.battlecity.loader.LevelLoader;
+import com.drozda.battlecity.unit.Playground;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,8 +1,8 @@
 package com.drozda.fx.controller;
 
-import com.drozda.battlecity.Playground;
 import com.drozda.battlecity.manager.PlaygroundManager;
 import com.drozda.battlecity.unit.GameUnit;
+import com.drozda.battlecity.unit.Playground;
 import com.drozda.battlecity.unit.TileUnit;
 import javafx.fxml.FXML;
 import javafx.scene.layout.BorderPane;
