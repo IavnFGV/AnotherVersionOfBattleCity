@@ -50,6 +50,7 @@ public class BaseApp implements Initializable {
             if (link != null && link.getText().equals(YabcLocalization.getString("statusbar.relogin"))) {
                 LoginDialogResponse loginDialogResponse = Dialog.ShowLoginDialog(AppModel::changeUserPredicate,
                         AppModel.getState(), AppModel::changeUser);
+                AppModel.setMessageString("Attempt to login as " + AppModel.getCurrentUser());
                 log.info(statusBar.getHeight() + "");
             }
         });

@@ -30,7 +30,7 @@ public class Dialog {
             }
         }
         LoginDialog dlg = new LoginDialog(AppModel.getCurrentUser() == CustomFeatures.DEFAULT_USER ? null : AppModel.getCurrentUser(),
-                AppModel.isUnknownNormal());
+                AppModel.isUnknownNormal() && AppModel.getCurrentUser().equals(CustomFeatures.DEFAULT_USER));
         dlg.showAndWait().ifPresent(consumer);
         log.info("Result is " + dlg.getResult());
         return dlg.getResult();

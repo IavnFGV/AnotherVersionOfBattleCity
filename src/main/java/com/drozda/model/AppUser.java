@@ -1,16 +1,23 @@
 package com.drozda.model;
 
+import com.drozda.appflow.config.ImmutableTripleAdapter;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * Created by GFH on 20.09.2015.
  */
 public class AppUser {
 
-    private final ImmutableTriple<String, String, Integer> triple;
+    @XmlJavaTypeAdapter(ImmutableTripleAdapter.class)
+    private ImmutableTriple<String, String, Integer> triple;
 
     public AppUser(String left, String middle, Integer right) {
         this.triple = new ImmutableTriple(left, middle, right);
+    }
+
+    public AppUser() {
     }
 
     public String getLogin() {

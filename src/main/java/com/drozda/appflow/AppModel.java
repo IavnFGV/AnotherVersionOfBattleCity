@@ -2,6 +2,7 @@ package com.drozda.appflow;
 
 
 import com.drozda.YabcLocalization;
+import com.drozda.appflow.config.AppConfig;
 import com.drozda.fx.controller.BaseApp;
 import com.drozda.model.AppUser;
 import com.drozda.model.LoginDialogResponse;
@@ -34,13 +35,12 @@ import static java.util.Arrays.asList;
 public class AppModel {
     private static final Logger log = LoggerFactory.getLogger(AppModel.class);
     public static Map<YabcContextTypes, Object> appContext = new EnumMap(YabcContextTypes.class);
+    public static AppConfig appConfig;
     //  eSingleThreadScheduledExecutor()nw;
     private static String KEY_UNKNOWN_IS_NORMAL = "UNKNOWN_IS_NORMAL";
     private static ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
     private static Stage mainStage;
-
     private static StringProperty mainStageTitle;
-
     private static StringProperty messageString = new SimpleStringProperty();
     private static BaseApp baseApp;
     private static CustomFeatures customFeatures = new DefaultFeatures();
@@ -75,6 +75,14 @@ public class AppModel {
         return messageString.get();
     }
 
+    public static void setMessageString(String messageString) {
+        AppModel.messageString.set(messageString);
+        if (!getDefaultString().equals(getMessageString())) {
+            service.schedule(() -> Platform.runLater(() -> AppModel.setDefaultMessage()), 2, TimeUnit
+                    .SECONDS);
+        }
+    }
+
     public static void startGame() throws Exception {
 
         //     setState();
@@ -104,8 +112,15 @@ public class AppModel {
     }
 
     private static String getDefaultString() {
+        if (isUnknownNormal() && getCurrentUser().equals(CustomFeatures.DEFAULT_USER)) {
+            return YabcLocalization.getString("statusbar.helloLabel.defaultuser");
+        }
         return format(YabcLocalization.getString("statusbar.helloLabel"),
                 AppModel.getCurrentUser().getLogin(), AppModel.getCurrentUser().getTeam());
+    }
+
+    public static boolean isUnknownNormal() {//if UNKNOWN and it is not normal
+        return (boolean) getAdditionalSettings().getOrDefault(KEY_UNKNOWN_IS_NORMAL, false);
     }
 
     public static AppUser getCurrentUser() {
@@ -116,14 +131,12 @@ public class AppModel {
         currentUser.set(aCurrentUser);
     }
 
+    private static Map<String, Object> getAdditionalSettings() {
+        return (Map<String, Object>) (appContext.get(YabcContextTypes.ADDITIONAL));
+    }
+
     public static ObjectProperty<AppUser> currentUserProperty() {
         return currentUser;
-    }    public static void setMessageString(String messageString) {
-        AppModel.messageString.set(messageString);
-        if (!getDefaultString().equals(getMessageString())) {
-            service.schedule(() -> Platform.runLater(() -> AppModel.setDefaultMessage()), 2, TimeUnit
-                    .SECONDS);
-        }
     }
 
     public static AppState getState() {
@@ -159,14 +172,6 @@ public class AppModel {
             return true;
         }
         return false;
-    }
-
-    public static boolean isUnknownNormal() {//if UNKNOWN and it is not normal
-        return (boolean) getAdditionalSettings().getOrDefault(KEY_UNKNOWN_IS_NORMAL, false);
-    }
-
-    private static Map<String, Object> getAdditionalSettings() {
-        return (Map<String, Object>) (appContext.get(YabcContextTypes.ADDITIONAL));
     }
 
     public static void stop() {
@@ -234,20 +239,6 @@ public class AppModel {
         }
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

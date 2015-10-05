@@ -9,6 +9,9 @@ import com.drozda.appflow.AppState;
 public class AppFlowTest {
 
 
+    {
+    }
+
     //    @Test(expected = IllegalArgumentException.class)
     public void testEnumYabcState() {
         AppState appState = AppState.Designer;
@@ -50,5 +53,4 @@ public class AppFlowTest {
 
         abstract void init();
     }
-
 }
