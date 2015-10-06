@@ -11,14 +11,14 @@ public class StaticServices {
     public static Locale DEFAULT_LOCALE = Locale.getDefault();
     //    public static ResourceBundle MESSAGES = ResourceBundle.getBundle("messages/messages", DEFAULT_LOCALE);
     public static Long ONE_SECOND = 1000_000_000l;
-    private static Playground playground;
+    private static YabcPlayGround yabcPlayGround;
 
-    public static HasGameUnits getPlayground() {
-        return playground;
+    public static HasGameUnits getYabcPlayGround() {
+        return yabcPlayGround;
     }
 
     public static void initPlayground() { //TODO STUB/ REPLACE
-        //     playground=
-        //  playground = new Playground();
+        //     yabcPlayGround=
+        //  yabcPlayGround = new YabcPlayGround();
     }
 }
