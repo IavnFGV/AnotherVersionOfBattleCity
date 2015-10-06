@@ -5,23 +5,23 @@
 <?import javafx.scene.layout.*?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity"
             minHeight="-Infinity"
-            minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="yabcPlayGround-back"
-            stylesheets="@../style/battle.css" xmlns="http://javafx.com/javafx/8.0.40"
+            minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="playground-back"
+            xmlns="http://javafx.com/javafx/8.0.40"
             fx:controller="com.drozda.fx.controller.Battle">
     <top>
-        <Pane prefHeight="200.0" prefWidth="200.0" styleClass="yabcPlayGround-border-top"
+        <Pane prefHeight="200.0" prefWidth="200.0" styleClass="playground-border-top"
               BorderPane.alignment="CENTER"/>
     </top>
     <left>
         <Pane maxHeight="520.0" maxWidth="262.0" prefHeight="520.0" prefWidth="262.0"
-              styleClass="yabcPlayGround-border-left" BorderPane.alignment="CENTER"/>
+              styleClass="playground-border-left" BorderPane.alignment="CENTER"/>
     </left>
     <bottom>
-        <Pane prefHeight="200.0" prefWidth="200.0" styleClass="yabcPlayGround-border-bottom"
+        <Pane prefHeight="200.0" prefWidth="200.0" styleClass="playground-border-bottom"
               BorderPane.alignment="CENTER"/>
     </bottom>
     <right>
-        <Pane prefHeight="200.0" prefWidth="200.0" styleClass="yabcPlayGround-border-right"
+        <Pane prefHeight="200.0" prefWidth="200.0" styleClass="playground-border-right"
               BorderPane.alignment="CENTER">
             <children>
                 <TilePane id="enemy-counter" fx:id="enemyCounter" prefHeight="200.0" prefWidth="200.0"/>

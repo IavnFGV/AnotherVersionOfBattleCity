@@ -3,7 +3,6 @@ package com.drozda.fx.dialog;
 import com.drozda.YabcLocalization;
 import com.drozda.appflow.AppModel;
 import com.drozda.appflow.AppState;
-import com.drozda.appflow.CustomFeatures;
 import com.drozda.model.LoginDialogResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +28,10 @@ public class Dialog {
                 return null;
             }
         }
-        LoginDialog dlg = new LoginDialog(AppModel.getCurrentUser() == CustomFeatures.DEFAULT_USER ? null : AppModel.getCurrentUser(),
-                AppModel.isUnknownNormal() && AppModel.getCurrentUser().equals(CustomFeatures.DEFAULT_USER));
-        dlg.showAndWait().ifPresent(consumer);
+        LoginDialog dlg = new LoginDialog(AppModel.getCurrentUser(),
+                AppModel.isUnknownNormal() && AppModel.getCurrentUser() == null);
+        dlg.showAndWait();
+        consumer.accept(dlg.getResult());
         log.info("Result is " + dlg.getResult());
         return dlg.getResult();
     }

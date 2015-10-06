@@ -17,22 +17,24 @@ import java.util.List;
  * Created by GFH on 05.10.2015.
  */
 @XmlRootElement
-public class AppConfig {
+public class AppData {
     @XmlTransient
-    private static final Logger log = LoggerFactory.getLogger(AppConfig.class);
+    private static final Logger log = LoggerFactory.getLogger(AppData.class);
 
     private boolean rememberMe;
 
-    public static AppConfig loadConfig(String path) {
+    private AppUser lastUser;
+
+    public static AppData loadConfig(String path) {
         File file = checkPath(path, getConfigFilename());
         if (file == null) {
             return null;
         }
         try {
-            JAXBContext context = JAXBContext.newInstance(AppConfig.class);
+            JAXBContext context = JAXBContext.newInstance(AppData.class);
             Unmarshaller um = context.createUnmarshaller();
-            AppConfig appConfig = (AppConfig) um.unmarshal(file);
-            return appConfig;
+            AppData appData = (AppData) um.unmarshal(file);
+            return appData;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -79,7 +81,7 @@ public class AppConfig {
     }
 
     public static void saveAppUsers(List<AppUser> appUsers) {
-        log.debug("AppConfig.saveAppUsers with parameters " + "appUsers = [" + appUsers + "]");
+        log.debug("AppData.saveAppUsers with parameters " + "appUsers = [" + appUsers + "]");
         AppUserWithoutTeamListWrapper wrapper = new AppUserWithoutTeamListWrapper(appUsers);
         try {
             if (appUsers == null) {
@@ -101,11 +103,11 @@ public class AppConfig {
         }
     }
 
-    public static void saveConfig(AppConfig config) {
-        log.debug("AppConfig.saveConfig with parameters " + "config = [" + config + "]");
+    public static void saveConfig(AppData config) {
+        log.debug("AppData.saveConfig with parameters " + "config = [" + config + "]");
         try {
             if (config == null) {
-                throw new NullPointerException("AppConfig is null");
+                throw new NullPointerException("AppData is null");
             }
 
             File file = new File(getConfigPath());
@@ -114,7 +116,7 @@ public class AppConfig {
             }
             file = new File(getConfigPath() + getConfigFilename());
 
-            JAXBContext context = JAXBContext.newInstance(AppConfig.class);
+            JAXBContext context = JAXBContext.newInstance(AppData.class);
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             m.marshal(config, file);
@@ -140,11 +142,11 @@ public class AppConfig {
     }
 
     private static String getTeamsFilename() {
-        return "users.xml";
+        return "teams.xml";
     }
 
     public static void saveAppTeams(List<AppTeam> appTeams) {
-        log.debug("AppConfig.saveAppTeams with parameters " + "appTeams = [" + appTeams + "]");
+        log.debug("AppData.saveAppTeams with parameters " + "appTeams = [" + appTeams + "]");
         AppTeamWrapper wrapper = new AppTeamWrapper(appTeams);
         try {
             if (appTeams == null) {
@@ -166,19 +168,28 @@ public class AppConfig {
         }
     }
 
+    public AppUser getLastUser() {
+        return lastUser;
+    }
+
+    public void setLastUser(AppUser lastUser) {
+        this.lastUser = lastUser;
+    }
+
+    @Override
+    public String toString() {
+        return "AppData{" +
+                "rememberMe=" + rememberMe +
+                ", lastUser=" + lastUser +
+                '}';
+    }
+
     public boolean isRememberMe() {
         return rememberMe;
     }
 
     public void setRememberMe(boolean rememberMe) {
         this.rememberMe = rememberMe;
-    }
-
-    @Override
-    public String toString() {
-        return "AppConfig{" +
-                "rememberMe=" + rememberMe +
-                '}';
     }
 
 

@@ -1,6 +1,6 @@
 package com.drozda.battlecity.appflow;
 
-import com.drozda.appflow.config.AppConfig;
+import com.drozda.appflow.config.AppData;
 import com.drozda.model.AppTeam;
 import com.drozda.model.AppUser;
 import org.junit.Test;
@@ -11,20 +11,21 @@ import java.util.List;
 /**
  * Created by GFH on 05.10.2015.
  */
-public class AppConfigTest {
+public class AppDataTest {
     @Test
     public void saveConfig() {
-        AppConfig appConfig = new AppConfig();
-        appConfig.setRememberMe(false);
-        AppConfig.saveConfig(appConfig);
+        AppData appData = new AppData();
+        appData.setRememberMe(false);
+        appData.setLastUser(new AppUser("Ivan", "madHead", 56544));
+        AppData.saveConfig(appData);
     }
 
     @Test
     public void loadConfig() {
-        AppConfig appConfig = AppConfig.loadConfig(null);
-        System.out.println(appConfig);
-        appConfig = AppConfig.loadConfig("C:/");
-        System.out.println(appConfig);
+        AppData appData = AppData.loadConfig(null);
+        System.out.println(appData);
+        appData = AppData.loadConfig("C:/");
+        System.out.println(appData);
 
     }
 
@@ -35,14 +36,14 @@ public class AppConfigTest {
         appUsers.add(new AppUser("left2", "middle2", 1));
         appUsers.add(new AppUser("left3", "middle3", 1));
 
-        AppConfig.saveAppUsers(appUsers);
+        AppData.saveAppUsers(appUsers);
     }
 
     @Test
     public void loadUsers() {
-        List<AppUser> appUsers = AppConfig.loadAppUsers(null);
+        List<AppUser> appUsers = AppData.loadAppUsers(null);
         System.out.println(appUsers);
-        appUsers = AppConfig.loadAppUsers("C:/");
+        appUsers = AppData.loadAppUsers("C:/");
         System.out.println(appUsers);
 
     }
@@ -56,14 +57,14 @@ public class AppConfigTest {
         appTeams.add(new AppTeam("Dummies"));
         appTeams.add(new AppTeam("Nuts"));
 
-        AppConfig.saveAppTeams(appTeams);
+        AppData.saveAppTeams(appTeams);
     }
 
     @Test
     public void loadTeams() {
-        List<AppTeam> appTeams = AppConfig.loadAppTeams(null);
+        List<AppTeam> appTeams = AppData.loadAppTeams(null);
         System.out.println(appTeams);
-        appTeams = AppConfig.loadAppTeams("C:/");
+        appTeams = AppData.loadAppTeams("C:/");
         System.out.println(appTeams);
 
     }

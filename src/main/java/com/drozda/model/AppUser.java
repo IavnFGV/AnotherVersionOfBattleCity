@@ -39,6 +39,9 @@ public class AppUser {
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (this == obj) return true;
+        if (!(obj instanceof AppUser)) return false;
         return triple.equals(((AppUser) (obj)).triple);
     }
 

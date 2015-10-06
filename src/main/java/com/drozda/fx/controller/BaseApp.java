@@ -3,7 +3,6 @@ package com.drozda.fx.controller;
 import com.drozda.YabcLocalization;
 import com.drozda.appflow.AppModel;
 import com.drozda.fx.dialog.Dialog;
-import com.drozda.model.LoginDialogResponse;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -30,11 +29,9 @@ public class BaseApp implements Initializable {
     private BorderPane borderPane;
     @FXML
     private AnchorPane centerAnchorPane;
-    @FXML
-    private Pane leftPane;
+
     private HyperlinkLabel helloLabel = new HyperlinkLabel();
-    //@FXML
-    //private SubScene subScene;
+
     private StatusBar statusBar = new StatusBar();
 
     {
@@ -48,23 +45,14 @@ public class BaseApp implements Initializable {
         helloLabel.setOnAction(event -> {
             Hyperlink link = (Hyperlink) event.getSource();
             if (link != null && link.getText().equals(YabcLocalization.getString("statusbar.relogin"))) {
-                LoginDialogResponse loginDialogResponse = Dialog.ShowLoginDialog(AppModel::changeUserPredicate,
+                Dialog.ShowLoginDialog(AppModel::changeUserPredicate,
                         AppModel.getState(), AppModel::changeUser);
-                AppModel.setMessageString("Attempt to login as " + AppModel.getCurrentUser());
-                log.info(statusBar.getHeight() + "");
             }
         });
 
         statusBar.getLeftItems().addAll(helloLabel);
         log.info(statusBar.getPrefHeight() + "");
         borderPane.getStylesheets().add("/com/drozda/fx/style/baseapp.css");
-//        borderPane.centerProperty().addListener((observable, oldValue, newValue) -> {
-//            leftPane.setMaxSize(0, 0);
-//            leftPane.setMinSize(0, 0);
-//            leftPane.setPrefSize(0,0);
-//borderPane.autosize();
-//        });
-//        borderPane.setLeft(null);
     }
 
     public void setSubScene(Parent parent) {
@@ -72,12 +60,7 @@ public class BaseApp implements Initializable {
         centerAnchorPane.getChildren().add(parent);
         Pane pane = (Pane) parent;
         centerAnchorPane.setPrefSize(pane.getPrefWidth(), pane.getPrefHeight());
-        //   borderPane.setCenter(parent);
-        //subScene.setRoot(parent);
-        // subPane.setNodeOrientation();
-        // subPane.getChildren().add(parent);
-        //    anchorPane.getChildren().clear();
-        //   anchorPane.getChildren().add(parent);
+
     }
 
     public BorderPane getBorderPane() {

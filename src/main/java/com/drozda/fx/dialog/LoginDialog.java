@@ -4,6 +4,8 @@ import com.drozda.YabcLocalization;
 import com.drozda.model.AppUser;
 import com.drozda.model.LoginDialogResponse;
 import impl.org.controlsfx.i18n.Localization;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.scene.control.*;
 import javafx.scene.control.Dialog;
 import javafx.scene.image.ImageView;
@@ -11,17 +13,21 @@ import javafx.scene.layout.VBox;
 import org.controlsfx.control.textfield.CustomPasswordField;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Created by GFH on 20.09.2015.
  */
 public class LoginDialog extends Dialog<LoginDialogResponse> {
+    private static final Logger log = LoggerFactory.getLogger(LoginDialog.class);
     private final ButtonType loginButtonType;
     private final CustomTextField txUserName;
     private final CustomTextField txTeam;
     private final CustomPasswordField txPassword;
     private final CheckBox cbUnknowIsNormal;
-
+    private BooleanBinding fullBinding;
 
     LoginDialog(AppUser initialUserInfo, boolean initialUnknowNormal) {
         DialogPane dialogPane = this.getDialogPane();
@@ -45,33 +51,39 @@ public class LoginDialog extends Dialog<LoginDialogResponse> {
             this.txUserName.setDisable(newValue);
         });
         this.cbUnknowIsNormal.setSelected(initialUnknowNormal);
-        Label lbMessage = new Label("");
-        lbMessage.getStyleClass().addAll(new String[]{"message-banner"});
-        lbMessage.setVisible(false);
-        lbMessage.setManaged(false);
+
+
         VBox content = new VBox(10.0D);
-        content.getChildren().add(lbMessage);
         content.getChildren().add(this.txUserName);
         content.getChildren().add(this.txTeam);
         content.getChildren().add(this.txPassword);
         content.getChildren().add(this.cbUnknowIsNormal);
         dialogPane.setContent(content);
-        this.loginButtonType = new ButtonType(Localization.getString("login.dlg.login.button"), ButtonBar.ButtonData.OK_DONE);
+        this.loginButtonType = new ButtonType(Localization.getString("login.dlg.login.button"),
+                ButtonBar.ButtonData.OK_DONE);
         dialogPane.getButtonTypes().addAll(new ButtonType[]{this.loginButtonType});
         Button loginButton = (Button) dialogPane.lookupButton(this.loginButtonType);
-        loginButton.setOnAction((actionEvent) -> {
-            try {
-                lbMessage.setVisible(false);
-                lbMessage.setManaged(false);
-                this.hide();
-            } catch (Throwable var5) {
-                lbMessage.setVisible(true);
-                lbMessage.setManaged(true);
-                lbMessage.setText(var5.getMessage());
-                var5.printStackTrace();
-            }
 
-        });
+
+        BooleanBinding enoughDataInTextFields = Bindings.and(txUserName.textProperty().isNotEmpty(), txTeam
+                .textProperty().isNotEmpty());
+        enoughDataInTextFields = Bindings.and(enoughDataInTextFields, txPassword.textProperty().isNotEmpty());
+
+        BooleanBinding enoughAndNotCheckbox = Bindings.and(enoughDataInTextFields, cbUnknowIsNormal.selectedProperty()
+                .not());
+        fullBinding = Bindings.or(cbUnknowIsNormal.selectedProperty(), enoughAndNotCheckbox);
+
+        loginButton.setDisable(!fullBinding.get());
+
+        fullBinding.addListener((observable, oldValue, newValue) -> loginButton.setDisable(!newValue));
+//        notEnoughDataInTextFields.
+//                and(cbUnknowIsNormal.selectedProperty()).
+//                or(notEnoughDataInTextFields.not()).addListener((observable, oldValue, newValue) -> {
+//            loginButton.setDisable(newValue);
+//        });
+
+//        BooleanBinding booleanBinding = new
+
         String userNameCation = Localization.getString("login.dlg.user.caption");
         String teamCation = YabcLocalization.getString("login.dlg.team.caption");
         String passwordCaption = Localization.getString("login.dlg.pswd.caption");
@@ -85,12 +97,12 @@ public class LoginDialog extends Dialog<LoginDialogResponse> {
         this.txTeam.setPromptText(teamCation);
         this.txPassword.setPromptText(passwordCaption);
 
-        this.setResultConverter((dialogButton) ->
-                dialogButton == this.loginButtonType ?
-                        new LoginDialogResponse(this.txUserName.getText(), this.txTeam.getText(),
-                                initialUserInfo != null ?
-                                        initialUserInfo.getPasswordHash() :
-                                        this.txPassword.getText().hashCode(), this.cbUnknowIsNormal.isSelected())
-                        : null);
+        this.setResultConverter((dialogButton) -> {
+            if (dialogButton == this.loginButtonType) {
+                return new LoginDialogResponse(this.txUserName.getText(), this.txTeam.getText(), this.txPassword
+                        .getText().hashCode(), this.cbUnknowIsNormal.isSelected());
+            }
+            return null;
+        });
     }
 }

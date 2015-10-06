@@ -2,7 +2,7 @@ package com.drozda.appflow;
 
 
 import com.drozda.YabcLocalization;
-import com.drozda.appflow.config.AppConfig;
+import com.drozda.appflow.config.AppData;
 import com.drozda.fx.controller.BaseApp;
 import com.drozda.model.AppUser;
 import com.drozda.model.LoginDialogResponse;
@@ -35,7 +35,7 @@ import static java.util.Arrays.asList;
 public class AppModel {
     private static final Logger log = LoggerFactory.getLogger(AppModel.class);
     public static Map<YabcContextTypes, Object> appContext = new EnumMap(YabcContextTypes.class);
-    public static AppConfig appConfig;
+    public static AppData appData = AppData.loadConfig(null);//TODO Maybe set from args
     //  eSingleThreadScheduledExecutor()nw;
     private static String KEY_UNKNOWN_IS_NORMAL = "UNKNOWN_IS_NORMAL";
     private static ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
@@ -43,15 +43,23 @@ public class AppModel {
     private static StringProperty mainStageTitle;
     private static StringProperty messageString = new SimpleStringProperty();
     private static BaseApp baseApp;
-    private static CustomFeatures customFeatures = new DefaultFeatures();
-    private static ObjectProperty<AppUser> currentUser = new SimpleObjectProperty(customFeatures.getLastUser());
+    private static ObjectProperty<AppUser> currentUser = new SimpleObjectProperty(appData.getLastUser());
     private static ObjectProperty<AppState> state = new SimpleObjectProperty();
     private static List<AppState> allowedToChangeUserStates = asList(AppState.Designer, AppState.HallOfFame,
             AppState.LevelPicker, AppState.MainMenu, AppState.Settings);
 
     static {
         appContext.put(YabcContextTypes.ADDITIONAL, new HashMap<String, Object>());
-        currentUser.addListener((observable, oldValue, newValue) -> setDefaultMessage());
+        currentUser.addListener((observable, oldValue, newValue) -> {
+            setDefaultMessage();
+            saveLastUser(newValue);
+        });
+    }
+
+    public static void saveLastUser(AppUser appUser) {
+        log.debug("AppModel.saveLastUser with parameters " + "appUser = [" + appUser + "]");
+        if (appUser == null) return;
+        appData.setLastUser(appUser);
     }
 
     public static StringProperty messageStringProperty() {
@@ -71,24 +79,7 @@ public class AppModel {
         mainStageTitle = mainStage.titleProperty();
     }
 
-    public static String getMessageString() {
-        return messageString.get();
-    }
-
-    public static void setMessageString(String messageString) {
-        AppModel.messageString.set(messageString);
-        if (!getDefaultString().equals(getMessageString())) {
-            service.schedule(() -> Platform.runLater(() -> AppModel.setDefaultMessage()), 2, TimeUnit
-                    .SECONDS);
-        }
-    }
-
     public static void startGame() throws Exception {
-
-        //     setState();
-
-        // initializing baseview
-
         String fxmlFile = "/com/drozda/fx/fxml/BaseApp.fxml";
         log.debug("Loading FXML for main view from: {}", fxmlFile);
         FXMLLoader loader = new FXMLLoader();
@@ -98,7 +89,7 @@ public class AppModel {
         baseApp = loader.getController();
         setState(AppState.MainMenu);
 
-        mainStage.setTitle("Hello JavaFX and Maven");
+        mainStage.setTitle("Yet Another Battlecity clone on JavaFX and Maven");
         mainStage.setScene(scene);
         mainStage.sizeToScene();
         setDefaultMessage();
@@ -112,15 +103,11 @@ public class AppModel {
     }
 
     private static String getDefaultString() {
-        if (isUnknownNormal() && getCurrentUser().equals(CustomFeatures.DEFAULT_USER)) {
+        if (getCurrentUser() == null) {
             return YabcLocalization.getString("statusbar.helloLabel.defaultuser");
         }
         return format(YabcLocalization.getString("statusbar.helloLabel"),
                 AppModel.getCurrentUser().getLogin(), AppModel.getCurrentUser().getTeam());
-    }
-
-    public static boolean isUnknownNormal() {//if UNKNOWN and it is not normal
-        return (boolean) getAdditionalSettings().getOrDefault(KEY_UNKNOWN_IS_NORMAL, false);
     }
 
     public static AppUser getCurrentUser() {
@@ -129,10 +116,6 @@ public class AppModel {
 
     public static void setCurrentUser(AppUser aCurrentUser) {
         currentUser.set(aCurrentUser);
-    }
-
-    private static Map<String, Object> getAdditionalSettings() {
-        return (Map<String, Object>) (appContext.get(YabcContextTypes.ADDITIONAL));
     }
 
     public static ObjectProperty<AppUser> currentUserProperty() {
@@ -168,13 +151,22 @@ public class AppModel {
     }
 
     public static boolean isLoggedIn() {
-        if (!getCurrentUser().equals(CustomFeatures.DEFAULT_USER)) {
+        if (getCurrentUser() != null) {
             return true;
         }
         return false;
     }
 
+    public static boolean isUnknownNormal() {//if UNKNOWN and it is not normal
+        return (boolean) getAdditionalSettings().getOrDefault(KEY_UNKNOWN_IS_NORMAL, false);
+    }
+
+    private static Map<String, Object> getAdditionalSettings() {
+        return (Map<String, Object>) (appContext.get(YabcContextTypes.ADDITIONAL));
+    }
+
     public static void stop() {
+        AppData.saveConfig(appData);
         service.shutdown();
     }
 
@@ -184,11 +176,15 @@ public class AppModel {
 
     public static void changeUser(LoginDialogResponse dialogResponse) {
         log.debug("AppModel.changeUser with parameters " + "dialogResponse = [" + dialogResponse + "]");
+        if (dialogResponse == null) {
+            return;
+        }
+
         if (dialogResponse.isUnknownNormal()) {
             log.debug("try to set to default");
-            setUnknownIsNormal();
-            AppModel.setCurrentUser(CustomFeatures.DEFAULT_USER);
-
+            setUnknownIsNormal(true);
+            AppModel.setCurrentUser(null);
+            AppModel.setMessageString(YabcLocalization.getString("change.user.to.null"));
             return;
         }
         if ((dialogResponse != null) &&
@@ -196,12 +192,25 @@ public class AppModel {
                 (!dialogResponse.getUserInfo().getTeam().isEmpty()) &&
                 (dialogResponse.getUserInfo().getPasswordHash() != 0)) {
             log.debug("try to set another user");
+            setUnknownIsNormal(false);
             AppModel.setCurrentUser(dialogResponse.getUserInfo());
         }
     }
 
-    public static void setUnknownIsNormal() {
-        getAdditionalSettings().put(KEY_UNKNOWN_IS_NORMAL, true);
+    public static void setUnknownIsNormal(boolean isNormal) {
+        getAdditionalSettings().put(KEY_UNKNOWN_IS_NORMAL, isNormal);
+    }
+
+    public static String getMessageString() {
+        return messageString.get();
+    }
+
+    public static void setMessageString(String messageString) {
+        AppModel.messageString.set(messageString);
+        if (!getDefaultString().equals(getMessageString())) {
+            service.schedule(() -> Platform.runLater(() -> AppModel.setDefaultMessage()), 2, TimeUnit
+                    .SECONDS);
+        }
     }
 
     public static Boolean changeUserPredicate(AppState state) {
