@@ -22,8 +22,11 @@ public class AppData {
     private static final Logger log = LoggerFactory.getLogger(AppData.class);
 
     private boolean rememberMe;
-
     private AppUser lastUser;
+    @XmlTransient
+    private List<AppUser> appUsers;
+    @XmlTransient
+    private List<AppTeam> appTeams;
 
     public static AppData loadConfig(String path) {
         File file = checkPath(path, getConfigFilename());
@@ -34,6 +37,8 @@ public class AppData {
             JAXBContext context = JAXBContext.newInstance(AppData.class);
             Unmarshaller um = context.createUnmarshaller();
             AppData appData = (AppData) um.unmarshal(file);
+            appData.appTeams = loadAppTeams(path);
+            appData.appUsers = loadAppUsers(path);
             return appData;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -52,14 +57,6 @@ public class AppData {
         return file;
     }
 
-    private static String getConfigFilename() {
-        return "settings.xml";
-    }
-
-    private static String getConfigPath() {
-        return System.getProperty("user.home") + File.separator + ".Tanks" + File.separator;
-    }
-
     public static List<AppUser> loadAppUsers(String path) {
         File file = checkPath(path, getUsersFilename());
         if (file == null) {
@@ -74,33 +71,6 @@ public class AppData {
             log.error(e.getMessage(), e);
         }
         return null;
-    }
-
-    private static String getUsersFilename() {
-        return "users.xml";
-    }
-
-    public static void saveAppUsers(List<AppUser> appUsers) {
-        log.debug("AppData.saveAppUsers with parameters " + "appUsers = [" + appUsers + "]");
-        AppUserWithoutTeamListWrapper wrapper = new AppUserWithoutTeamListWrapper(appUsers);
-        try {
-            if (appUsers == null) {
-                throw new NullPointerException("appUsers is null");
-            }
-
-            File file = new File(getConfigPath());
-            if (!file.exists()) {
-                file.mkdirs();
-            }
-            file = new File(getConfigPath() + getUsersFilename());
-
-            JAXBContext context = JAXBContext.newInstance(AppUserWithoutTeamListWrapper.class);
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            m.marshal(wrapper, file);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
     }
 
     public static void saveConfig(AppData config) {
@@ -120,29 +90,19 @@ public class AppData {
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             m.marshal(config, file);
+            saveAppTeams(config.appTeams);
+            saveAppUsers(config.appUsers);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }
 
-    public static List<AppTeam> loadAppTeams(String path) {
-        File file = checkPath(path, getTeamsFilename());
-        if (file == null) {
-            return null;
-        }
-        try {
-            JAXBContext context = JAXBContext.newInstance(AppTeamWrapper.class);
-            Unmarshaller um = context.createUnmarshaller();
-            AppTeamWrapper wrapper = (AppTeamWrapper) um.unmarshal(file);
-            return wrapper.getTeams();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        return null;
+    private static String getConfigPath() {
+        return System.getProperty("user.home") + File.separator + ".Tanks" + File.separator;
     }
 
-    private static String getTeamsFilename() {
-        return "teams.xml";
+    private static String getConfigFilename() {
+        return "settings.xml";
     }
 
     public static void saveAppTeams(List<AppTeam> appTeams) {
@@ -168,6 +128,71 @@ public class AppData {
         }
     }
 
+    public static void saveAppUsers(List<AppUser> appUsers) {
+        log.debug("AppData.saveAppUsers with parameters " + "appUsers = [" + appUsers + "]");
+        AppUserWithoutTeamListWrapper wrapper = new AppUserWithoutTeamListWrapper(appUsers);
+        try {
+            if (appUsers == null) {
+                throw new NullPointerException("appUsers is null");
+            }
+
+            File file = new File(getConfigPath());
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            file = new File(getConfigPath() + getUsersFilename());
+
+            JAXBContext context = JAXBContext.newInstance(AppUserWithoutTeamListWrapper.class);
+            Marshaller m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            m.marshal(wrapper, file);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    private static String getTeamsFilename() {
+        return "teams.xml";
+    }
+
+    private static String getUsersFilename() {
+        return "users.xml";
+    }
+
+    public static List<AppTeam> loadAppTeams(String path) {
+        File file = checkPath(path, getTeamsFilename());
+        if (file == null) {
+            return null;
+        }
+        try {
+            JAXBContext context = JAXBContext.newInstance(AppTeamWrapper.class);
+            Unmarshaller um = context.createUnmarshaller();
+            AppTeamWrapper wrapper = (AppTeamWrapper) um.unmarshal(file);
+            return wrapper.getTeams();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "AppData{" +
+                "rememberMe=" + rememberMe +
+                ", lastUser=" + lastUser +
+                ", appUsers=" + appUsers +
+                ", appTeams=" + appTeams +
+                '}';
+    }
+
+    public List<AppUser> getAppUsers() {
+        return appUsers;
+    }
+
+    public List<AppTeam> getAppTeams() {
+        return appTeams;
+    }
+
     public AppUser getLastUser() {
         return lastUser;
     }
@@ -176,13 +201,6 @@ public class AppData {
         this.lastUser = lastUser;
     }
 
-    @Override
-    public String toString() {
-        return "AppData{" +
-                "rememberMe=" + rememberMe +
-                ", lastUser=" + lastUser +
-                '}';
-    }
 
     public boolean isRememberMe() {
         return rememberMe;

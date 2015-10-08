@@ -1,7 +1,7 @@
 package com.drozda.fx.dialog;
 
 import com.drozda.YabcLocalization;
-import com.drozda.model.AppUser;
+import com.drozda.model.LoginDialogRequest;
 import com.drozda.model.LoginDialogResponse;
 import impl.org.controlsfx.i18n.Localization;
 import javafx.beans.binding.Bindings;
@@ -29,7 +29,9 @@ public class LoginDialog extends Dialog<LoginDialogResponse> {
     private final CheckBox cbUnknowIsNormal;
     private BooleanBinding fullBinding;
 
-    LoginDialog(AppUser initialUserInfo, boolean initialUnknowNormal) {
+    // private ChoiceBox choiceBox;
+    //ChoiceDialog
+    LoginDialog(LoginDialogRequest loginDialogRequest) {
         DialogPane dialogPane = this.getDialogPane();
         this.setTitle(Localization.getString("login.dlg.title"));
         dialogPane.setHeaderText(Localization.getString("login.dlg.header"));
@@ -41,7 +43,9 @@ public class LoginDialog extends Dialog<LoginDialogResponse> {
         this.txTeam = (CustomTextField) TextFields.createClearableTextField();
         this.txTeam.setLeft(new ImageView(LoginDialog.class.getResource("/com/drozda/fx/dialog/team.png")
                 .toExternalForm()));
-
+        // this.choiceBox = new ChoiceBox();
+        ////  this.choiceBox.getItems().add("s1");
+        //  this.choiceBox.getItems().add("s2");
         this.txPassword = (CustomPasswordField) TextFields.createClearablePasswordField();
         this.txPassword.setLeft(new ImageView(org.controlsfx.dialog.LoginDialog.class.getResource("/org/controlsfx/dialog/lock.png").toExternalForm()));
         this.cbUnknowIsNormal = new CheckBox(YabcLocalization.getString("login.dlg.cbunknowisnormal.text"));
@@ -50,12 +54,13 @@ public class LoginDialog extends Dialog<LoginDialogResponse> {
             this.txTeam.setDisable(newValue);
             this.txUserName.setDisable(newValue);
         });
-        this.cbUnknowIsNormal.setSelected(initialUnknowNormal);
+        this.cbUnknowIsNormal.setSelected(loginDialogRequest.isInitialUnknowNormal());
 
 
         VBox content = new VBox(10.0D);
         content.getChildren().add(this.txUserName);
         content.getChildren().add(this.txTeam);
+        //  content.getChildren().add(this.choiceBox);
         content.getChildren().add(this.txPassword);
         content.getChildren().add(this.cbUnknowIsNormal);
         dialogPane.setContent(content);
@@ -88,9 +93,9 @@ public class LoginDialog extends Dialog<LoginDialogResponse> {
         String teamCation = YabcLocalization.getString("login.dlg.team.caption");
         String passwordCaption = Localization.getString("login.dlg.pswd.caption");
 
-        if (initialUserInfo != null) {
-            this.txUserName.setText(initialUserInfo.getLogin());
-            this.txTeam.setText(initialUserInfo.getTeam());
+        if (loginDialogRequest.getInitialUserInfo() != null) {
+            this.txUserName.setText(loginDialogRequest.getInitialUserInfo().getLogin());
+            this.txTeam.setText(loginDialogRequest.getInitialUserInfo().getTeam());
             this.txPassword.setText("pass");
         }
         this.txUserName.setPromptText(userNameCation);

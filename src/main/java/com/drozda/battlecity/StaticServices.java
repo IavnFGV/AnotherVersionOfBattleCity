@@ -1,6 +1,7 @@
 package com.drozda.battlecity;
 
 import com.drozda.battlecity.interfaces.HasGameUnits;
+import com.drozda.battlecity.playground.YabcPlayground;
 
 import java.util.Locale;
 
@@ -11,14 +12,14 @@ public class StaticServices {
     public static Locale DEFAULT_LOCALE = Locale.getDefault();
     //    public static ResourceBundle MESSAGES = ResourceBundle.getBundle("messages/messages", DEFAULT_LOCALE);
     public static Long ONE_SECOND = 1000_000_000l;
-    private static YabcPlayGround yabcPlayGround;
+    private static YabcPlayground yabcPlayground;
 
-    public static HasGameUnits getYabcPlayGround() {
-        return yabcPlayGround;
+    public static HasGameUnits getYabcPlayground() {
+        return yabcPlayground;
     }
 
     public static void initPlayground() { //TODO STUB/ REPLACE
-        //     yabcPlayGround=
-        //  yabcPlayGround = new YabcPlayGround();
+        //     yabcPlayground=
+        //  yabcPlayground = new YabcPlayground();
     }
 }

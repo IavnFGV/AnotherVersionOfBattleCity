@@ -20,7 +20,7 @@ import static java.util.Arrays.asList;
 /**
  * Created by GFH on 26.09.2015.
  */
-public class GameUnit extends Observable implements CanChangeState, CanPause {
+public class GameUnit extends Observable implements CanChangeState<GameUnit.State>, CanPause {
     private static final Logger log = LoggerFactory.getLogger(GameUnit.class);
     protected static Map<State, Long> defaultTimeInState = new EnumMap<>(State.class);
 
@@ -102,17 +102,17 @@ public class GameUnit extends Observable implements CanChangeState, CanPause {
         return bonusList.get();
     }
 
-    @Override
-    public State getCurrentState() {
-        return currentState.get();
-    }
-
     public void setBonusList(ObservableList<BonusUnit.BonusType> bonusList) {
         this.bonusList.set(bonusList);
     }
 
     public ListProperty<BonusUnit.BonusType> bonusListProperty() {
         return bonusList;
+    }
+
+    @Override
+    public State getCurrentState() {
+        return currentState.get();
     }
 
     @Override

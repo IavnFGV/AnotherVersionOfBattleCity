@@ -51,7 +51,11 @@ public class StateChangeListener implements ChangeListener<AppState> {
     }
 
     private LoginDialogResponse loginRequest(AppState state) {
-        return Dialog.ShowLoginDialog(AppModel::changeUserPredicate, state, AppModel::changeUser);
+        return Dialog.showLoginDialog(AppModel::changeUserPredicate,
+                state,
+                AppModel::changeUser,
+                AppModel.appData.getAppUsers(),
+                AppModel.appData.getAppTeams());
     }
 
     private boolean isDisableBattleToMainMenu() {

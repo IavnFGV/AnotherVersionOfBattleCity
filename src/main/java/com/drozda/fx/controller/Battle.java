@@ -1,7 +1,7 @@
 package com.drozda.fx.controller;
 
-import com.drozda.battlecity.YabcPlayGround;
 import com.drozda.battlecity.manager.PlaygroundManager;
+import com.drozda.battlecity.playground.YabcPlayground;
 import com.drozda.battlecity.unit.GameUnit;
 import com.drozda.battlecity.unit.TileUnit;
 import javafx.fxml.FXML;
@@ -12,16 +12,16 @@ import javafx.scene.layout.BorderPane;
  */
 public class Battle {
     PlaygroundManager playgroundManager = new PlaygroundManager();
-    YabcPlayGround curYabcPlayGround;
+    YabcPlayground curYabcPlayground;
 
     @FXML
     private BorderPane borderPane;
 
     @FXML
     private void initialize() {
-        curYabcPlayGround = playgroundManager.getPlayground(12, 1, 1);
+        curYabcPlayground = playgroundManager.getPlayground(12, 1, 1);
         String s = "";
-        for (GameUnit g : curYabcPlayGround.getUnitList()) {
+        for (GameUnit g : curYabcPlayground.getUnitList()) {
             if (g instanceof TileUnit) {
                 s += ((TileUnit) g).getTileType() + " ";
             }

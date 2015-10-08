@@ -1,8 +1,8 @@
 package com.drozda.battlecity.manager;
 
-import com.drozda.battlecity.YabcPlayGround;
 import com.drozda.battlecity.loader.FileLevelLoader;
 import com.drozda.battlecity.loader.LevelLoader;
+import com.drozda.battlecity.playground.YabcPlayground;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,16 +14,16 @@ public class PlaygroundManager {
 
     LevelLoader levelLoader = new FileLevelLoader();
 
-    public YabcPlayGround getPlayground(int levelNumber, int multX, int multY) {
-        log.debug("PlaygroundManager.getYabcPlayGround with parameters " + "levelNumber = [" + levelNumber + "], multX = [" + multX + "], multY = [" + multY + "]");
-        YabcPlayGround yabcPlayGround = new YabcPlayGround(multX, multY);
+    public YabcPlayground getPlayground(int levelNumber, int multX, int multY) {
+        log.debug("PlaygroundManager.getYabcPlayground with parameters " + "levelNumber = [" + levelNumber + "], multX = [" + multX + "], multY = [" + multY + "]");
+        YabcPlayground yabcPlayground = new YabcPlayground(multX, multY);
 
         try {
-            levelLoader.loadlevel(levelNumber + "", yabcPlayGround);
+            levelLoader.loadlevel(levelNumber + "", yabcPlayground);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return null;
         }
-        return yabcPlayGround;
+        return yabcPlayground;
     }
 }

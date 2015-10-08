@@ -45,8 +45,11 @@ public class BaseApp implements Initializable {
         helloLabel.setOnAction(event -> {
             Hyperlink link = (Hyperlink) event.getSource();
             if (link != null && link.getText().equals(YabcLocalization.getString("statusbar.relogin"))) {
-                Dialog.ShowLoginDialog(AppModel::changeUserPredicate,
-                        AppModel.getState(), AppModel::changeUser);
+                Dialog.showLoginDialog(AppModel::changeUserPredicate,
+                        AppModel.getState(),
+                        AppModel::changeUser,
+                        AppModel.appData.getAppUsers(),
+                        AppModel.appData.getAppTeams());
             }
         });
 
