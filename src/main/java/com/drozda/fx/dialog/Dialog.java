@@ -32,10 +32,12 @@ public class Dialog {
         return showLoginDialog(canShow,
                 state,
                 consumer,
-                new HashSet<>(possibleUsers.stream().map(appUser -> appUser.getLogin()).
-                        collect(Collectors.toSet())),
-                new HashSet<>(possibleTeams.stream().map(appTeam -> appTeam.getName()).
-                        collect(Collectors.toSet())));
+                possibleUsers != null ?
+                        new HashSet<>(possibleUsers.stream().map(appUser -> appUser.getLogin()).collect(Collectors.toSet())) :
+                        null,
+                possibleTeams != null ?
+                        new HashSet<>(possibleTeams.stream().map(appTeam -> appTeam.getName()).collect(Collectors.toSet())) :
+                        null);
     }
 
     public static LoginDialogResponse showLoginDialog(Predicate<AppState> canShow, AppState state,

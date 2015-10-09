@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -60,6 +61,11 @@ public class AppModel {
         log.debug("AppModel.saveLastUser with parameters " + "appUser = [" + appUser + "]");
         if (appUser == null) return;
         appData.setLastUser(appUser);
+        if (!appData.getAppUsers().stream().//NOT contains new login
+                map(appUser1 -> appUser1.getLogin()).
+                collect(Collectors.toSet()).contains(appUser)) {
+            appData.getAppUsers().add(appUser);
+        }
     }
 
     public static StringProperty messageStringProperty() {
@@ -144,17 +150,11 @@ public class AppModel {
     }
 
     public static boolean isLoginRequired() {
-        if (!isLoggedIn() && !isUnknownNormal()) {
-            return true;
-        }
-        return false;
+        return !isLoggedIn() && !isUnknownNormal();
     }
 
     public static boolean isLoggedIn() {
-        if (getCurrentUser() != null) {
-            return true;
-        }
-        return false;
+        return getCurrentUser() != null;
     }
 
     public static boolean isUnknownNormal() {//if UNKNOWN and it is not normal

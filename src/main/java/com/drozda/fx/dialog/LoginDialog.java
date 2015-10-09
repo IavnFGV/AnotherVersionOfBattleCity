@@ -16,6 +16,8 @@ import org.controlsfx.control.textfield.TextFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.drozda.fx.dialog.CleanStyleHelper.cleanStyle;
+
 
 /**
  * Created by GFH on 20.09.2015.
@@ -37,7 +39,7 @@ public class LoginDialog extends Dialog<LoginDialogResponse> {
         dialogPane.setHeaderText(Localization.getString("login.dlg.header"));
         dialogPane.getStyleClass().add("login-dialog");
         dialogPane.getStylesheets().add(org.controlsfx.dialog.LoginDialog.class.getResource("dialogs.css").toExternalForm());
-        dialogPane.getButtonTypes().addAll(new ButtonType[]{ButtonType.CANCEL});
+        dialogPane.getButtonTypes().addAll(ButtonType.CANCEL);
         this.txUserName = (CustomTextField) TextFields.createClearableTextField();
         this.txUserName.setLeft(new ImageView(org.controlsfx.dialog.LoginDialog.class.getResource("/org/controlsfx/dialog/user.png").toExternalForm()));
         this.txTeam = (CustomTextField) TextFields.createClearableTextField();
@@ -56,7 +58,14 @@ public class LoginDialog extends Dialog<LoginDialogResponse> {
         });
         this.cbUnknowIsNormal.setSelected(loginDialogRequest.isInitialUnknowNormal());
 
-
+        if (loginDialogRequest.getPossibleTeams() != null) {
+            cleanStyle(TextFields.bindAutoCompletion(txTeam,
+                    loginDialogRequest.getPossibleTeams()));
+        }
+        if (loginDialogRequest.getPossibleUsers() != null) {
+            cleanStyle(TextFields.bindAutoCompletion(txUserName,
+                    loginDialogRequest.getPossibleUsers()));
+        }
         VBox content = new VBox(10.0D);
         content.getChildren().add(this.txUserName);
         content.getChildren().add(this.txTeam);
@@ -66,7 +75,7 @@ public class LoginDialog extends Dialog<LoginDialogResponse> {
         dialogPane.setContent(content);
         this.loginButtonType = new ButtonType(Localization.getString("login.dlg.login.button"),
                 ButtonBar.ButtonData.OK_DONE);
-        dialogPane.getButtonTypes().addAll(new ButtonType[]{this.loginButtonType});
+        dialogPane.getButtonTypes().addAll(this.loginButtonType);
         Button loginButton = (Button) dialogPane.lookupButton(this.loginButtonType);
 
 
