@@ -4,8 +4,12 @@ package com.drozda.appflow;
 import com.drozda.YabcLocalization;
 import com.drozda.appflow.config.AppData;
 import com.drozda.fx.controller.BaseApp;
+import com.drozda.fx.dialog.ConfirmationDialog;
+import com.drozda.fx.dialog.Dialog;
+import com.drozda.model.AppTeam;
 import com.drozda.model.AppUser;
 import com.drozda.model.LoginDialogResponse;
+import com.drozda.model.NewUserDialogResponse;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -18,10 +22,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -39,6 +40,7 @@ public class AppModel {
     public static AppData appData = AppData.loadConfig(null);//TODO Maybe set from args
     //  eSingleThreadScheduledExecutor()nw;
     private static String KEY_UNKNOWN_IS_NORMAL = "UNKNOWN_IS_NORMAL";
+    private static int BITSET_SIZE_FOR_USERCHECK = 3;
     private static ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
     private static Stage mainStage;
     private static StringProperty mainStageTitle;
@@ -174,8 +176,8 @@ public class AppModel {
 
     }
 
-    public static void changeUser(LoginDialogResponse dialogResponse) {
-        log.debug("AppModel.changeUser with parameters " + "dialogResponse = [" + dialogResponse + "]");
+    public static void processLoginDialogResponse(LoginDialogResponse dialogResponse) {
+        log.debug("AppModel.processLoginDialogResponse with parameters " + "dialogResponse = [" + dialogResponse + "]");
         if (dialogResponse == null) {
             return;
         }
@@ -184,21 +186,77 @@ public class AppModel {
             log.debug("try to set to default");
             setUnknownIsNormal(true);
             AppModel.setCurrentUser(null);
-            AppModel.setMessageString(YabcLocalization.getString("change.user.to.null"));
+            AppModel.setMessageString(YabcLocalization.getString("statusbar.change.user.to.null"));
             return;
         }
-        if ((dialogResponse != null) &&
+        if (
                 (!dialogResponse.getUserInfo().getLogin().isEmpty()) &&
-                (!dialogResponse.getUserInfo().getTeam().isEmpty()) &&
-                (dialogResponse.getUserInfo().getPasswordHash() != 0)) {
+                        (!dialogResponse.getUserInfo().getTeam().isEmpty()) &&
+                        (dialogResponse.getUserInfo().getPasswordHash() != 0)) {
             log.debug("try to set another user");
-            setUnknownIsNormal(false);
+            setUnknownIsNormal(false);//TODO REPLACE
+
+            CheckUsernameAndPasswordResult checkUsernameAndPasswordResult = checkUsernameAndPassword(dialogResponse
+                    .getUserInfo());
+
+            if (checkUsernameAndPasswordResult.bitSet.get(2))//password
+            {
+                if (!checkUsernameAndPasswordResult.bitSet.get(1))//team
+                {
+                    createNewTeam(dialogResponse.getUserInfo().getTeam());
+                }
+            } else {
+                if (checkUsernameAndPasswordResult.bitSet.get(0))//login
+                {
+
+                } else {//new login
+                    boolean confirmCreation = ConfirmationDialog.userCreation();
+                    if (!confirmCreation) {
+                        AppModel.setMessageString(YabcLocalization.getString("statusbar.change.user.to.new.fail"));
+                        return;
+                    }
+                    createNewUser(dialogResponse.getUserInfo().getLogin(), dialogResponse.getUserInfo().getPasswordHash());
+                    return;
+                }
+            }
+
             AppModel.setCurrentUser(dialogResponse.getUserInfo());
+
         }
     }
 
     public static void setUnknownIsNormal(boolean isNormal) {
         getAdditionalSettings().put(KEY_UNKNOWN_IS_NORMAL, isNormal);
+    }
+
+    private static CheckUsernameAndPasswordResult checkUsernameAndPassword(AppUser appUser) {
+        if (appUser == null) {
+            throw new NullPointerException("appUser is null");
+        }
+        if (appUser.getTeam() == null) {
+            throw new NullPointerException("appUser.team is null");
+        }
+
+        int appUserIndex = appData.getAppUsers().indexOf(appUser);
+        boolean isLoginExists = appUserIndex >= 0;
+        boolean isTeamExists = appData.getAppTeams()
+                .stream().map(AppTeam::getName).collect(Collectors.toSet())
+                .contains(appUser.getTeam());
+
+//        boolean isPasswordCorrect = isLoginExists ? (appData.getAppUsers().get(appUserIndex).getPasswordHash()
+//                .equals(appUser.getPasswordHash())):
+//                false;
+        boolean isPasswordCorrect = isLoginExists && (appData.getAppUsers().get(appUserIndex).getPasswordHash()
+                .equals(appUser.getPasswordHash()));
+        return new CheckUsernameAndPasswordResult(isLoginExists, isTeamExists, isPasswordCorrect);
+    }
+
+    public static void createNewTeam(String teamName) {
+
+    }
+
+    public static void createNewUser(String login, Integer passwordHash) {
+        Dialog.showNewUserDialog(AppModel::processNewUserDialogResponse, login);
     }
 
     public static String getMessageString() {
@@ -211,6 +269,12 @@ public class AppModel {
             service.schedule(() -> Platform.runLater(() -> AppModel.setDefaultMessage()), 2, TimeUnit
                     .SECONDS);
         }
+    }
+
+    public static void processNewUserDialogResponse(NewUserDialogResponse newUserDialogResponse) {
+        AppModel.setMessageString(String.format(YabcLocalization.getString("statusbar.create.user.complete"),
+                newUserDialogResponse.getUser().getLogin()));
+        appData.getAppUsers().add(newUserDialogResponse.getUser());
     }
 
     public static Boolean changeUserPredicate(AppState state) {
@@ -227,6 +291,16 @@ public class AppModel {
         STATESTACK,
         ADDITIONAL
 
+    }
+
+    public static class CheckUsernameAndPasswordResult {
+        BitSet bitSet = new BitSet(BITSET_SIZE_FOR_USERCHECK);
+
+        public CheckUsernameAndPasswordResult(boolean... bitState) {
+            for (int i = 0; i < BITSET_SIZE_FOR_USERCHECK; i++) {
+                if (bitState[i]) bitSet.set(i);
+            }
+        }
     }
 
     public static class YabcFrame<T> {

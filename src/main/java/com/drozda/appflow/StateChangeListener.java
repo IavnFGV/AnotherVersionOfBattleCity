@@ -53,7 +53,7 @@ public class StateChangeListener implements ChangeListener<AppState> {
     private LoginDialogResponse loginRequest(AppState state) {
         return Dialog.showLoginDialog(AppModel::changeUserPredicate,
                 state,
-                AppModel::changeUser,
+                AppModel::processLoginDialogResponse,
                 AppModel.appData.getAppUsers(),
                 AppModel.appData.getAppTeams());
     }

@@ -47,7 +47,7 @@ public class BaseApp implements Initializable {
             if (link != null && link.getText().equals(YabcLocalization.getString("statusbar.relogin"))) {
                 Dialog.showLoginDialog(AppModel::changeUserPredicate,
                         AppModel.getState(),
-                        AppModel::changeUser,
+                        AppModel::processLoginDialogResponse,
                         AppModel.appData.getAppUsers(),
                         AppModel.appData.getAppTeams());
             }

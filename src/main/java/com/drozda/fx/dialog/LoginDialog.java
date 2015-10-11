@@ -31,23 +31,19 @@ public class LoginDialog extends Dialog<LoginDialogResponse> {
     private final CheckBox cbUnknowIsNormal;
     private BooleanBinding fullBinding;
 
-    // private ChoiceBox choiceBox;
-    //ChoiceDialog
     LoginDialog(LoginDialogRequest loginDialogRequest) {
         DialogPane dialogPane = this.getDialogPane();
         this.setTitle(Localization.getString("login.dlg.title"));
         dialogPane.setHeaderText(Localization.getString("login.dlg.header"));
         dialogPane.getStyleClass().add("login-dialog");
-        dialogPane.getStylesheets().add(org.controlsfx.dialog.LoginDialog.class.getResource("dialogs.css").toExternalForm());
+        dialogPane.getStylesheets().add(org.controlsfx.dialog.LoginDialog.class.getResource("dialogs.css")
+                .toExternalForm());
         dialogPane.getButtonTypes().addAll(ButtonType.CANCEL);
         this.txUserName = (CustomTextField) TextFields.createClearableTextField();
         this.txUserName.setLeft(new ImageView(org.controlsfx.dialog.LoginDialog.class.getResource("/org/controlsfx/dialog/user.png").toExternalForm()));
         this.txTeam = (CustomTextField) TextFields.createClearableTextField();
         this.txTeam.setLeft(new ImageView(LoginDialog.class.getResource("/com/drozda/fx/dialog/team.png")
                 .toExternalForm()));
-        // this.choiceBox = new ChoiceBox();
-        ////  this.choiceBox.getItems().add("s1");
-        //  this.choiceBox.getItems().add("s2");
         this.txPassword = (CustomPasswordField) TextFields.createClearablePasswordField();
         this.txPassword.setLeft(new ImageView(org.controlsfx.dialog.LoginDialog.class.getResource("/org/controlsfx/dialog/lock.png").toExternalForm()));
         this.cbUnknowIsNormal = new CheckBox(YabcLocalization.getString("login.dlg.cbunknowisnormal.text"));
@@ -90,13 +86,6 @@ public class LoginDialog extends Dialog<LoginDialogResponse> {
         loginButton.setDisable(!fullBinding.get());
 
         fullBinding.addListener((observable, oldValue, newValue) -> loginButton.setDisable(!newValue));
-//        notEnoughDataInTextFields.
-//                and(cbUnknowIsNormal.selectedProperty()).
-//                or(notEnoughDataInTextFields.not()).addListener((observable, oldValue, newValue) -> {
-//            loginButton.setDisable(newValue);
-//        });
-
-//        BooleanBinding booleanBinding = new
 
         String userNameCation = Localization.getString("login.dlg.user.caption");
         String teamCation = YabcLocalization.getString("login.dlg.team.caption");
