@@ -4,12 +4,8 @@ package com.drozda.appflow;
 import com.drozda.YabcLocalization;
 import com.drozda.appflow.config.AppData;
 import com.drozda.fx.controller.BaseApp;
-import com.drozda.fx.dialog.ConfirmationDialog;
 import com.drozda.fx.dialog.Dialog;
-import com.drozda.model.AppTeam;
-import com.drozda.model.AppUser;
-import com.drozda.model.LoginDialogResponse;
-import com.drozda.model.NewUserDialogResponse;
+import com.drozda.model.*;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -199,29 +195,9 @@ public class AppModel {
             CheckUsernameAndPasswordResult checkUsernameAndPasswordResult = checkUsernameAndPassword(dialogResponse
                     .getUserInfo());
 
-            if (checkUsernameAndPasswordResult.bitSet.get(2))//password
-            {
-                if (!checkUsernameAndPasswordResult.bitSet.get(1))//team
-                {
-                    createNewTeam(dialogResponse.getUserInfo().getTeam());
-                }
-            } else {
-                if (checkUsernameAndPasswordResult.bitSet.get(0))//login
-                {
-
-                } else {//new login
-                    boolean confirmCreation = ConfirmationDialog.userCreation();
-                    if (!confirmCreation) {
-                        AppModel.setMessageString(YabcLocalization.getString("statusbar.change.user.to.new.fail"));
-                        return;
-                    }
-                    createNewUser(dialogResponse.getUserInfo().getLogin(), dialogResponse.getUserInfo().getPasswordHash());
-                    return;
-                }
-            }
-
-            AppModel.setCurrentUser(dialogResponse.getUserInfo());
-
+            LoginDialogResponseProcessor loginDialogResponseProcessor = LoginDialogResponseProcessor.
+                    newLoginDialogResponseProcessor(dialogResponse, checkUsernameAndPasswordResult);
+            loginDialogResponseProcessor.execute();
         }
     }
 
@@ -251,14 +227,6 @@ public class AppModel {
         return new CheckUsernameAndPasswordResult(isLoginExists, isTeamExists, isPasswordCorrect);
     }
 
-    public static void createNewTeam(String teamName) {
-
-    }
-
-    public static void createNewUser(String login, Integer passwordHash) {
-        Dialog.showNewUserDialog(AppModel::processNewUserDialogResponse, login);
-    }
-
     public static String getMessageString() {
         return messageString.get();
     }
@@ -269,6 +237,14 @@ public class AppModel {
             service.schedule(() -> Platform.runLater(() -> AppModel.setDefaultMessage()), 2, TimeUnit
                     .SECONDS);
         }
+    }
+
+    public static void createNewTeam(String teamName) {
+
+    }
+
+    public static void createNewUser(String login, Integer passwordHash) {
+        Dialog.showNewUserDialog(AppModel::processNewUserDialogResponse, login);
     }
 
     public static void processNewUserDialogResponse(NewUserDialogResponse newUserDialogResponse) {
@@ -294,7 +270,7 @@ public class AppModel {
     }
 
     public static class CheckUsernameAndPasswordResult {
-        BitSet bitSet = new BitSet(BITSET_SIZE_FOR_USERCHECK);
+        public BitSet bitSet = new BitSet(BITSET_SIZE_FOR_USERCHECK);
 
         public CheckUsernameAndPasswordResult(boolean... bitState) {
             for (int i = 0; i < BITSET_SIZE_FOR_USERCHECK; i++) {

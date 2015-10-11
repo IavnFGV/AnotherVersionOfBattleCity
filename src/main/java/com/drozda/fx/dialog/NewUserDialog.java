@@ -97,7 +97,7 @@ public class NewUserDialog extends Dialog<NewUserDialogResponse> {
 
         this.setResultConverter((dialogButton) -> {
             if (dialogButton == this.acceptUserButtonType) {
-                return new NewUserDialogResponse();
+                return new NewUserDialogResponse(null);
             }
             return null;
         });
