@@ -90,8 +90,8 @@ public class AppData {
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             m.marshal(config, file);
-            saveAppTeams(config.appTeams);
-            saveAppUsers(config.appUsers);
+            if (config.getAppTeams() != null) saveAppTeams(config.getAppTeams());
+            if (config.getAppUsers() != null) saveAppUsers(config.getAppUsers());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -103,6 +103,10 @@ public class AppData {
 
     private static String getConfigFilename() {
         return "settings.xml";
+    }
+
+    public List<AppTeam> getAppTeams() {
+        return appTeams;
     }
 
     public static void saveAppTeams(List<AppTeam> appTeams) {
@@ -126,6 +130,10 @@ public class AppData {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    public List<AppUser> getAppUsers() {
+        return appUsers;
     }
 
     public static void saveAppUsers(List<AppUser> appUsers) {
@@ -183,14 +191,6 @@ public class AppData {
                 ", appUsers=" + appUsers +
                 ", appTeams=" + appTeams +
                 '}';
-    }
-
-    public List<AppUser> getAppUsers() {
-        return appUsers;
-    }
-
-    public List<AppTeam> getAppTeams() {
-        return appTeams;
     }
 
     public AppUser getLastUser() {

@@ -213,7 +213,8 @@ public class AppModel {
             throw new NullPointerException("appUser.team is null");
         }
 
-        int appUserIndex = appData.getAppUsers().indexOf(appUser);
+        int appUserIndex = appData.getAppUsers().stream().map(AppUser::getLogin).collect(Collectors.toList()).indexOf
+                (appUser.getLogin());
         boolean isLoginExists = appUserIndex >= 0;
         boolean isTeamExists = appData.getAppTeams()
                 .stream().map(AppTeam::getName).collect(Collectors.toSet())
@@ -248,6 +249,7 @@ public class AppModel {
     }
 
     public static void processNewUserDialogResponse(NewUserDialogResponse newUserDialogResponse) {
+        if (newUserDialogResponse == null) return;
         AppModel.setMessageString(String.format(YabcLocalization.getString("statusbar.create.user.complete"),
                 newUserDialogResponse.getUser().getLogin()));
         appData.getAppUsers().add(newUserDialogResponse.getUser());
@@ -257,7 +259,7 @@ public class AppModel {
         return allowedToChangeUserStates.contains(state);
     }
 
-    public static void clearUser() { // if we play under one login and then want to play as UNKNOWN -  we have to
+    public static void clearUser() { // TODO if we play under one login and then want to play as UNKNOWN -  we have to
         // handle  results correct
         getAdditionalSettings().put(KEY_UNKNOWN_IS_NORMAL, true);
     }

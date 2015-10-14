@@ -26,7 +26,7 @@ public class LoginDialogResponseProcessor {
     private Command createUserCommand;
     //  private Command IsProcessComplete;
     private Command setCurrentUserCommand;
-
+    //TODO Password checker
     private Context context;
     private Chain chain;
 
@@ -88,18 +88,20 @@ public class LoginDialogResponseProcessor {
         }
 
         @Override
+        protected boolean needExecution(Context context) {
+            return this.checkUsernameAndPasswordResult.bitSet.get(2)//password is correct;
+                    && this.checkUsernameAndPasswordResult.bitSet.get(0)// and login is not new
+                    && !(boolean) context.getOrDefault("STOP", false);
+        }
+
+        @Override
         protected boolean fullExecute(Context context) {
             AppModel.setCurrentUser(loginDialogResponse.getUserInfo());
             context.put("STOP", true);
             return false;
         }
 
-        @Override
-        protected boolean needExecution(Context context) {
-            return this.checkUsernameAndPasswordResult.bitSet.get(2)//password is correct;
-                    && this.checkUsernameAndPasswordResult.bitSet.get(0)// and login is not new
-                    && !(boolean) context.getOrDefault("STOP", false);
-        }
+
     }
 
     private static class CreateTeamCommand extends LoginDialogResponseCommand {

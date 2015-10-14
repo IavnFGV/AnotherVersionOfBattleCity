@@ -16,7 +16,7 @@ public class AppDataTest {
     public void saveConfig() {
         AppData appData = new AppData();
         appData.setRememberMe(false);
-        appData.setLastUser(new AppUser("Ivan", "madHead", 56544));
+        appData.setLastUser(new AppUser("Test", "madHead", 56544));
         AppData.saveConfig(appData);
     }
 

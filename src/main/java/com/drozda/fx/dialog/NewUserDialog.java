@@ -1,14 +1,14 @@
 package com.drozda.fx.dialog;
 
 import com.drozda.YabcLocalization;
+import com.drozda.model.AppUser;
 import com.drozda.model.NewUserDialogRequest;
 import com.drozda.model.NewUserDialogResponse;
 import impl.org.controlsfx.i18n.Localization;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.*;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.textfield.CustomPasswordField;
@@ -16,9 +16,8 @@ import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
-import org.controlsfx.validation.decoration.CompoundValidationDecoration;
+import org.controlsfx.validation.Validator;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
-import org.controlsfx.validation.decoration.StyleClassValidationDecoration;
 import org.controlsfx.validation.decoration.ValidationDecoration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,7 @@ public class NewUserDialog extends Dialog<NewUserDialogResponse> {
     private final CustomPasswordField txPassword;
     private final CustomPasswordField txConfirmPassword;
     private final ValidationSupport validationSupport = new ValidationSupport();
-    private BooleanBinding fullBinding;
+    private BooleanBinding acceptButtonActivationBinding;
 
     NewUserDialog(NewUserDialogRequest newUserDialogRequest) {
         DialogPane dialogPane = this.getDialogPane();
@@ -59,7 +58,7 @@ public class NewUserDialog extends Dialog<NewUserDialogResponse> {
         this.acceptUserButtonType = new ButtonType(YabcLocalization.getString("newuser.dlg.accept.button"),
                 ButtonBar.ButtonData.APPLY);
         dialogPane.getButtonTypes().addAll(this.acceptUserButtonType);
-        //   Button loginButton = (Button) dialogPane.lookupButton(this.acceptUserButtonType);
+        Button acceptButton = (Button) dialogPane.lookupButton(this.acceptUserButtonType);
 
 
 //        BooleanBinding enoughDataInTextFields = Bindings.and(txUserName.textProperty().isNotEmpty(), txTeam
@@ -86,20 +85,33 @@ public class NewUserDialog extends Dialog<NewUserDialogResponse> {
         this.txPassword.setPromptText(passwordCaption);
         this.txConfirmPassword.setPromptText(confirmPasswordCaption);
 
+        validationSupport.registerValidator(txPassword,
+                Validator.createEmptyValidator(YabcLocalization.getString("dlg.field.cannot.be.empty")));
+        validationSupport.registerValidator(txConfirmPassword,
+                Validator.createEmptyValidator(YabcLocalization.getString("dlg.field.cannot.be.empty")));
         validationSupport.registerValidator(txConfirmPassword, (control, o) -> ValidationResult.fromErrorIf
                 (txConfirmPassword, YabcLocalization.getString("newuser.dlg.pswd.passwords.are.not.identical"),
                         !txConfirmPassword.getText().equals(txPassword.getText())));
 
         ValidationDecoration iconDecorator = new GraphicValidationDecoration();
-        ValidationDecoration cssDecorator = new StyleClassValidationDecoration();
-        ValidationDecoration compoundDecorator = new CompoundValidationDecoration(cssDecorator, iconDecorator);
-        validationSupport.setValidationDecorator(compoundDecorator);
+        validationSupport.setValidationDecorator(iconDecorator);
 
+        BooleanBinding passwordsEmpty = Bindings.or(txPassword.textProperty().isEmpty(), txConfirmPassword
+                .textProperty().isEmpty());
+        BooleanBinding fieldEmpty = Bindings.or(txUserName.textProperty().isEmpty(), passwordsEmpty);
+        BooleanBinding passworsAreEqual = txConfirmPassword.textProperty().isEqualTo(txPassword.textProperty());
+
+        acceptButtonActivationBinding = Bindings.and(passworsAreEqual, fieldEmpty.not());
+        acceptButtonActivationBinding.addListener((observable, oldValue, newValue) -> acceptButton.setDisable
+                (!newValue));
+
+        acceptButton.setDisable(!acceptButtonActivationBinding.get());
         this.setResultConverter((dialogButton) -> {
             if (dialogButton == this.acceptUserButtonType) {
-                return new NewUserDialogResponse(null);
+                return new NewUserDialogResponse(new AppUser(txUserName.getText(), null, txPassword.getText().hashCode()));
             }
             return null;
         });
     }
+
 }
