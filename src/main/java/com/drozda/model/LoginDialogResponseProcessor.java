@@ -3,6 +3,7 @@ package com.drozda.model;
 
 import com.drozda.YabcLocalization;
 import com.drozda.appflow.AppModel;
+import com.drozda.appflow.config.AppData;
 import com.drozda.fx.dialog.ConfirmationDialog;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.stream.Collectors;
 
-import static com.drozda.appflow.AppModel.CheckUsernameAndPasswordResult;
 
 /**
  * Created by GFH on 11.10.2015.
@@ -33,12 +33,12 @@ public class LoginDialogResponseProcessor {
     public LoginDialogResponseProcessor() {
     }
 
-    public static LoginDialogResponseProcessor newLoginDialogResponseProcessor(LoginDialogResponse dialogResponse,
-                                                                               CheckUsernameAndPasswordResult checkUsernameAndPasswordResult) {
+    public static LoginDialogResponseProcessor newLoginDialogResponseProcessor(LoginDialogResponse dialogResponse, AppData.CheckLoginStatus checkLoginStatus, boolean isTeamExists) {
         LoginDialogResponseProcessor ldrp = new LoginDialogResponseProcessor();
         ldrp.context = new ContextBase();
         ldrp.context.put(LoginDialogResponse.class, dialogResponse);
-        ldrp.context.put(CheckUsernameAndPasswordResult.class, checkUsernameAndPasswordResult);
+        ldrp.context.put(AppData.CheckLoginStatus.class, checkLoginStatus);
+        ldrp.context.put("isTeamExists", isTeamExists);
 
         ldrp.chain = new ChainBase();
         ldrp.setCurrentUserCommand = new SetCurrentUserCommand(ldrp.context);
@@ -46,6 +46,7 @@ public class LoginDialogResponseProcessor {
         ldrp.chain.addCommand(ldrp.setCurrentUserCommand);
         ldrp.chain.addCommand(ldrp.createUserCommand);
         return ldrp;
+
     }
 
     public boolean execute() {
@@ -90,15 +91,13 @@ public class LoginDialogResponseProcessor {
         @Override
         protected boolean needExecution(Context context) {
             return this.checkUsernameAndPasswordResult.bitSet.get(2)//password is correct;
-                    && this.checkUsernameAndPasswordResult.bitSet.get(0)// and login is not new
-                    && !(boolean) context.getOrDefault("STOP", false);
+                    && this.checkUsernameAndPasswordResult.bitSet.get(0);// and login is not new
         }
 
         @Override
         protected boolean fullExecute(Context context) {
             AppModel.setCurrentUser(loginDialogResponse.getUserInfo());
-            context.put("STOP", true);
-            return false;
+            return true;
         }
 
 

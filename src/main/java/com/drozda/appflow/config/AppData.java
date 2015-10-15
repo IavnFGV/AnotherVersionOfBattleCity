@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.File;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by GFH on 05.10.2015.
@@ -105,10 +106,6 @@ public class AppData {
         return "settings.xml";
     }
 
-    public List<AppTeam> getAppTeams() {
-        return appTeams;
-    }
-
     public static void saveAppTeams(List<AppTeam> appTeams) {
         log.debug("AppData.saveAppTeams with parameters " + "appTeams = [" + appTeams + "]");
         AppTeamWrapper wrapper = new AppTeamWrapper(appTeams);
@@ -130,10 +127,6 @@ public class AppData {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-    }
-
-    public List<AppUser> getAppUsers() {
-        return appUsers;
     }
 
     public static void saveAppUsers(List<AppUser> appUsers) {
@@ -183,6 +176,35 @@ public class AppData {
         return null;
     }
 
+    public CheckLoginStatus checkLoginAndPassword(String login, int passwordHash) {
+        if (!isLoginExists(login)) {
+            return CheckLoginStatus.UNKNOWN_LOGIN;
+        }
+        if (!getAppUsers().stream().filter(appUser1 -> appUser1.getLogin().equals(login)).findFirst().get()
+                .getPasswordHash().equals(passwordHash)) {
+            return CheckLoginStatus.WRONG_PASSWORD;
+        }
+        return CheckLoginStatus.OK;
+    }
+
+    public boolean isLoginExists(String login) {
+        return getAppUsers().stream().
+                map(appUser1 -> appUser1.getLogin()).
+                collect(Collectors.toSet()).contains(login);
+    }
+
+    public List<AppUser> getAppUsers() {
+        return appUsers;
+    }
+
+    public boolean isTeamExists(String teamName) {
+        return (getAppTeams().stream().anyMatch(appTeam -> appTeam.getName().equals(teamName)));
+    }
+
+    public List<AppTeam> getAppTeams() {
+        return appTeams;
+    }
+
     @Override
     public String toString() {
         return "AppData{" +
@@ -201,13 +223,18 @@ public class AppData {
         this.lastUser = lastUser;
     }
 
-
     public boolean isRememberMe() {
         return rememberMe;
     }
 
     public void setRememberMe(boolean rememberMe) {
         this.rememberMe = rememberMe;
+    }
+
+    public enum CheckLoginStatus {
+        OK,
+        WRONG_PASSWORD,
+        UNKNOWN_LOGIN
     }
 
 

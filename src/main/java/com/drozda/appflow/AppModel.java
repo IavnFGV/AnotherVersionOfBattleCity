@@ -5,7 +5,10 @@ import com.drozda.YabcLocalization;
 import com.drozda.appflow.config.AppData;
 import com.drozda.fx.controller.BaseApp;
 import com.drozda.fx.dialog.Dialog;
-import com.drozda.model.*;
+import com.drozda.model.AppUser;
+import com.drozda.model.LoginDialogResponse;
+import com.drozda.model.LoginDialogResponseProcessor;
+import com.drozda.model.NewUserDialogResponse;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -18,11 +21,13 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -59,11 +64,6 @@ public class AppModel {
         log.debug("AppModel.saveLastUser with parameters " + "appUser = [" + appUser + "]");
         if (appUser == null) return;
         appData.setLastUser(appUser);
-        if (!appData.getAppUsers().stream().//NOT contains new login
-                map(appUser1 -> appUser1.getLogin()).
-                collect(Collectors.toSet()).contains(appUser)) {
-            appData.getAppUsers().add(appUser);
-        }
     }
 
     public static StringProperty messageStringProperty() {
@@ -188,15 +188,16 @@ public class AppModel {
         if (
                 (!dialogResponse.getUserInfo().getLogin().isEmpty()) &&
                         (!dialogResponse.getUserInfo().getTeam().isEmpty()) &&
-                        (dialogResponse.getUserInfo().getPasswordHash() != 0)) {
+                        (dialogResponse.getUserInfo().getPasswordHash() != null)) {
             log.debug("try to set another user");
             setUnknownIsNormal(false);//TODO REPLACE
 
-            CheckUsernameAndPasswordResult checkUsernameAndPasswordResult = checkUsernameAndPassword(dialogResponse
-                    .getUserInfo());
+            AppData.CheckLoginStatus checkLoginStatus = appData.checkLoginAndPassword(dialogResponse
+                    .getUserInfo().getLogin(), dialogResponse.getUserInfo().getPasswordHash());
 
+            boolean isTeamExists = appData.isTeamExists(dialogResponse.getUserInfo().getTeam());
             LoginDialogResponseProcessor loginDialogResponseProcessor = LoginDialogResponseProcessor.
-                    newLoginDialogResponseProcessor(dialogResponse, checkUsernameAndPasswordResult);
+                    newLoginDialogResponseProcessor(dialogResponse, checkLoginStatus, isTeamExists);
             loginDialogResponseProcessor.execute();
         }
     }
@@ -205,28 +206,7 @@ public class AppModel {
         getAdditionalSettings().put(KEY_UNKNOWN_IS_NORMAL, isNormal);
     }
 
-    private static CheckUsernameAndPasswordResult checkUsernameAndPassword(AppUser appUser) {
-        if (appUser == null) {
-            throw new NullPointerException("appUser is null");
-        }
-        if (appUser.getTeam() == null) {
-            throw new NullPointerException("appUser.team is null");
-        }
 
-        int appUserIndex = appData.getAppUsers().stream().map(AppUser::getLogin).collect(Collectors.toList()).indexOf
-                (appUser.getLogin());
-        boolean isLoginExists = appUserIndex >= 0;
-        boolean isTeamExists = appData.getAppTeams()
-                .stream().map(AppTeam::getName).collect(Collectors.toSet())
-                .contains(appUser.getTeam());
-
-//        boolean isPasswordCorrect = isLoginExists ? (appData.getAppUsers().get(appUserIndex).getPasswordHash()
-//                .equals(appUser.getPasswordHash())):
-//                false;
-        boolean isPasswordCorrect = isLoginExists && (appData.getAppUsers().get(appUserIndex).getPasswordHash()
-                .equals(appUser.getPasswordHash()));
-        return new CheckUsernameAndPasswordResult(isLoginExists, isTeamExists, isPasswordCorrect);
-    }
 
     public static String getMessageString() {
         return messageString.get();
@@ -269,16 +249,6 @@ public class AppModel {
         STATESTACK,
         ADDITIONAL
 
-    }
-
-    public static class CheckUsernameAndPasswordResult {
-        public BitSet bitSet = new BitSet(BITSET_SIZE_FOR_USERCHECK);
-
-        public CheckUsernameAndPasswordResult(boolean... bitState) {
-            for (int i = 0; i < BITSET_SIZE_FOR_USERCHECK; i++) {
-                if (bitState[i]) bitSet.set(i);
-            }
-        }
     }
 
     public static class YabcFrame<T> {
