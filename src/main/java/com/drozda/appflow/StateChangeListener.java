@@ -18,6 +18,7 @@ public class StateChangeListener implements ChangeListener<AppState> {
 
     @Override
     public void changed(ObservableValue<? extends AppState> observable, AppState oldValue, AppState newValue) {
+        AppModel.readyForTest();
         if (oldValue == null) { // application initialization
             AppModel.getBaseApp().setSubScene(AppState.MainMenu.getYabcFrame().getRoot());
             return;
@@ -33,7 +34,7 @@ public class StateChangeListener implements ChangeListener<AppState> {
             }
             if (!AppModel.isLoginRequired()) {
                 AppModel.getBaseApp().setSubScene(AppState.Battle.getYabcFrame().getRoot());
-
+                AppModel.propertiesEditorController.initPropertyShit(AppState.Battle.getYabcFrame().getController());
                 log.debug("FUCK111sadsadsadsadsad1!!!");
                 return;
             }
@@ -48,6 +49,7 @@ public class StateChangeListener implements ChangeListener<AppState> {
             log.debug("FUCK!!!");
         }
 //      }
+
     }
 
     private LoginDialogResponse loginRequest(AppState state) {

@@ -4,27 +4,22 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity"
-            minHeight="-Infinity"
-            minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="playground-back"
-            xmlns="http://javafx.com/javafx/8.0.40"
+            minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="playground-back"
+            stylesheets="@../style/battle.css" xmlns="http://javafx.com/javafx/8.0.40"
             fx:controller="com.drozda.fx.controller.Battle">
     <top>
-        <Pane prefHeight="200.0" prefWidth="200.0" styleClass="playground-border-top"
-              BorderPane.alignment="CENTER"/>
+        <Pane styleClass="playground-border-top" BorderPane.alignment="CENTER"/>
     </top>
     <left>
-        <Pane maxHeight="520.0" maxWidth="262.0" prefHeight="520.0" prefWidth="262.0"
-              styleClass="playground-border-left" BorderPane.alignment="CENTER"/>
+        <Pane styleClass="playground-border-left" BorderPane.alignment="CENTER"/>
     </left>
     <bottom>
-        <Pane prefHeight="200.0" prefWidth="200.0" styleClass="playground-border-bottom"
-              BorderPane.alignment="CENTER"/>
+        <Pane styleClass="playground-border-bottom" BorderPane.alignment="CENTER"/>
     </bottom>
     <right>
-        <Pane prefHeight="200.0" prefWidth="200.0" styleClass="playground-border-right"
-              BorderPane.alignment="CENTER">
+        <Pane styleClass="playground-border-right" BorderPane.alignment="CENTER">
             <children>
-                <TilePane id="enemy-counter" fx:id="enemyCounter" prefHeight="200.0" prefWidth="200.0"/>
+                <TilePane id="enemy-counter" fx:id="enemyCounter"/>
                 <Pane id="stats-back" layoutX="16.0" layoutY="272.0" prefHeight="200.0" prefWidth="32.0">
                     <children>
                         <ImageView fx:id="firstPlayerLifes" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
@@ -62,4 +57,7 @@
             </children>
         </Pane>
     </right>
+    <center>
+        <Pane fx:id="centerPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
+    </center>
 </BorderPane>

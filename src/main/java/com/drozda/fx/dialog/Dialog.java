@@ -3,6 +3,7 @@ package com.drozda.fx.dialog;
 import com.drozda.YabcLocalization;
 import com.drozda.appflow.AppModel;
 import com.drozda.appflow.AppState;
+import com.drozda.appflow.config.AppData;
 import com.drozda.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +24,8 @@ public class Dialog {
     private static final Logger log = LoggerFactory.getLogger(Dialog.class);
 
     public static NewUserDialogResponse showNewUserDialog(Consumer<NewUserDialogResponse> consumer, String
-            initialLogin) {
-        NewUserDialog dlg = new NewUserDialog(new NewUserDialogRequest(initialLogin));
+            initialLogin, AppData appData) {
+        NewUserDialog dlg = new NewUserDialog(new NewUserDialogRequest(initialLogin), appData);
         dlg.showAndWait();
         consumer.accept(dlg.getResult());
         log.info("Result is " + dlg.getResult());

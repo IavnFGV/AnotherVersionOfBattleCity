@@ -1,29 +1,32 @@
 package com.drozda.model;
 
-import com.drozda.appflow.config.ImmutablePairAdapter;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlElement;
 
 
 /**
  * Created by GFH on 20.09.2015.
  */
 public class AppUser {
-    @XmlJavaTypeAdapter(ImmutablePairAdapter.class)
-    private ImmutablePair<String, Integer> pair;
+    //    @XmlJavaTypeAdapter(ImmutablePairAdapter.class)
+    @XmlElement
     private String teamName;
+    @XmlElement
+    private String login;
+    @XmlElement
+    private int passwordHash;
 
-    public AppUser(String left, String middle, Integer right) {
-        this.pair = new ImmutablePair<>(left, right);
+
+    public AppUser(String left, String middle, int right) {
         this.teamName = middle;
+        this.login = left;
+        this.passwordHash = right;
     }
 
     public AppUser() {
     }
 
     public String getLogin() {
-        return pair.getLeft();
+        return login;
     }
 
     public String getTeam() {
@@ -31,12 +34,12 @@ public class AppUser {
     }
 
     public Integer getPasswordHash() {
-        return pair.getRight();
+        return passwordHash;
     }
 
     @Override
     public int hashCode() {
-        return pair.hashCode();
+        return login.hashCode();
     }
 
     @Override
@@ -44,14 +47,15 @@ public class AppUser {
         if (obj == null) return false;
         if (this == obj) return true;
         if (!(obj instanceof AppUser)) return false;
-        return pair.equals(((AppUser) (obj)).pair);
+        return login.equals(((AppUser) (obj)).login);
     }
 
     @Override
     public String toString() {
         return "AppUser{" +
-                "pair=" + pair +
-                ", teamName='" + teamName + '\'' +
+                "teamName='" + teamName + '\'' +
+                ", login='" + login + '\'' +
+                ", passwordHash=" + passwordHash +
                 '}';
     }
 }

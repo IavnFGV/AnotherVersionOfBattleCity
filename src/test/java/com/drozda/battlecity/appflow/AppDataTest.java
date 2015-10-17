@@ -1,6 +1,6 @@
 package com.drozda.battlecity.appflow;
 
-import com.drozda.appflow.config.AppData;
+import com.drozda.appflow.config.FileAppData;
 import com.drozda.model.AppTeam;
 import com.drozda.model.AppUser;
 import org.junit.Test;
@@ -14,17 +14,17 @@ import java.util.List;
 public class AppDataTest {
     @Test
     public void saveConfig() {
-        AppData appData = new AppData();
+        FileAppData appData = new FileAppData();
         appData.setRememberMe(false);
         appData.setLastUser(new AppUser("Test", "madHead", 56544));
-        AppData.saveConfig(appData);
+        FileAppData.saveConfig(appData);
     }
 
     @Test
     public void loadConfig() {
-        AppData appData = AppData.loadConfig(null);
+        FileAppData appData = FileAppData.loadConfig(null);
         System.out.println(appData);
-        appData = AppData.loadConfig("C:/");
+        appData = FileAppData.loadConfig("C:/");
         System.out.println(appData);
 
     }
@@ -36,14 +36,14 @@ public class AppDataTest {
         appUsers.add(new AppUser("left2", "middle2", 1));
         appUsers.add(new AppUser("left3", "middle3", 1));
 
-        AppData.saveAppUsers(appUsers);
+        FileAppData.saveAppUsers(appUsers);
     }
 
     @Test
     public void loadUsers() {
-        List<AppUser> appUsers = AppData.loadAppUsers(null);
+        List<AppUser> appUsers = FileAppData.loadAppUsers(null);
         System.out.println(appUsers);
-        appUsers = AppData.loadAppUsers("C:/");
+        appUsers = FileAppData.loadAppUsers("C:/");
         System.out.println(appUsers);
 
     }
@@ -57,14 +57,14 @@ public class AppDataTest {
         appTeams.add(new AppTeam("Dummies"));
         appTeams.add(new AppTeam("Nuts"));
 
-        AppData.saveAppTeams(appTeams);
+        FileAppData.saveAppTeams(appTeams);
     }
 
     @Test
     public void loadTeams() {
-        List<AppTeam> appTeams = AppData.loadAppTeams(null);
+        List<AppTeam> appTeams = FileAppData.loadAppTeams(null);
         System.out.println(appTeams);
-        appTeams = AppData.loadAppTeams("C:/");
+        appTeams = FileAppData.loadAppTeams("C:/");
         System.out.println(appTeams);
 
     }

@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     private static final Logger log = LoggerFactory.getLogger(YabcBattleGround.class);
 
-
     private PlaygroundState state;
     private Point2D gamePixel;
     private int worldWiddthCells = 26;
@@ -45,8 +44,6 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
 
     public void initialize() {
         setState(PlaygroundState.INITIALIZING);
-
-
         setState(PlaygroundState.PAUSED);
     }
 

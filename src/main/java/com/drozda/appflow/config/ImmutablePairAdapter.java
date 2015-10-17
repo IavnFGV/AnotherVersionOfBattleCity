@@ -20,5 +20,7 @@ public class ImmutablePairAdapter extends XmlAdapter<String, ImmutablePair<Strin
     public String marshal(ImmutablePair<String, Integer> v) throws Exception {
         return v.getLeft() + DELIMITER + v.getRight();
     }
+
+
 }
 

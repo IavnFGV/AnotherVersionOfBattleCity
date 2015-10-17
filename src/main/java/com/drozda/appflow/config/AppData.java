@@ -2,240 +2,51 @@ package com.drozda.appflow.config;
 
 import com.drozda.model.AppTeam;
 import com.drozda.model.AppUser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Created by GFH on 05.10.2015.
+ * Created by GFH on 17.10.2015.
  */
-@XmlRootElement
-public class AppData {
-    @XmlTransient
-    private static final Logger log = LoggerFactory.getLogger(AppData.class);
-
-    private boolean rememberMe;
-    private AppUser lastUser;
-    @XmlTransient
-    private List<AppUser> appUsers;
-    @XmlTransient
-    private List<AppTeam> appTeams;
-
-    public static AppData loadConfig(String path) {
-        File file = checkPath(path, getConfigFilename());
-        if (file == null) {
-            return null;
-        }
-        try {
-            JAXBContext context = JAXBContext.newInstance(AppData.class);
-            Unmarshaller um = context.createUnmarshaller();
-            AppData appData = (AppData) um.unmarshal(file);
-            appData.appTeams = loadAppTeams(path);
-            appData.appUsers = loadAppUsers(path);
-            return appData;
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        return null;
-    }
-
-    private static File checkPath(String path, String filename) {
-        if (path == null) {
-            path = getConfigPath() + filename;
-        }
-        File file = new File(path);
-        if (!file.exists() || !file.isFile()) {
-            return null;
-        }
-        return file;
-    }
-
-    public static List<AppUser> loadAppUsers(String path) {
-        File file = checkPath(path, getUsersFilename());
-        if (file == null) {
-            return null;
-        }
-        try {
-            JAXBContext context = JAXBContext.newInstance(AppUserWithoutTeamListWrapper.class);
-            Unmarshaller um = context.createUnmarshaller();
-            AppUserWithoutTeamListWrapper wrapper = (AppUserWithoutTeamListWrapper) um.unmarshal(file);
-            return wrapper.getPersons();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        return null;
-    }
-
-    public static void saveConfig(AppData config) {
-        log.debug("AppData.saveConfig with parameters " + "config = [" + config + "]");
-        try {
-            if (config == null) {
-                throw new NullPointerException("AppData is null");
-            }
-
-            File file = new File(getConfigPath());
-            if (!file.exists()) {
-                file.mkdirs();
-            }
-            file = new File(getConfigPath() + getConfigFilename());
-
-            JAXBContext context = JAXBContext.newInstance(AppData.class);
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            m.marshal(config, file);
-            if (config.getAppTeams() != null) saveAppTeams(config.getAppTeams());
-            if (config.getAppUsers() != null) saveAppUsers(config.getAppUsers());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+public interface AppData {
+    static AppData getAppData(DataStorage dataStorage) {
+        switch (dataStorage) {
+            case LOCAL_STORAGE:
+                return FileAppData.loadConfig(null);
+            default:
+                throw new RuntimeException("Unknown DataStorage");
         }
     }
 
-    private static String getConfigPath() {
-        return System.getProperty("user.home") + File.separator + ".Tanks" + File.separator;
-    }
+    boolean isTeamExists(String teamName);
 
-    private static String getConfigFilename() {
-        return "settings.xml";
-    }
+    CheckLoginStatus checkLoginAndPassword(String login, int passwordHash);
 
-    public static void saveAppTeams(List<AppTeam> appTeams) {
-        log.debug("AppData.saveAppTeams with parameters " + "appTeams = [" + appTeams + "]");
-        AppTeamWrapper wrapper = new AppTeamWrapper(appTeams);
-        try {
-            if (appTeams == null) {
-                throw new NullPointerException("appTeams is null");
-            }
+    boolean isLoginExists(String login);
 
-            File file = new File(getConfigPath());
-            if (!file.exists()) {
-                file.mkdirs();
-            }
-            file = new File(getConfigPath() + getTeamsFilename());
+    AppUser getLastUser();
 
-            JAXBContext context = JAXBContext.newInstance(AppTeamWrapper.class);
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            m.marshal(wrapper, file);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-    }
+    void setLastUser(AppUser lastUser);
 
-    public static void saveAppUsers(List<AppUser> appUsers) {
-        log.debug("AppData.saveAppUsers with parameters " + "appUsers = [" + appUsers + "]");
-        AppUserWithoutTeamListWrapper wrapper = new AppUserWithoutTeamListWrapper(appUsers);
-        try {
-            if (appUsers == null) {
-                throw new NullPointerException("appUsers is null");
-            }
+    boolean addUser(AppUser appUser);
 
-            File file = new File(getConfigPath());
-            if (!file.exists()) {
-                file.mkdirs();
-            }
-            file = new File(getConfigPath() + getUsersFilename());
+    boolean addTeam(AppTeam appTeam);
 
-            JAXBContext context = JAXBContext.newInstance(AppUserWithoutTeamListWrapper.class);
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            m.marshal(wrapper, file);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-    }
+    boolean isRememberMe();
 
-    private static String getTeamsFilename() {
-        return "teams.xml";
-    }
+    void setRememberMe(boolean rememberMe);
 
-    private static String getUsersFilename() {
-        return "users.xml";
-    }
+    List<AppTeam> getAppTeams();
 
-    public static List<AppTeam> loadAppTeams(String path) {
-        File file = checkPath(path, getTeamsFilename());
-        if (file == null) {
-            return null;
-        }
-        try {
-            JAXBContext context = JAXBContext.newInstance(AppTeamWrapper.class);
-            Unmarshaller um = context.createUnmarshaller();
-            AppTeamWrapper wrapper = (AppTeamWrapper) um.unmarshal(file);
-            return wrapper.getTeams();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        return null;
-    }
+    List<AppUser> getAppUsers();
 
-    public CheckLoginStatus checkLoginAndPassword(String login, int passwordHash) {
-        if (!isLoginExists(login)) {
-            return CheckLoginStatus.UNKNOWN_LOGIN;
-        }
-        if (!getAppUsers().stream().filter(appUser1 -> appUser1.getLogin().equals(login)).findFirst().get()
-                .getPasswordHash().equals(passwordHash)) {
-            return CheckLoginStatus.WRONG_PASSWORD;
-        }
-        return CheckLoginStatus.OK;
-    }
-
-    public boolean isLoginExists(String login) {
-        return getAppUsers().stream().
-                map(appUser1 -> appUser1.getLogin()).
-                collect(Collectors.toSet()).contains(login);
-    }
-
-    public List<AppUser> getAppUsers() {
-        return appUsers;
-    }
-
-    public boolean isTeamExists(String teamName) {
-        return (getAppTeams().stream().anyMatch(appTeam -> appTeam.getName().equals(teamName)));
-    }
-
-    public List<AppTeam> getAppTeams() {
-        return appTeams;
-    }
-
-    @Override
-    public String toString() {
-        return "AppData{" +
-                "rememberMe=" + rememberMe +
-                ", lastUser=" + lastUser +
-                ", appUsers=" + appUsers +
-                ", appTeams=" + appTeams +
-                '}';
-    }
-
-    public AppUser getLastUser() {
-        return lastUser;
-    }
-
-    public void setLastUser(AppUser lastUser) {
-        this.lastUser = lastUser;
-    }
-
-    public boolean isRememberMe() {
-        return rememberMe;
-    }
-
-    public void setRememberMe(boolean rememberMe) {
-        this.rememberMe = rememberMe;
-    }
-
-    public enum CheckLoginStatus {
+    enum CheckLoginStatus {
         OK,
         WRONG_PASSWORD,
         UNKNOWN_LOGIN
     }
 
-
+    enum DataStorage {
+        LOCAL_STORAGE
+    }
 }

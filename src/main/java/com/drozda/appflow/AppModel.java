@@ -3,7 +3,9 @@ package com.drozda.appflow;
 
 import com.drozda.YabcLocalization;
 import com.drozda.appflow.config.AppData;
+import com.drozda.appflow.config.FileAppData;
 import com.drozda.fx.controller.BaseApp;
+import com.drozda.fx.controller.PropertiesEditorController;
 import com.drozda.fx.dialog.Dialog;
 import com.drozda.model.AppUser;
 import com.drozda.model.LoginDialogResponse;
@@ -21,6 +23,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -38,10 +41,11 @@ import static java.util.Arrays.asList;
 public class AppModel {
     private static final Logger log = LoggerFactory.getLogger(AppModel.class);
     public static Map<YabcContextTypes, Object> appContext = new EnumMap(YabcContextTypes.class);
-    public static AppData appData = AppData.loadConfig(null);//TODO Maybe set from args
+    public static AppData appData = AppData.getAppData(AppData.DataStorage.LOCAL_STORAGE);//TODO Maybe set from args
+    //test
+    public static PropertiesEditorController propertiesEditorController;
     //  eSingleThreadScheduledExecutor()nw;
     private static String KEY_UNKNOWN_IS_NORMAL = "UNKNOWN_IS_NORMAL";
-    private static int BITSET_SIZE_FOR_USERCHECK = 3;
     private static ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
     private static Stage mainStage;
     private static StringProperty mainStageTitle;
@@ -51,6 +55,7 @@ public class AppModel {
     private static ObjectProperty<AppState> state = new SimpleObjectProperty();
     private static List<AppState> allowedToChangeUserStates = asList(AppState.Designer, AppState.HallOfFame,
             AppState.LevelPicker, AppState.MainMenu, AppState.Settings);
+    private static Stage propertiesStage;
 
     static {
         appContext.put(YabcContextTypes.ADDITIONAL, new HashMap<String, Object>());
@@ -58,6 +63,27 @@ public class AppModel {
             setDefaultMessage();
             saveLastUser(newValue);
         });
+    }
+
+    public static void readyForTest() {
+        propertiesStage = new Stage();
+        propertiesStage.setScene(new Scene(createPropertiesEditorWorld()));
+        propertiesStage.setTitle("Properties Editor");
+        propertiesStage.show();
+    }
+
+    private static Parent createPropertiesEditorWorld() {
+        FXMLLoader loader = new FXMLLoader();
+        Parent root = null;
+        try {
+            root = loader.load(AppModel.class.getResourceAsStream("/com/drozda/fx/fxml/PropertiesEditorController" +
+                    ".fxml"));
+            propertiesEditorController = loader.getController();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return root;
     }
 
     public static void saveLastUser(AppUser appUser) {
@@ -164,7 +190,7 @@ public class AppModel {
     }
 
     public static void stop() {
-        AppData.saveConfig(appData);
+        FileAppData.saveConfig(appData);
         service.shutdown();
     }
 
@@ -196,6 +222,10 @@ public class AppModel {
                     .getUserInfo().getLogin(), dialogResponse.getUserInfo().getPasswordHash());
 
             boolean isTeamExists = appData.isTeamExists(dialogResponse.getUserInfo().getTeam());
+            if (checkLoginStatus == AppData.CheckLoginStatus.WRONG_PASSWORD) {
+                AppModel.setMessageString(YabcLocalization.getString("login.dlg.password.is.wrong"));
+                return;
+            }
             LoginDialogResponseProcessor loginDialogResponseProcessor = LoginDialogResponseProcessor.
                     newLoginDialogResponseProcessor(dialogResponse, checkLoginStatus, isTeamExists);
             loginDialogResponseProcessor.execute();
@@ -205,7 +235,6 @@ public class AppModel {
     public static void setUnknownIsNormal(boolean isNormal) {
         getAdditionalSettings().put(KEY_UNKNOWN_IS_NORMAL, isNormal);
     }
-
 
 
     public static String getMessageString() {
@@ -225,14 +254,14 @@ public class AppModel {
     }
 
     public static void createNewUser(String login, Integer passwordHash) {
-        Dialog.showNewUserDialog(AppModel::processNewUserDialogResponse, login);
+        Dialog.showNewUserDialog(AppModel::processNewUserDialogResponse, login, appData);
     }
 
     public static void processNewUserDialogResponse(NewUserDialogResponse newUserDialogResponse) {
         if (newUserDialogResponse == null) return;
         AppModel.setMessageString(String.format(YabcLocalization.getString("statusbar.create.user.complete"),
                 newUserDialogResponse.getUser().getLogin()));
-        appData.getAppUsers().add(newUserDialogResponse.getUser());
+        appData.addUser(newUserDialogResponse.getUser());
     }
 
     public static Boolean changeUserPredicate(AppState state) {

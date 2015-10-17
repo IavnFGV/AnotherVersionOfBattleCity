@@ -1,16 +1,20 @@
 package com.drozda.fx.dialog;
 
 import com.drozda.YabcLocalization;
+import com.drozda.appflow.config.AppData;
 import com.drozda.model.AppUser;
 import com.drozda.model.NewUserDialogRequest;
 import com.drozda.model.NewUserDialogResponse;
 import impl.org.controlsfx.i18n.Localization;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
+import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.Dialog;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import org.controlsfx.control.textfield.CustomPasswordField;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
@@ -35,7 +39,7 @@ public class NewUserDialog extends Dialog<NewUserDialogResponse> {
     private final ValidationSupport validationSupport = new ValidationSupport();
     private BooleanBinding acceptButtonActivationBinding;
 
-    NewUserDialog(NewUserDialogRequest newUserDialogRequest) {
+    NewUserDialog(NewUserDialogRequest newUserDialogRequest, AppData appData) {
         DialogPane dialogPane = this.getDialogPane();
         this.setTitle(YabcLocalization.getString("newuser.dlg.title"));
         dialogPane.setHeaderText(YabcLocalization.getString("newuser.dlg.header"));
@@ -60,19 +64,6 @@ public class NewUserDialog extends Dialog<NewUserDialogResponse> {
         dialogPane.getButtonTypes().addAll(this.acceptUserButtonType);
         Button acceptButton = (Button) dialogPane.lookupButton(this.acceptUserButtonType);
 
-
-//        BooleanBinding enoughDataInTextFields = Bindings.and(txUserName.textProperty().isNotEmpty(), txTeam
-//                .textProperty().isNotEmpty());
-//        enoughDataInTextFields = Bindings.and(enoughDataInTextFields, txPassword.textProperty().isNotEmpty());
-//
-//        BooleanBinding enoughAndNotCheckbox = Bindings.and(enoughDataInTextFields, cbUnknowIsNormal.selectedProperty()
-//                .not());
-//        fullBinding = Bindings.or(cbUnknowIsNormal.selectedProperty(), enoughAndNotCheckbox);
-//
-//        loginButton.setDisable(!fullBinding.get());
-
-//        fullBinding.addListener((observable, oldValue, newValue) -> loginButton.setDisable(!newValue));
-
         String userNameCaption = Localization.getString("login.dlg.user.caption");
         String passwordCaption = Localization.getString("login.dlg.pswd.caption");
         String confirmPasswordCaption = YabcLocalization.getString("newuser.dlg.pswd.caption");
@@ -84,7 +75,15 @@ public class NewUserDialog extends Dialog<NewUserDialogResponse> {
         this.txUserName.setPromptText(userNameCaption);
         this.txPassword.setPromptText(passwordCaption);
         this.txConfirmPassword.setPromptText(confirmPasswordCaption);
-
+        this.txUserName.focusedProperty().addListener((observable, oldValue,
+                                                       newValue) ->
+                this.txUserName.setEffect(null));
+        validationSupport.registerValidator(txUserName, Validator.createEmptyValidator(YabcLocalization.getString
+                ("dlg.field.cannot.be.empty")));
+        validationSupport.registerValidator(txUserName, (control1, o1) -> ValidationResult.fromErrorIf
+                        (txUserName, YabcLocalization.getString("dlg.field.already.exists"), appData.isLoginExists(txUserName
+                                .getText()))
+        );
         validationSupport.registerValidator(txPassword,
                 Validator.createEmptyValidator(YabcLocalization.getString("dlg.field.cannot.be.empty")));
         validationSupport.registerValidator(txConfirmPassword,
@@ -104,14 +103,36 @@ public class NewUserDialog extends Dialog<NewUserDialogResponse> {
         acceptButtonActivationBinding = Bindings.and(passworsAreEqual, fieldEmpty.not());
         acceptButtonActivationBinding.addListener((observable, oldValue, newValue) -> acceptButton.setDisable
                 (!newValue));
-
+        acceptButton.addEventFilter(ActionEvent.ACTION, event -> {
+            if (!validateInput()) {
+                event.consume();
+            }
+        });
         acceptButton.setDisable(!acceptButtonActivationBinding.get());
+        acceptButton.setDefaultButton(true);
         this.setResultConverter((dialogButton) -> {
             if (dialogButton == this.acceptUserButtonType) {
                 return new NewUserDialogResponse(new AppUser(txUserName.getText(), null, txPassword.getText().hashCode()));
             }
             return null;
         });
+    }
+
+    private boolean validateInput() {
+        validationSupport.getValidationResult().getErrors().stream().findFirst().ifPresent(validationMessage -> {
+
+            int depth = 70; //Setting the uniform variable for the glow width and height
+
+            DropShadow borderGlow = new DropShadow();
+            borderGlow.setOffsetY(0f);
+            borderGlow.setOffsetX(0f);
+            borderGlow.setColor(Color.RED);
+            borderGlow.setWidth(depth);
+            borderGlow.setHeight(depth);
+            validationMessage.getTarget().setEffect(borderGlow); //
+        });
+
+        return validationSupport.getValidationResult().getErrors().isEmpty();
     }
 
 }
