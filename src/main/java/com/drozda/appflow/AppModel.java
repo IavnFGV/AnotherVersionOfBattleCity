@@ -44,6 +44,7 @@ public class AppModel {
     public static AppData appData = AppData.getAppData(AppData.DataStorage.LOCAL_STORAGE);//TODO Maybe set from args
     //test
     public static PropertiesEditorController propertiesEditorController;
+    public static int stageNumberForLoading = 20;
     //  eSingleThreadScheduledExecutor()nw;
     private static String KEY_UNKNOWN_IS_NORMAL = "UNKNOWN_IS_NORMAL";
     private static ScheduledExecutorService service = Executors.newScheduledThreadPool(5);

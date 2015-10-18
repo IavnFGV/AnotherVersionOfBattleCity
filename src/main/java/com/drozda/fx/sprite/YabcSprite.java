@@ -1,5 +1,8 @@
 package com.drozda.fx.sprite;
 
+import com.drozda.battlecity.StaticServices;
+import com.drozda.battlecity.unit.GameUnit;
+import com.drozda.battlecity.unit.TileUnit;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -9,8 +12,11 @@ import javafx.scene.image.ImageView;
  */
 public enum YabcSprite {
     //tiles
-    TILE_BRICK(null), TILE_EMPTY, TILE_FOREST, TILE_ICE, TILE_STEEL,
-    TILE_WATER,//TILE_WATER_1,TILE_WATER_2,TILE_WATER_3,
+    TILE_BRICK, TILE_EMPTY, TILE_FOREST, TILE_ICE, TILE_STEEL,
+    TILE_WATER(new Rectangle2D[]{
+            new Rectangle2D(0, 848, 16, 16),
+            new Rectangle2D(16, 848, 16, 16),
+            new Rectangle2D(32, 848, 16, 16)}),//TILE_WATER_1,TILE_WATER_2,TILE_WATER_3,
     //players
     TANK_FIRST_PLAYER, TANK_FIRST_PLAYER_1_STAR, TANK_FIRST_PLAYER_2_STAR, TANK_FIRST_PLAYER_3_STAR, TANK_FIRST_PLAYER_4_STAR,
     TANK_SECOND_PLAYER, TANK_SECOND_PLAYER_1_STAR, TANK_SECOND_PLAYER_2_STAR, TANK_SECOND_PLAYER_3_STAR, TANK_SECOND_PLAYER_4_STAR,
@@ -37,8 +43,15 @@ public enum YabcSprite {
     DIGIT_9(new Rectangle2D[]{new Rectangle2D(64, 784, 16, 16)});
     public static Image baseImage = new Image(YabcSprite.class.getResource("BattleCity.png").toExternalForm());
     protected Rectangle2D[] viewports;
+    protected long toggleTime = (long) (StaticServices.ONE_SECOND * 0.125);
 
     YabcSprite() {
+    }
+
+    YabcSprite(Rectangle2D[] viewports, long toggleTime) {
+//        log.debug("YabcSprite.YabcSprite with parameters " + "viewports = [" + viewports + "]");
+        this(viewports);
+        this.toggleTime = toggleTime;
     }
 
     YabcSprite(Rectangle2D[] viewports) {
@@ -50,6 +63,16 @@ public enum YabcSprite {
         ImageView imageView = new ImageView(baseImage);
         imageView.setViewport(spriteType.viewports[0]);
         return imageView;
+    }
+
+    public static ImageView getFullSprite(GameUnit gameUnit) {
+        if (gameUnit instanceof TileUnit) {
+            TileUnit tileUnit = (TileUnit) gameUnit;
+            if (tileUnit.getTileType() == TileUnit.TileType.WATER) {
+                return new WaterFxSprite(tileUnit);
+            }
+        }
+        return getDigit(0);
     }
 
     public static ImageView getDigit(int digit) {

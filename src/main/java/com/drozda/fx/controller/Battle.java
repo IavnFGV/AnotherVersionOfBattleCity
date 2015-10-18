@@ -1,6 +1,10 @@
 package com.drozda.fx.controller;
 
+import com.drozda.appflow.AppModel;
+import com.drozda.battlecity.manager.PlaygroundManager;
 import com.drozda.battlecity.playground.YabcBattleGround;
+import com.drozda.battlecity.unit.GameUnit;
+import com.drozda.battlecity.unit.TileUnit;
 import com.drozda.fx.sprite.YabcSprite;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -16,7 +20,7 @@ import java.lang.reflect.Field;
  * Created by GFH on 21.09.2015.
  */
 public class Battle {
-    //    PlaygroundManager playgroundManager = new PlaygroundManager();
+    PlaygroundManager playgroundManager = new PlaygroundManager();
     YabcBattleGround curYabcPlayground;
     IntegerProperty enemyCount = new SimpleIntegerProperty(0);
     IntegerProperty singleOrDouble = new SimpleIntegerProperty(0);
@@ -47,6 +51,8 @@ public class Battle {
     private Pane stageNumberSecondDigit;
     @FXML
     private Pane stageNumberFirstDigit;
+    @FXML
+    private Pane centerPane;
 
     public int getFirstPlayersLifes() {
         return firstPlayersLifes.get();
@@ -153,6 +159,7 @@ public class Battle {
         });
 
         initResources();
+
     }
 
     public IntegerProperty enemyCountProperty() {
@@ -189,6 +196,28 @@ public class Battle {
                 }
             }
         }
+    }
+
+    public void startGame() {
+        YabcBattleGround yabcBattleGround = playgroundManager.getPlayground(AppModel.stageNumberForLoading, 1, 1);
+        loadPlayground(yabcBattleGround);
+    }
+
+    public void loadPlayground(YabcBattleGround battleGround) {
+        //Pane pane = new Pane();
+        for (GameUnit gameUnit : battleGround.getUnitList()) {
+            if (gameUnit instanceof TileUnit) {
+                TileUnit tileUnit =
+                        ((TileUnit) gameUnit);
+                if (tileUnit.getTileType() == TileUnit.TileType.WATER) {
+                    ImageView imageView = YabcSprite.getFullSprite(gameUnit);
+                    centerPane.getChildren().add(imageView);
+                }
+            }
+            // ImageView imageView = YabcSprite.getFullSprite(gameUnit);
+            //  centerPane.getChildren().add(imageView);
+        }
+        // borderPane.getCenter().
     }
 
 }

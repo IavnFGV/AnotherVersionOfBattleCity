@@ -1,5 +1,6 @@
 package com.drozda.appflow;
 
+import com.drozda.fx.controller.Battle;
 import com.drozda.fx.dialog.Dialog;
 import com.drozda.model.LoginDialogResponse;
 import javafx.beans.value.ChangeListener;
@@ -35,6 +36,9 @@ public class StateChangeListener implements ChangeListener<AppState> {
             if (!AppModel.isLoginRequired()) {
                 AppModel.getBaseApp().setSubScene(AppState.Battle.getYabcFrame().getRoot());
                 AppModel.propertiesEditorController.initPropertyShit(AppState.Battle.getYabcFrame().getController());
+//                AppModel appModel;
+                // AppModel.propertiesEditorController.initPropertyShit(AppModel.class);
+                ((Battle) AppState.Battle.getYabcFrame().getController()).startGame();
                 log.debug("FUCK111sadsadsadsadsad1!!!");
                 return;
             }
