@@ -20,8 +20,9 @@ public class Battle {
     YabcBattleGround curYabcPlayground;
     IntegerProperty enemyCount = new SimpleIntegerProperty(0);
     IntegerProperty singleOrDouble = new SimpleIntegerProperty(0);
-
     IntegerProperty stageNumber = new SimpleIntegerProperty(0);
+    IntegerProperty firstPlayersLifes = new SimpleIntegerProperty(0);
+    IntegerProperty secondPlayersLifes = new SimpleIntegerProperty(0);
     @FXML
     private BorderPane borderPane;
     @FXML
@@ -46,6 +47,22 @@ public class Battle {
     private Pane stageNumberSecondDigit;
     @FXML
     private Pane stageNumberFirstDigit;
+
+    public int getFirstPlayersLifes() {
+        return firstPlayersLifes.get();
+    }
+
+    public void setFirstPlayersLifes(int firstPlayersLifes) {
+        this.firstPlayersLifes.set(firstPlayersLifes);
+    }
+
+    public int getSecondPlayersLifes() {
+        return secondPlayersLifes.get();
+    }
+
+    public void setSecondPlayersLifes(int secondPlayersLifes) {
+        this.secondPlayersLifes.set(secondPlayersLifes);
+    }
 
     public int getStageNumber() {
         return stageNumber.get();
@@ -124,6 +141,17 @@ public class Battle {
 
         });
 
+        firstPlayersLifesProperty().addListener((observable, oldValue, newValue) -> {
+            firstPlayerLifes.getChildren().clear();
+            firstPlayerLifes.getChildren().add(YabcSprite.getDigit(newValue.intValue()));
+        });
+
+
+        secondPlayersLifesProperty().addListener((observable, oldValue, newValue) -> {
+            secondPlayerLifes.getChildren().clear();
+            secondPlayerLifes.getChildren().add(YabcSprite.getDigit(newValue.intValue()));
+        });
+
         initResources();
     }
 
@@ -137,6 +165,14 @@ public class Battle {
 
     public IntegerProperty stageNumberProperty() {
         return stageNumber;
+    }
+
+    public IntegerProperty firstPlayersLifesProperty() {
+        return firstPlayersLifes;
+    }
+
+    public IntegerProperty secondPlayersLifesProperty() {
+        return secondPlayersLifes;
     }
 
     private void initResources() {
