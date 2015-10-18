@@ -20,38 +20,55 @@
         <Pane styleClass="playground-border-right" BorderPane.alignment="CENTER">
             <children>
                 <TilePane id="enemy-counter" fx:id="enemyCounter"/>
-                <Pane id="stats-back" layoutX="16.0" layoutY="272.0" prefHeight="200.0" prefWidth="32.0">
+                <Pane id="stats-back" layoutX="17.0" layoutY="272.0" prefHeight="200.0" prefWidth="32.0">
                     <children>
-                        <ImageView fx:id="firstPlayerLifes" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
-                                   preserveRatio="true" x="16.0" y="16.0">
-                            <viewport>
-                                <Rectangle2D height="32.0" minX="1024.0" minY="240.0" width="32.0"/>
-                            </viewport>
+                        <Pane fx:id="firstPlayerBannerPane" maxHeight="-Infinity" maxWidth="-Infinity"
+                              minHeight="-Infinity" minWidth="-Infinity" prefHeight="32.0" prefWidth="32.0">
+                            <children>
+                                <ImageView fx:id="firstPlayerBanner" fitHeight="32.0" fitWidth="32.0"
+                                           pickOnBounds="true" preserveRatio="true" x="1.0">
+                                    <viewport>
+                                        <Rectangle2D height="32.0" minX="80.0" minY="768.0" width="32.0"/>
+                                    </viewport>
 
-                        </ImageView>
-                        <ImageView fx:id="secondPlayerLifes" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
-                                   preserveRatio="true" x="16.0" y="64.0">
-                            <viewport>
-                                <Rectangle2D height="32.0" minX="1024.0" minY="288.0" width="32.0"/>
-                            </viewport>
+                                </ImageView>
+                                <Pane fx:id="firstPlayerLifes" layoutX="16.0" layoutY="16.0" maxHeight="-Infinity"
+                                      maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="16.0"
+                                      prefWidth="16.0"/>
+                            </children>
+                        </Pane>
+                        <Pane fx:id="secondPlayerBannerPane" layoutY="48.0" maxHeight="-Infinity" maxWidth="-Infinity"
+                              minHeight="-Infinity" minWidth="-Infinity" prefHeight="32.0" prefWidth="32.0">
+                            <children>
+                                <ImageView fx:id="secondPlayerBanner" fitHeight="32.0" fitWidth="32.0"
+                                           pickOnBounds="true" preserveRatio="true" x="1.0">
+                                    <viewport>
+                                        <Rectangle2D height="32.0" minX="112.0" minY="768.0" width="32.0"/>
+                                    </viewport>
 
+                                </ImageView>
+                                <Pane fx:id="firstPlayerLifes" layoutX="16.0" layoutY="16.0" maxHeight="-Infinity"
+                                      maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="16.0"
+                                      prefWidth="16.0"/>
+                            </children>
+                        </Pane>
+                        <Pane fx:id="stageNumberBannerPane" layoutY="112.0" maxHeight="-Infinity" maxWidth="-Infinity"
+                              minHeight="-Infinity" minWidth="-Infinity" prefHeight="32.0" prefWidth="32.0">
+                            <children>
+                                <ImageView fx:id="stageNumberBanner" fitHeight="32.0" fitWidth="32.0"
+                                           pickOnBounds="true" preserveRatio="true" y="-16.0">
+                                    <viewport>
+                                        <Rectangle2D height="32.0" minX="145.0" minY="768.0" width="32.0"/>
+                                    </viewport>
                         </ImageView>
-                        <ImageView fx:id="stageNumberFirstDigit" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
-                                   preserveRatio="true" y="128.0">
-                            <viewport>
-                                <Rectangle2D height="16.0" minX="1024.0" minY="336.0" width="16.0"/>
-                            </viewport>
-
-                        </ImageView>
-                        <ImageView fx:id="stageNumberSecondDigit" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true"
-                                   preserveRatio="true" x="16.0" y="128.0">
-
-                            <viewport>
-                                <Rectangle2D height="16.0" minX="1024.0" minY="336.0" width="16.0"/>
-                            </viewport>
-                        </ImageView>
-                        <Pane id="disable-second-player" fx:id="secondPlayerHider" layoutY="48.0" prefHeight="32.0"
-                              prefWidth="32.0" visible="false"/>
+                                <Pane fx:id="stageNumberFirstDigit" layoutY="16.0" maxHeight="-Infinity"
+                                      maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="16.0"
+                                      prefWidth="16.0"/>
+                                <Pane fx:id="stageNumberSecondDigit" layoutX="16.0" layoutY="16.0" maxHeight="-Infinity"
+                                      maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="16.0"
+                                      prefWidth="16.0"/>
+                            </children>
+                        </Pane>
                     </children>
                 </Pane>
             </children>

@@ -24,6 +24,14 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     private int tankHeightCells = 2;
     private int tankWidthCells = 2;
     private int worldSizeCells = worldWiddthCells * worldHeightCells;
+    //    private ObservableListBase observableListBase;
+//    {
+//
+//    }
+//    private ListProperty listProperty = new SimpleListProperty<>(observableListBase);
+//    {
+//        listProperty.s
+//    }
     //private MailManager
     private ListProperty<GameUnit> unitList = new SimpleListProperty<>(FXCollections.observableArrayList());
 
