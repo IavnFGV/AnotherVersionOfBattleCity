@@ -19,14 +19,13 @@ public class BrickFxSprite extends FxSprite<TileUnit> {
         });
         xProperty().setValue(gameUnit.getBounds().getMinX());
         yProperty().setValue(gameUnit.getBounds().getMinY());
-
+        animation.lastIndex = 1;//instead of initialization  - change to 1 for reset viewport in first iteration
         animation.play();
     }
 
     @Override
     protected SpriteAnimation<TileUnit> createAnimation() {
-        return new BrickAnimation(Duration.seconds(6), 15,
-                Animation.INDEFINITE);
+        return new BrickAnimation();
     }
 
     @Override
@@ -36,9 +35,58 @@ public class BrickFxSprite extends FxSprite<TileUnit> {
 
     protected class BrickAnimation extends SpriteAnimation<TileUnit> {
 
-        public BrickAnimation(Duration duration, int count, int cycleCount) {
-            super(duration, count, cycleCount);
+        public BrickAnimation() {
+            super(Duration.seconds(6), 15,
+                    Animation.INDEFINITE);
+
         }
+
+        protected void interpolate(double k) {
+            final int index = tileStateToViewportIndex(gameUnit.getTileState());
+
+            if (index != lastIndex) {
+                BrickFxSprite.this.setViewport(nextSprite(index));
+                lastIndex = index;
+            }
+        }
+
+        protected int tileStateToViewportIndex(TileUnit.TileState tileState) {
+            switch (tileState) {
+                case STATE_0001:
+                    return 12;
+                case STATE_0010:
+                    return 11;
+                case STATE_0011:
+                    return 5;
+                case STATE_0100:
+                    return 10;
+                case STATE_0101:
+                    return 13;
+                case STATE_0110:
+                    return 8;
+                case STATE_0111:
+                    return 1;
+                case STATE_1000:
+                    return 9;
+                case STATE_1001:
+                    return 6;
+                case STATE_1010:
+                    return 14;
+                case STATE_1011:
+                    return 2;
+                case STATE_1100:
+                    return 7;
+                case STATE_1101:
+                    return 3;
+                case STATE_1110:
+                    return 4;
+                case STATE_1111:
+                    return 0;
+            }
+            return 0;
+        }
+
+
     }
 
 }

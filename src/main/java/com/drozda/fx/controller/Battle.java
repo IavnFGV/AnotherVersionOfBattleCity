@@ -201,6 +201,7 @@ public class Battle {
     public void startGame() {
         YabcBattleGround yabcBattleGround = playgroundManager.getPlayground(AppModel.stageNumberForLoading, 2, 2);
         loadPlayground(yabcBattleGround);
+        curYabcPlayground = yabcBattleGround;
     }
 
     public void loadPlayground(YabcBattleGround battleGround) {

@@ -54,7 +54,7 @@ public abstract class FxSprite<T extends GameUnit> extends ImageView {
     protected abstract class SpriteAnimation<T extends GameUnit> extends Transition {
 
         private final int count;
-        private int lastIndex;
+        protected int lastIndex;
 
         public SpriteAnimation(
                 Duration duration,
