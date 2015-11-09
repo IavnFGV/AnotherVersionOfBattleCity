@@ -53,6 +53,7 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     public void initialize() {
         setState(PlaygroundState.INITIALIZING);
         setState(PlaygroundState.PAUSED);
+
     }
 
     @Override

@@ -47,6 +47,10 @@ public abstract class FxSprite<T extends GameUnit> extends ImageView {
 
     protected abstract Rectangle2D nextSprite(int index);
 
+    public Transition getAnimation() {
+        return animation;
+    }
+
     protected abstract class SpriteAnimation<T extends GameUnit> extends Transition {
 
         private final int count;

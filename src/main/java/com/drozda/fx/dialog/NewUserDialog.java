@@ -10,21 +10,19 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
-import javafx.scene.control.Dialog;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import org.controlsfx.control.textfield.CustomPasswordField;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.validation.ValidationResult;
-import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.controlsfx.validation.decoration.GraphicValidationDecoration;
 import org.controlsfx.validation.decoration.ValidationDecoration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * Created by GFH on 11.10.2015.
@@ -36,7 +34,6 @@ public class NewUserDialog extends Dialog<NewUserDialogResponse> {
     private final CustomTextField txUserName;
     private final CustomPasswordField txPassword;
     private final CustomPasswordField txConfirmPassword;
-    private final ValidationSupport validationSupport = new ValidationSupport();
     private BooleanBinding acceptButtonActivationBinding;
 
     NewUserDialog(NewUserDialogRequest newUserDialogRequest, AppData appData) {
@@ -104,7 +101,9 @@ public class NewUserDialog extends Dialog<NewUserDialogResponse> {
         acceptButtonActivationBinding.addListener((observable, oldValue, newValue) -> acceptButton.setDisable
                 (!newValue));
         acceptButton.addEventFilter(ActionEvent.ACTION, event -> {
-            if (!validateInput()) {
+            List<Control> controls = getInvalidControls();
+            if (!controls.isEmpty()) {
+                markAsInvalid(controls);
                 event.consume();
             }
         });
@@ -117,22 +116,4 @@ public class NewUserDialog extends Dialog<NewUserDialogResponse> {
             return null;
         });
     }
-
-    private boolean validateInput() {
-        validationSupport.getValidationResult().getErrors().stream().findFirst().ifPresent(validationMessage -> {
-
-            int depth = 70; //Setting the uniform variable for the glow width and height
-
-            DropShadow borderGlow = new DropShadow();
-            borderGlow.setOffsetY(0f);
-            borderGlow.setOffsetX(0f);
-            borderGlow.setColor(Color.RED);
-            borderGlow.setWidth(depth);
-            borderGlow.setHeight(depth);
-            validationMessage.getTarget().setEffect(borderGlow); //
-        });
-
-        return validationSupport.getValidationResult().getErrors().isEmpty();
-    }
-
 }

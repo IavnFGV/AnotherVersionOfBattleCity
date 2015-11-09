@@ -6,13 +6,31 @@ import com.drozda.battlecity.unit.TileUnit;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by GFH on 24.09.2015.
  */
 public enum YabcSprite {
     //tiles
-    TILE_BRICK, TILE_EMPTY, TILE_FOREST, TILE_ICE, TILE_STEEL,
+    TILE_BRICK(new Rectangle2D[]{
+            new Rectangle2D(0, 816, 16, 16),//1111
+            new Rectangle2D(16, 816, 16, 16),//0111
+            new Rectangle2D(32, 816, 16, 16),//1011
+            new Rectangle2D(48, 816, 16, 16),//1101
+            new Rectangle2D(64, 816, 16, 16),//1110
+            new Rectangle2D(80, 816, 16, 16),//0011
+            new Rectangle2D(96, 816, 16, 16),//1001
+            new Rectangle2D(112, 816, 16, 16),//1100
+            new Rectangle2D(128, 816, 16, 16),//0110
+            new Rectangle2D(144, 816, 16, 16),//1000
+            new Rectangle2D(160, 816, 16, 16),//0100
+            new Rectangle2D(176, 816, 16, 16),//0010
+            new Rectangle2D(192, 816, 16, 16),//0001
+            new Rectangle2D(208, 816, 16, 16),//0101
+            new Rectangle2D(224, 816, 16, 16),//1010
+    }), TILE_EMPTY, TILE_FOREST, TILE_ICE, TILE_STEEL,
     TILE_WATER(new Rectangle2D[]{
             new Rectangle2D(0, 848, 16, 16),
             new Rectangle2D(16, 848, 16, 16),
@@ -41,10 +59,10 @@ public enum YabcSprite {
     DIGIT_7(new Rectangle2D[]{new Rectangle2D(32, 784, 16, 16)}),
     DIGIT_8(new Rectangle2D[]{new Rectangle2D(48, 784, 16, 16)}),
     DIGIT_9(new Rectangle2D[]{new Rectangle2D(64, 784, 16, 16)});
+    protected static final Logger log = LoggerFactory.getLogger(YabcSprite.class);
     public static Image baseImage = new Image(YabcSprite.class.getResource("BattleCity.png").toExternalForm());
     protected Rectangle2D[] viewports;
     protected long toggleTime = (long) (StaticServices.ONE_SECOND * 0.125);
-
     YabcSprite() {
     }
 
@@ -68,11 +86,23 @@ public enum YabcSprite {
     public static ImageView getFullSprite(GameUnit gameUnit) {
         if (gameUnit instanceof TileUnit) {
             TileUnit tileUnit = (TileUnit) gameUnit;
-            if (tileUnit.getTileType() == TileUnit.TileType.WATER) {
-                return new WaterFxSprite(tileUnit);
+            log.debug(tileUnit.getTileType().toString());
+            switch (tileUnit.getTileType()) {
+
+
+                case BRICK:
+                    return new BrickFxSprite(tileUnit);
+                case FOREST:
+                    break;
+                case ICE:
+                    break;
+                case STEEL:
+                    break;
+                case WATER:
+                    return new WaterFxSprite(tileUnit);
             }
         }
-        return getDigit(0);
+        return getDigit(0); //  STUB
     }
 
     public static ImageView getDigit(int digit) {

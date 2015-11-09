@@ -199,7 +199,7 @@ public class Battle {
     }
 
     public void startGame() {
-        YabcBattleGround yabcBattleGround = playgroundManager.getPlayground(AppModel.stageNumberForLoading, 1, 1);
+        YabcBattleGround yabcBattleGround = playgroundManager.getPlayground(AppModel.stageNumberForLoading, 2, 2);
         loadPlayground(yabcBattleGround);
     }
 
@@ -209,7 +209,9 @@ public class Battle {
             if (gameUnit instanceof TileUnit) {
                 TileUnit tileUnit =
                         ((TileUnit) gameUnit);
-                if (tileUnit.getTileType() == TileUnit.TileType.WATER) {
+                if ((tileUnit.getTileType() == TileUnit.TileType.WATER) || //TODO REMOVE AFTER IMPLEMENTATION OF ALL  TYPES
+                        (tileUnit.getTileType() == TileUnit.TileType
+                                .BRICK)) {
                     ImageView imageView = YabcSprite.getFullSprite(gameUnit);
                     centerPane.getChildren().add(imageView);
                 }

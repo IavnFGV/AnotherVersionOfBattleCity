@@ -5,6 +5,13 @@ import com.drozda.appflow.AppModel;
 import com.drozda.appflow.AppState;
 import com.drozda.appflow.config.AppData;
 import com.drozda.model.*;
+import javafx.application.Platform;
+import javafx.scene.control.Control;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Effect;
+import javafx.scene.paint.Color;
+import org.controlsfx.validation.ValidationMessage;
+import org.controlsfx.validation.ValidationSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +27,23 @@ import static java.lang.String.format;
 /**
  * Created by GFH on 21.09.2015.
  */
-public class Dialog {
+public class Dialog<T> extends javafx.scene.control.Dialog<T> {
     private static final Logger log = LoggerFactory.getLogger(Dialog.class);
+
+    static protected Effect invalidControlEffect;
+
+    static {
+        int depth = 70; //Setting the uniform variable for the glow width and height
+        DropShadow borderGlow = new DropShadow();
+        borderGlow.setOffsetY(0f);
+        borderGlow.setOffsetX(0f);
+        borderGlow.setColor(Color.RED);
+        borderGlow.setWidth(depth);
+        borderGlow.setHeight(depth);
+        invalidControlEffect = borderGlow;
+    }
+
+    protected final ValidationSupport validationSupport = new ValidationSupport();
 
     public static NewUserDialogResponse showNewUserDialog(Consumer<NewUserDialogResponse> consumer, String
             initialLogin, AppData appData) {
@@ -67,5 +89,21 @@ public class Dialog {
         consumer.accept(dlg.getResult());
         log.info("Result is " + dlg.getResult());
         return dlg.getResult();
+    }
+
+    protected List<Control> getInvalidControls() {
+        Platform.runLater(() -> validationSupport.redecorate());
+        return validationSupport.getValidationResult().getErrors().stream().map(ValidationMessage::getTarget).collect
+                (Collectors.toList());
+    }
+
+    protected void markControls(List<Control> controls, Effect effect) {
+        log.debug("Dialog.markControls with parameters " + "controls = [" + controls + "], effect = [" + effect + "]");
+        Platform.runLater(() -> controls.forEach(control -> control.setEffect(effect)));
+    }
+
+    protected void markAsInvalid(List<Control> controls) {
+        log.debug("Dialog.markAsInvalid with parameters " + "controls = [" + controls + "]");
+        Platform.runLater(() -> controls.forEach(control -> control.setEffect(invalidControlEffect)));
     }
 }

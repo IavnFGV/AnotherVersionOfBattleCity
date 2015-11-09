@@ -6,13 +6,12 @@ import javafx.geometry.Rectangle2D;
 import javafx.util.Duration;
 
 /**
- * Created by GFH on 18.10.2015.
+ * Created by GFH on 09.11.2015.
  */
-public class WaterFxSprite extends FxSprite<TileUnit> {
+public class BrickFxSprite extends FxSprite<TileUnit> {
+    Rectangle2D[] viewPorts = YabcSprite.TILE_BRICK.viewports;
 
-    Rectangle2D[] viewPorts = YabcSprite.TILE_WATER.viewports;
-
-    public WaterFxSprite(TileUnit gameUnit) {
+    public BrickFxSprite(TileUnit gameUnit) {
         super(gameUnit);
         gameUnit.boundsProperty().addListener((observable, oldValue, newValue) -> {
             xProperty().setValue(newValue.getMinX());
@@ -26,20 +25,20 @@ public class WaterFxSprite extends FxSprite<TileUnit> {
 
     @Override
     protected SpriteAnimation<TileUnit> createAnimation() {
-        return new WaterAnimation(Duration.seconds(1), 3,
+        return new BrickAnimation(Duration.seconds(6), 15,
                 Animation.INDEFINITE);
     }
 
     @Override
     protected Rectangle2D nextSprite(int index) {
-
         return viewPorts[index];
     }
 
-    protected class WaterAnimation extends SpriteAnimation<TileUnit> {
+    protected class BrickAnimation extends SpriteAnimation<TileUnit> {
 
-        public WaterAnimation(Duration duration, int count, int cycleCount) {
+        public BrickAnimation(Duration duration, int count, int cycleCount) {
             super(duration, count, cycleCount);
         }
     }
+
 }
