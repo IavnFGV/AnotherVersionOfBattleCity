@@ -4,6 +4,7 @@ import com.drozda.battlecity.StaticServices;
 import com.drozda.battlecity.unit.GameUnit;
 import com.drozda.battlecity.unit.TileUnit;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.slf4j.Logger;
@@ -30,7 +31,9 @@ public enum YabcSprite {
             new Rectangle2D(192, 816, 16, 16),//0001
             new Rectangle2D(208, 816, 16, 16),//0101
             new Rectangle2D(224, 816, 16, 16),//1010
-    }), TILE_EMPTY, TILE_FOREST, TILE_ICE, TILE_STEEL,
+    }), TILE_EMPTY,
+    TILE_FOREST, TILE_ICE,
+    TILE_STEEL(new Rectangle2D[]{new Rectangle2D(0, 832, 16, 16)}),
     TILE_WATER(new Rectangle2D[]{
             new Rectangle2D(0, 848, 16, 16),
             new Rectangle2D(16, 848, 16, 16),
@@ -63,6 +66,7 @@ public enum YabcSprite {
     public static Image baseImage = new Image(YabcSprite.class.getResource("BattleCity.png").toExternalForm());
     protected Rectangle2D[] viewports;
     protected long toggleTime = (long) (StaticServices.ONE_SECOND * 0.125);
+
     YabcSprite() {
     }
 
@@ -83,7 +87,7 @@ public enum YabcSprite {
         return imageView;
     }
 
-    public static ImageView getFullSprite(GameUnit gameUnit) {
+    public static Node getFullSprite(GameUnit gameUnit) {
         if (gameUnit instanceof TileUnit) {
             TileUnit tileUnit = (TileUnit) gameUnit;
             log.debug(tileUnit.getTileType().toString());
@@ -97,7 +101,7 @@ public enum YabcSprite {
                 case ICE:
                     break;
                 case STEEL:
-                    break;
+                    return new SteelFxSprite(tileUnit);
                 case WATER:
                     return new WaterFxSprite(tileUnit);
             }

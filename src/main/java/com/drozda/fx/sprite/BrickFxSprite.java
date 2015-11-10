@@ -1,8 +1,8 @@
 package com.drozda.fx.sprite;
 
 import com.drozda.battlecity.unit.TileUnit;
-import javafx.animation.Animation;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
 /**
@@ -13,19 +13,13 @@ public class BrickFxSprite extends FxSprite<TileUnit> {
 
     public BrickFxSprite(TileUnit gameUnit) {
         super(gameUnit);
-        gameUnit.boundsProperty().addListener((observable, oldValue, newValue) -> {
-            xProperty().setValue(newValue.getMinX());
-            yProperty().setValue(newValue.getMinY());
-        });
-        xProperty().setValue(gameUnit.getBounds().getMinX());
-        yProperty().setValue(gameUnit.getBounds().getMinY());
-        animation.lastIndex = 1;//instead of initialization  - change to 1 for reset viewport in first iteration
-        animation.play();
+        initSprite();
+        allAnimations.play();
     }
 
     @Override
-    protected SpriteAnimation<TileUnit> createAnimation() {
-        return new BrickAnimation();
+    protected SpriteAnimation<TileUnit> createAnimation(ImageView imageView) {
+        return new BrickAnimation(1, imageView);
     }
 
     @Override
@@ -34,18 +28,18 @@ public class BrickFxSprite extends FxSprite<TileUnit> {
     }
 
     protected class BrickAnimation extends SpriteAnimation<TileUnit> {
+        private int lastIndex = 1;//instead of initialization  - change to 1 for reset viewport in first iteration
 
-        public BrickAnimation() {
-            super(Duration.seconds(6), 15,
-                    Animation.INDEFINITE);
-
+        public BrickAnimation(int cycleCount, ImageView imageView) {
+            super(Duration.INDEFINITE, imageView);
+            setCycleCount(cycleCount);
         }
 
         protected void interpolate(double k) {
             final int index = tileStateToViewportIndex(gameUnit.getTileState());
 
             if (index != lastIndex) {
-                BrickFxSprite.this.setViewport(nextSprite(index));
+                imageView.setViewport(nextSprite(index));
                 lastIndex = index;
             }
         }

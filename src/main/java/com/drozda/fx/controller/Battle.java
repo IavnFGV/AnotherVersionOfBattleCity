@@ -9,6 +9,7 @@ import com.drozda.fx.sprite.YabcSprite;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -211,10 +212,11 @@ public class Battle {
                 TileUnit tileUnit =
                         ((TileUnit) gameUnit);
                 if ((tileUnit.getTileType() == TileUnit.TileType.WATER) || //TODO REMOVE AFTER IMPLEMENTATION OF ALL  TYPES
-                        (tileUnit.getTileType() == TileUnit.TileType
-                                .BRICK)) {
-                    ImageView imageView = YabcSprite.getFullSprite(gameUnit);
-                    centerPane.getChildren().add(imageView);
+                        (tileUnit.getTileType() == TileUnit.TileType.BRICK) ||
+                        (tileUnit.getTileType() == TileUnit.TileType.STEEL)
+                        ) {
+                    Node node = YabcSprite.getFullSprite(gameUnit);
+                    centerPane.getChildren().add(node);
                 }
             }
             // ImageView imageView = YabcSprite.getFullSprite(gameUnit);

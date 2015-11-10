@@ -15,7 +15,11 @@ public class PlaygroundManager {
     LevelLoader levelLoader = new FileLevelLoader();
 
     public YabcBattleGround getPlayground(int levelNumber, int multX, int multY) {
-        log.debug("PlaygroundManager.getYabcPlayground with parameters " + "levelNumber = [" + levelNumber + "], multX = [" + multX + "], multY = [" + multY + "]");
+        return getPlayground(levelNumber, multX, multY, this.levelLoader);
+    }
+
+    public YabcBattleGround getPlayground(int levelNumber, int multX, int multY, LevelLoader levelLoader) {
+        log.debug("PlaygroundManager.getPlayground with parameters " + "levelNumber = [" + levelNumber + "], multX = [" + multX + "], multY = [" + multY + "], levelLoader = [" + levelLoader + "]");
         YabcBattleGround yabcPlayground = new YabcBattleGround(multX, multY);
 
         try {

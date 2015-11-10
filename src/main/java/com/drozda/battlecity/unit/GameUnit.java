@@ -6,7 +6,6 @@ import com.drozda.battlecity.interfaces.CanPause;
 import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.StateFlowModifier;
 import javafx.beans.property.*;
-import javafx.collections.ObservableList;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import org.slf4j.Logger;
@@ -38,7 +37,7 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
     private Map<State, Long> timeInState = new EnumMap<>(State.class);
     private ObjectProperty<State> currentState = new SimpleObjectProperty<>();
     private BooleanProperty pause = new SimpleBooleanProperty();
-    private ListProperty<BonusUnit.BonusType> bonusList = new SimpleListProperty<>();
+
     private List<State> stateFlow = new LinkedList(); //TODO maybe we can use LinkedHashMap??
 
     public GameUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long>
@@ -98,23 +97,6 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
         return pause;
     }
 
-    public ObservableList<BonusUnit.BonusType> getBonusList() {
-        return bonusList.get();
-    }
-
-    public void setBonusList(ObservableList<BonusUnit.BonusType> bonusList) {
-        this.bonusList.set(bonusList);
-    }
-
-    public ListProperty<BonusUnit.BonusType> bonusListProperty() {
-        return bonusList;
-    }
-
-    @Override
-    public State getCurrentState() {
-        return currentState.get();
-    }
-
     @Override
     public String toString() {
         return "GameUnit{" +
@@ -124,17 +106,21 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
                 ", currentState=" + currentState +
                 ", pause=" + pause +
                 ", heartBeats=" + heartBeats +
-                ", bonusList=" + bonusList +
                 ", stateFlow=" + stateFlow +
                 ", stateFlowModifier=" + stateFlowModifier +
                 "} " + super.toString();
+    }
+
+    @Override
+    public State getCurrentState() {
+        return currentState.get();
     }
 
     public enum State {
         CREATING,
         ACTIVE,
         EXPLODING,
-        DEAD;
+        DEAD
     }
 
 
