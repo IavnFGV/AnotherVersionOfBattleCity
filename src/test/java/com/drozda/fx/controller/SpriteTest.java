@@ -48,7 +48,7 @@ public class SpriteTest extends Application {
                 .filter(tileUnit -> tileUnit.getTileType() == TileUnit.TileType.WATER)
                 .findFirst().get();
 
-        brickUnit.setTileState(TileUnit.TileState.STATE_1111);
+        brickUnit.setTileState(TileUnit.TileState.STATE_1001);
 //        waterUnit.setPause(false);
         primaryStage.setScene(scene);
         primaryStage.show();

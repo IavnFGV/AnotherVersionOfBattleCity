@@ -7,10 +7,10 @@ import javafx.scene.image.ImageView;
 /**
  * Created by GFH on 10.11.2015.
  */
-public class SteelFxSprite extends FxSprite<TileUnit> {
-    Rectangle2D[] viewPorts = YabcSprite.TILE_STEEL.viewports;
+public class IceFxSprite extends FxSprite<TileUnit> {
+    Rectangle2D[] viewPorts = YabcSprite.TILE_ICE.viewports;
 
-    public SteelFxSprite(TileUnit gameUnit) {
+    public IceFxSprite(TileUnit gameUnit) {
         super(gameUnit);
         initSprite();
         baseImageView.setViewport(viewPorts[0]);
@@ -23,8 +23,6 @@ public class SteelFxSprite extends FxSprite<TileUnit> {
 
     @Override
     protected Rectangle2D nextSprite(int index) {
-        return viewPorts[0];
+        return null;
     }
-
-
 }

@@ -211,13 +211,9 @@ public class Battle {
             if (gameUnit instanceof TileUnit) {
                 TileUnit tileUnit =
                         ((TileUnit) gameUnit);
-                if ((tileUnit.getTileType() == TileUnit.TileType.WATER) || //TODO REMOVE AFTER IMPLEMENTATION OF ALL  TYPES
-                        (tileUnit.getTileType() == TileUnit.TileType.BRICK) ||
-                        (tileUnit.getTileType() == TileUnit.TileType.STEEL)
-                        ) {
-                    Node node = YabcSprite.getFullSprite(gameUnit);
-                    centerPane.getChildren().add(node);
-                }
+                Node node = YabcSprite.getFullSprite(gameUnit);
+                centerPane.getChildren().add(node);
+
             }
             // ImageView imageView = YabcSprite.getFullSprite(gameUnit);
             //  centerPane.getChildren().add(imageView);

@@ -32,7 +32,8 @@ public enum YabcSprite {
             new Rectangle2D(208, 816, 16, 16),//0101
             new Rectangle2D(224, 816, 16, 16),//1010
     }), TILE_EMPTY,
-    TILE_FOREST, TILE_ICE,
+    TILE_FOREST(new Rectangle2D[]{new Rectangle2D(0, 864, 16, 16)}),
+    TILE_ICE(new Rectangle2D[]{new Rectangle2D(0, 880, 16, 16)}),
     TILE_STEEL(new Rectangle2D[]{new Rectangle2D(0, 832, 16, 16)}),
     TILE_WATER(new Rectangle2D[]{
             new Rectangle2D(0, 848, 16, 16),
@@ -93,13 +94,12 @@ public enum YabcSprite {
             log.debug(tileUnit.getTileType().toString());
             switch (tileUnit.getTileType()) {
 
-
                 case BRICK:
                     return new BrickFxSprite(tileUnit);
                 case FOREST:
-                    break;
+                    return new ForestFxSprite(tileUnit);
                 case ICE:
-                    break;
+                    return new IceFxSprite(tileUnit);
                 case STEEL:
                     return new SteelFxSprite(tileUnit);
                 case WATER:
