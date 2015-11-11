@@ -42,7 +42,9 @@ public class SpriteTest extends Application {
         Battle battle = (Battle) appState.getController();
 
         YabcBattleGround yabcBattleGround = battle.playgroundManager.getPlayground(AppModel.stageNumberForLoading, 2,
-                2, levelLoader, YabcBattleGround.BattleType.SINGLE_PLAYER);
+                2, levelLoader, YabcBattleGround.BattleType.DOUBLE_PLAYER);
+//        YabcBattleGround yabcBattleGround = battle.playgroundManager.getPlayground(AppModel.stageNumberForLoading, 2,
+//                2, YabcBattleGround.BattleType.SINGLE_PLAYER);
         battle.loadPlayground(yabcBattleGround);
         TileUnit brickUnit = yabcBattleGround.getUnitList().stream()
                 .filter(gameUnit -> (gameUnit instanceof TileUnit))
@@ -55,16 +57,24 @@ public class SpriteTest extends Application {
                 .filter(tileUnit -> tileUnit.getTileType() == TileUnit.TileType.WATER)
                 .findFirst().get();
 
-        TankUnit tankUnit = yabcBattleGround.getUnitList().stream()
+        TankUnit firstTank = yabcBattleGround.getUnitList().stream()
                 .filter(gameUnit -> (gameUnit instanceof TankUnit))
                 .map(gameUnit1 -> (TankUnit) gameUnit1)
-                .filter(tankUnit1 -> tankUnit1.getTankType() == TankUnit.TankType.TANK_FIRST_PLAYER)
+                .filter(tankUnit -> tankUnit.getTankType() == TankUnit.TankType.TANK_FIRST_PLAYER)
                 .findFirst().get();
 
+
+        TankUnit secondTank = yabcBattleGround.getUnitList().stream()
+                .filter(gameUnit -> (gameUnit instanceof TankUnit))
+                .map(gameUnit1 -> (TankUnit) gameUnit1)
+                .filter(tankUnit -> tankUnit.getTankType() == TankUnit.TankType.TANK_SECOND_PLAYER)
+                .findFirst().get();
         readyForTest();
-        propertiesEditorController.initPropertyShit(tankUnit);
-        //  tankUnit.setEngineOn(true);
-        //    tankUnit.setStars();
+        //     firstTank.getBonusList().add(BonusUnit.BonusType.HELMET);
+//        propertiesEditorController.initPropertyShit(firstTank);
+        propertiesEditorController.initPropertyShit(secondTank);
+        //  firstTank.setEngineOn(true);
+        //    firstTank.setStars();
 //        brickUnit.setTileState(TileUnit.TileState.STATE_1001);
 //        waterUnit.setPause(false);
         primaryStage.setScene(scene);

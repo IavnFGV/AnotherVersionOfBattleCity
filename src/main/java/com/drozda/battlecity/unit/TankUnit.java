@@ -9,6 +9,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.Map;
 public class TankUnit extends MoveableUnit implements Destroyable {
 
     protected final PositionFixingModifier<MoveableUnit> fixingModifier;
-    protected ListProperty<BonusUnit.BonusType> bonusList = new SimpleListProperty<>();
+    protected ListProperty<BonusUnit.BonusType> bonusList = new SimpleListProperty<>(FXCollections.observableArrayList());
     protected TankType tankType;
     protected IntegerProperty stars = new SimpleIntegerProperty(0);
     protected IntegerProperty lifes = new SimpleIntegerProperty(1);

@@ -16,7 +16,6 @@ public class WaterFxSprite extends FxSprite<TileUnit> {
 
     public WaterFxSprite(TileUnit gameUnit) {
         super(gameUnit);
-
         initSprite();
         allAnimations.play();
     }

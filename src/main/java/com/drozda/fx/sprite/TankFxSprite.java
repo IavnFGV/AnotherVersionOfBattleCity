@@ -13,33 +13,18 @@ import java.util.Map;
 /**
  * Created by GFH on 11.11.2015.
  */
-public class TankFxSprite extends FxSprite<TankUnit> {
+public abstract class TankFxSprite extends FxSprite<TankUnit> {
     private static final Logger log = LoggerFactory.getLogger(TankFxSprite.class);
-    Map<Integer, Rectangle2D[]> viewPorsMap = new HashMap<>();
+    protected Map<Integer, Rectangle2D[]> viewportsMap = new HashMap<>();
+
 
     public TankFxSprite(TankUnit gameUnit) {
         super(gameUnit);
-        viewPorsMap.put(0, YabcSprite.TANK_FIRST_PLAYER_0_STAR.viewports);
-        viewPorsMap.put(1, YabcSprite.TANK_FIRST_PLAYER_1_STAR.viewports);
-        viewPorsMap.put(2, YabcSprite.TANK_FIRST_PLAYER_2_STAR.viewports);
-        viewPorsMap.put(3, YabcSprite.TANK_FIRST_PLAYER_3_STAR.viewports);
-        initSprite();
-        baseImageView.setViewport(nextSprite(0));
-        gameUnit.starsProperty().addListener((observable, oldValue, newValue) -> {
-            baseImageView.setViewport(nextSprite(0));
-        });
-
-        allAnimations.play();
     }
 
     @Override
     protected SpriteAnimation<TankUnit> createAnimation(ImageView imageView) {
         return new BasicTankAnimation(Duration.millis(200), baseImageView);
-    }
-
-    @Override
-    protected Rectangle2D nextSprite(int index) {
-        return viewPorsMap.get(gameUnit.getStars())[index];
     }
 
     protected class BasicTankAnimation extends SpriteAnimation<TankUnit> {
@@ -65,4 +50,5 @@ public class TankFxSprite extends FxSprite<TankUnit> {
             }
         }
     }
+
 }

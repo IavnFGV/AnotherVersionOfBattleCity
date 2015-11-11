@@ -54,15 +54,29 @@ public enum YabcSprite {
     TANK_FIRST_PLAYER_3_STAR(new Rectangle2D[]{
             new Rectangle2D(192, 255, 32, 32),
             new Rectangle2D(224, 255, 32, 32)}),
-    TANK_SECOND_PLAYER, TANK_SECOND_PLAYER_0_STAR, TANK_SECOND_PLAYER_1_STAR, TANK_SECOND_PLAYER_2_STAR,
-    TANK_SECOND_PLAYER_3_STAR, TANK_SECOND_PLAYER_4_STAR,
+    TANK_SECOND_PLAYER,
+    TANK_SECOND_PLAYER_0_STAR(new Rectangle2D[]{
+            new Rectangle2D(0, 287, 32, 32),
+            new Rectangle2D(32, 287, 32, 32)}),
+    TANK_SECOND_PLAYER_1_STAR(new Rectangle2D[]{
+            new Rectangle2D(64, 287, 32, 32),
+            new Rectangle2D(96, 287, 32, 32)}),
+    TANK_SECOND_PLAYER_2_STAR(new Rectangle2D[]{
+            new Rectangle2D(128, 287, 32, 32),
+            new Rectangle2D(160, 287, 32, 32)}),
+    TANK_SECOND_PLAYER_3_STAR(new Rectangle2D[]{
+            new Rectangle2D(192, 287, 32, 32),
+            new Rectangle2D(224, 287, 32, 32)}),
     //enemies
     TANK_SIMPLE_ENEMY, TANK_FAST_ENEMY, TANK_POWER_ENEMY,
     TANK_ARMOR_ENEMY, TANK_ARMOR_ENEMY_4_LIFES_X, TANK_ARMOR_ENEMY_4_LIFES, TANK_ARMOR_ENEMY_3_LIFES,
     TANK_ARMOR_ENEMY_2_LIFES, TANK_ARMOR_ENEMY_1_LIFES,
     TANK_SIMPLE_ENEMY_X, TANK_FAST_ENEMY_X, TANK_POWER_ENEMY_X, TANK_ARMOR_ENEMY_X,
     //bonuses
-    BONUS_HELMET, BONUS_CLOCK, BONUS_SPADE, BONUS_STAR, BONUS_GRENADE, BONUS_TANK, BONUS_GUN,
+    BONUS_HELMET(new Rectangle2D[]{
+            new Rectangle2D(0, 320, 32, 32),
+            new Rectangle2D(32, 320, 32, 32)}), BONUS_CLOCK, BONUS_SPADE, BONUS_STAR, BONUS_GRENADE,
+    BONUS_TANK, BONUS_GUN,
     //bullets
     BULLET_PLAYER, BULLET_ENEMY,
     //special for UI
@@ -125,9 +139,9 @@ public enum YabcSprite {
             switch (tankUnit.getTankType()) {
 
                 case TANK_FIRST_PLAYER:
-                    return new TankFxSprite(tankUnit);
+                    return new PlayerTankFxSprite(tankUnit);
                 case TANK_SECOND_PLAYER:
-                    break;
+                    return new PlayerTankFxSprite(tankUnit);
                 case TANK_SIMPLE_ENEMY:
                     break;
                 case TANK_FAST_ENEMY:

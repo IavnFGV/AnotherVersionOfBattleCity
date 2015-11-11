@@ -99,8 +99,15 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     @Override
     public void start() {
         createFirstPlayer();
+        if (getBattleType() == BattleType.DOUBLE_PLAYER) {
+            createSecondPlayer();
+        }
+    }
 
-        //     if ()
+    private void createSecondPlayer() {
+        TankUnit secondPlayer = new TankUnit(secondPlayerRespawn.getX(), secondPlayerRespawn.getY(), getTankWidth(),
+                getTankHeight(), this, TankUnit.TankType.TANK_SECOND_PLAYER);
+        unitList.add(secondPlayer);
     }
 
     private void createFirstPlayer() {
