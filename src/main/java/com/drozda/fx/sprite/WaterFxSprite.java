@@ -51,7 +51,6 @@ public class WaterFxSprite extends FxSprite<TileUnit> {
                 imageView.setViewport(nextSprite(index));
                 lastIndex = index;
             }
-
         }
     }
 }

@@ -5,16 +5,23 @@ import com.drozda.appflow.AppState;
 import com.drozda.battlecity.loader.LevelLoader;
 import com.drozda.battlecity.loader.TestLoader;
 import com.drozda.battlecity.playground.YabcBattleGround;
+import com.drozda.battlecity.unit.TankUnit;
 import com.drozda.battlecity.unit.TileUnit;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 /**
  * Created by GFH on 10.11.2015.
  */
 public class SpriteTest extends Application {
 
+    static Stage propertiesStage;
+    static PropertiesEditorController propertiesEditorController;
     private static Stage mainStage;
     AppState appState = AppState.Battle;
     LevelLoader levelLoader = new TestLoader();
@@ -35,7 +42,7 @@ public class SpriteTest extends Application {
         Battle battle = (Battle) appState.getController();
 
         YabcBattleGround yabcBattleGround = battle.playgroundManager.getPlayground(AppModel.stageNumberForLoading, 2,
-                2, levelLoader);
+                2, levelLoader, YabcBattleGround.BattleType.SINGLE_PLAYER);
         battle.loadPlayground(yabcBattleGround);
         TileUnit brickUnit = yabcBattleGround.getUnitList().stream()
                 .filter(gameUnit -> (gameUnit instanceof TileUnit))
@@ -48,7 +55,17 @@ public class SpriteTest extends Application {
                 .filter(tileUnit -> tileUnit.getTileType() == TileUnit.TileType.WATER)
                 .findFirst().get();
 
-        brickUnit.setTileState(TileUnit.TileState.STATE_1001);
+        TankUnit tankUnit = yabcBattleGround.getUnitList().stream()
+                .filter(gameUnit -> (gameUnit instanceof TankUnit))
+                .map(gameUnit1 -> (TankUnit) gameUnit1)
+                .filter(tankUnit1 -> tankUnit1.getTankType() == TankUnit.TankType.TANK_FIRST_PLAYER)
+                .findFirst().get();
+
+        readyForTest();
+        propertiesEditorController.initPropertyShit(tankUnit);
+        //  tankUnit.setEngineOn(true);
+        //    tankUnit.setStars();
+//        brickUnit.setTileState(TileUnit.TileState.STATE_1001);
 //        waterUnit.setPause(false);
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -56,4 +73,27 @@ public class SpriteTest extends Application {
 //        Platform.runLater(() -> waterUnit.setCurrentState(GameUnit.State.DEAD));
 
     }
+
+    public static void readyForTest() {
+        propertiesStage = new Stage();
+        propertiesStage.setScene(new Scene(createPropertiesEditorWorld()));
+        propertiesStage.setTitle("Properties Editor");
+        propertiesStage.show();
+    }
+
+    private static Parent createPropertiesEditorWorld() {
+        FXMLLoader loader = new FXMLLoader();
+        Parent root = null;
+        try {
+            root = loader.load(AppModel.class.getResourceAsStream("/com/drozda/fx/fxml/PropertiesEditorController" +
+                    ".fxml"));
+            propertiesEditorController = loader.getController();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return root;
+    }
+
+
 }

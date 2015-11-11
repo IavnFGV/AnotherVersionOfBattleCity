@@ -4,6 +4,7 @@ package com.drozda.appflow;
 import com.drozda.YabcLocalization;
 import com.drozda.appflow.config.AppData;
 import com.drozda.appflow.config.FileAppData;
+import com.drozda.battlecity.playground.YabcBattleGround;
 import com.drozda.fx.controller.BaseApp;
 import com.drozda.fx.controller.PropertiesEditorController;
 import com.drozda.fx.dialog.Dialog;
@@ -45,6 +46,7 @@ public class AppModel {
     //test
     public static PropertiesEditorController propertiesEditorController;
     public static int stageNumberForLoading = 20;
+    public static YabcBattleGround.BattleType battleType = YabcBattleGround.BattleType.SINGLE_PLAYER;
     //  eSingleThreadScheduledExecutor()nw;
     private static String KEY_UNKNOWN_IS_NORMAL = "UNKNOWN_IS_NORMAL";
     private static ScheduledExecutorService service = Executors.newScheduledThreadPool(5);

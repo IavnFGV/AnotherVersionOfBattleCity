@@ -18,10 +18,12 @@ import java.util.Map;
  */
 public abstract class MoveableUnit extends GameUnit implements CanMove {
     private static final Logger log = LoggerFactory.getLogger(MoveableUnit.class);
+    public static long fastSpeed = 8l;
+    public static long normalSpeed = 6l;
     protected final MovingModifier<MoveableUnit> movingModifier;
     protected BooleanProperty engineOn = new SimpleBooleanProperty(false);
     protected ObjectProperty<Direction> direction = new SimpleObjectProperty<>(Direction.UP);
-    private long velocity = 8L;
+    private long velocity;
 
     public MoveableUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long> timeInState, HasGameUnits playground, long velocity) {
         super(minX, minY, width, height, stateFlow, timeInState, playground);
@@ -82,7 +84,7 @@ public abstract class MoveableUnit extends GameUnit implements CanMove {
         UP,
         LEFT,
         DOWN,
-        RIGHT;
+        RIGHT
     }
 
 }

@@ -4,7 +4,6 @@ import com.drozda.appflow.AppModel;
 import com.drozda.battlecity.manager.PlaygroundManager;
 import com.drozda.battlecity.playground.YabcBattleGround;
 import com.drozda.battlecity.unit.GameUnit;
-import com.drozda.battlecity.unit.TileUnit;
 import com.drozda.fx.sprite.YabcSprite;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -200,25 +199,24 @@ public class Battle {
     }
 
     public void startGame() {
-        YabcBattleGround yabcBattleGround = playgroundManager.getPlayground(AppModel.stageNumberForLoading, 2, 2);
+        YabcBattleGround yabcBattleGround = playgroundManager.getPlayground(AppModel.stageNumberForLoading, 2, 2,
+                AppModel.battleType);
         loadPlayground(yabcBattleGround);
         curYabcPlayground = yabcBattleGround;
     }
 
     public void loadPlayground(YabcBattleGround battleGround) {
-        //Pane pane = new Pane();
         for (GameUnit gameUnit : battleGround.getUnitList()) {
-            if (gameUnit instanceof TileUnit) {
-                TileUnit tileUnit =
-                        ((TileUnit) gameUnit);
+            //  if (gameUnit instanceof TileUnit) {
                 Node node = YabcSprite.getFullSprite(gameUnit);
                 centerPane.getChildren().add(node);
-
-            }
-            // ImageView imageView = YabcSprite.getFullSprite(gameUnit);
-            //  centerPane.getChildren().add(imageView);
+            //  }
         }
-        // borderPane.getCenter().
+        battleGround.battleTypeProperty().addListener((observable, oldValue, newValue) -> setSingleOrDouble
+                (newValue == YabcBattleGround.BattleType.SINGLE_PLAYER ? 1 : 2));
+        setSingleOrDouble
+                (battleGround.getBattleType() == YabcBattleGround.BattleType.SINGLE_PLAYER ? 1 : 2);
+
     }
 
 }

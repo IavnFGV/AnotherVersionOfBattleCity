@@ -2,6 +2,7 @@ package com.drozda.fx.sprite;
 
 import com.drozda.battlecity.StaticServices;
 import com.drozda.battlecity.unit.GameUnit;
+import com.drozda.battlecity.unit.TankUnit;
 import com.drozda.battlecity.unit.TileUnit;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
@@ -38,10 +39,23 @@ public enum YabcSprite {
     TILE_WATER(new Rectangle2D[]{
             new Rectangle2D(0, 848, 16, 16),
             new Rectangle2D(16, 848, 16, 16),
-            new Rectangle2D(32, 848, 16, 16)}),//TILE_WATER_1,TILE_WATER_2,TILE_WATER_3,
+            new Rectangle2D(32, 848, 16, 16)}),
     //players
-    TANK_FIRST_PLAYER, TANK_FIRST_PLAYER_1_STAR, TANK_FIRST_PLAYER_2_STAR, TANK_FIRST_PLAYER_3_STAR, TANK_FIRST_PLAYER_4_STAR,
-    TANK_SECOND_PLAYER, TANK_SECOND_PLAYER_1_STAR, TANK_SECOND_PLAYER_2_STAR, TANK_SECOND_PLAYER_3_STAR, TANK_SECOND_PLAYER_4_STAR,
+    TANK_FIRST_PLAYER,
+    TANK_FIRST_PLAYER_0_STAR(new Rectangle2D[]{
+            new Rectangle2D(0, 255, 32, 32),
+            new Rectangle2D(32, 255, 32, 32)}),
+    TANK_FIRST_PLAYER_1_STAR(new Rectangle2D[]{
+            new Rectangle2D(64, 255, 32, 32),
+            new Rectangle2D(96, 255, 32, 32)}),
+    TANK_FIRST_PLAYER_2_STAR(new Rectangle2D[]{
+            new Rectangle2D(128, 255, 32, 32),
+            new Rectangle2D(160, 255, 32, 32)}),
+    TANK_FIRST_PLAYER_3_STAR(new Rectangle2D[]{
+            new Rectangle2D(192, 255, 32, 32),
+            new Rectangle2D(224, 255, 32, 32)}),
+    TANK_SECOND_PLAYER, TANK_SECOND_PLAYER_0_STAR, TANK_SECOND_PLAYER_1_STAR, TANK_SECOND_PLAYER_2_STAR,
+    TANK_SECOND_PLAYER_3_STAR, TANK_SECOND_PLAYER_4_STAR,
     //enemies
     TANK_SIMPLE_ENEMY, TANK_FAST_ENEMY, TANK_POWER_ENEMY,
     TANK_ARMOR_ENEMY, TANK_ARMOR_ENEMY_4_LIFES_X, TANK_ARMOR_ENEMY_4_LIFES, TANK_ARMOR_ENEMY_3_LIFES,
@@ -93,7 +107,6 @@ public enum YabcSprite {
             TileUnit tileUnit = (TileUnit) gameUnit;
             log.debug(tileUnit.getTileType().toString());
             switch (tileUnit.getTileType()) {
-
                 case BRICK:
                     return new BrickFxSprite(tileUnit);
                 case FOREST:
@@ -105,6 +118,34 @@ public enum YabcSprite {
                 case WATER:
                     return new WaterFxSprite(tileUnit);
             }
+        }
+        if (gameUnit instanceof TankUnit) {
+            TankUnit tankUnit = (TankUnit) gameUnit;
+            log.debug(tankUnit.toString());
+            switch (tankUnit.getTankType()) {
+
+                case TANK_FIRST_PLAYER:
+                    return new TankFxSprite(tankUnit);
+                case TANK_SECOND_PLAYER:
+                    break;
+                case TANK_SIMPLE_ENEMY:
+                    break;
+                case TANK_FAST_ENEMY:
+                    break;
+                case TANK_POWER_ENEMY:
+                    break;
+                case TANK_ARMOR_ENEMY:
+                    break;
+                case TANK_SIMPLE_ENEMY_X:
+                    break;
+                case TANK_FAST_ENEMY_X:
+                    break;
+                case TANK_POWER_ENEMY_X:
+                    break;
+                case TANK_ARMOR_ENEMY_X:
+                    break;
+            }
+
         }
         return getDigit(0); //  STUB
     }
