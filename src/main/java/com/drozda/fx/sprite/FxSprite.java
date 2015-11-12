@@ -2,10 +2,7 @@ package com.drozda.fx.sprite;
 
 import com.drozda.battlecity.unit.GameUnit;
 import javafx.animation.Interpolator;
-import javafx.animation.ParallelTransition;
 import javafx.animation.Transition;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
@@ -13,44 +10,33 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Created by GFH on 18.10.2015.
  */
 public abstract class FxSprite<T extends GameUnit> extends Group {
 
-    public static Image sprite = YabcSprite.baseImage;
-    protected final List<SpriteAnimation<T>> animations = new ArrayList<>();
-    protected final ParallelTransition allAnimations = new ParallelTransition();
+    public static Image baseImage = YabcSprite.baseImage;
+    public static String NO_ANIMATION = "NO_ANIMATION";
+    //    protected final List<SpriteAnimation<T>> animations = new ArrayList<>();
+    //  protected final ParallelTransition allAnimations = new ParallelTransition();
     protected final T gameUnit;
-    protected final List<ImageView> imageViews = new ArrayList<>();
-    protected ImageView baseImageView = new ImageView(sprite);
-    BooleanBinding playBinding;
-
-    {
-        imageViews.add(baseImageView);
-    }
+    //    protected final List<ImageView> imageViews = new ArrayList<>();
+    //    protected ImageView baseImageView = new ImageView(baseImage);
+    protected Set<SpriteAnimation<T>> animationSet = new LinkedHashSet<>();
 
     public FxSprite(T gameUnit) {
         this.gameUnit = gameUnit;
-        gameUnit.boundsProperty().addListener((observable, oldValue, newValue) -> {
-            baseImageView.xProperty().setValue(newValue.getMinX());
-            baseImageView.yProperty().setValue(newValue.getMinY());
-        });
-        baseImageView.xProperty().setValue(gameUnit.getBounds().getMinX());
-        baseImageView.yProperty().setValue(gameUnit.getBounds().getMinY());
-        Transition transition = createAnimation(baseImageView);
-        if (transition != null) {
-            animations.add(createAnimation(baseImageView));
-        }
+
         gameUnit.pauseProperty().addListener((observable, oldValue, newValue) -> {
+            // if (allAnimations.get)
             if (!oldValue && newValue) {
-                allAnimations.pause();
+                animationSet.forEach(Transition::pause);
             }
             if (oldValue && !newValue) {
-                allAnimations.play();
+                animationSet.forEach(Transition::play);
             }
         });
         gameUnit.currentStateProperty().addListener((observable, oldValue, newValue) -> {
@@ -71,40 +57,62 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
                     }
                 }
         );
-        playBinding = createPlayBinding();
+        initSprite();
     }
 
-    protected abstract SpriteAnimation<T> createAnimation(ImageView imageView);
 
     protected void toCreatingState() {
+        SpriteAnimation helmetAnimation = animationSet.stream().filter(tSpriteAnimation -> tSpriteAnimation
+                .getAnimationId().equals("HELMET_TANK_ANIMATION")).findFirst().orElse(null);
+        //helmetAnimation.stop();
+        helmetAnimation.imageView.setVisible(true);
     }
 
     protected void toActiveState() {
+        SpriteAnimation helmetAnimation = animationSet.stream().filter(tSpriteAnimation -> tSpriteAnimation
+                .getAnimationId().equals("HELMET_TANK_ANIMATION")).findFirst().orElse(null);
+        helmetAnimation.imageView.setVisible(false);
+
     }
 
     protected void toExplodingState() {
     }
 
     protected void toDeadState() {
-        allAnimations.stop();
+        //allAnimations.stop();
         ((Pane) this.getParent()).getChildren().removeAll(this); // todo REPLACE AS Consumer???
     }
 
-    protected BooleanBinding createPlayBinding() {
-        return Bindings.createBooleanBinding(() ->
-                gameUnit.isPause(), gameUnit.pauseProperty());
-    }
-
+    /**
+     * Need to be overridden in ancestors and call after preparing animationSet
+     */
     protected void initSprite() {
-        this.getChildren().addAll(imageViews);
-        allAnimations.getChildren().addAll(animations);
+        animationSet.stream().forEach(tSpriteAnimation -> {
+            this.getChildren().add(tSpriteAnimation.imageView);
+            tSpriteAnimation.imageView.toBack();
+            //   allAnimations.getChildren().add(tSpriteAnimation);
+        });
     }
 
-    protected abstract Rectangle2D nextSprite(int index);
+    protected Rectangle2D nextViewport(String animationId, int index) {
+        throw new RuntimeException("Something wrong! In cant be happened in properly animation hierarchy");
+    }
 
-//    public Transition getAnimation() {
-//        return animation;
-//    }
+    protected void bindImageViewToGameUnit(ImageView imageView, double dx, double dy) {
+        gameUnit.boundsProperty().addListener((observable, oldValue, newValue) -> {
+            imageView.xProperty().setValue(newValue.getMinX() + dx);
+            imageView.yProperty().setValue(newValue.getMinY() + dy);
+        });
+        imageView.xProperty().setValue(gameUnit.getBounds().getMinX() + dx);
+        imageView.yProperty().setValue(gameUnit.getBounds().getMinY() + dy);
+    }
+
+    public enum AnimationType {
+        ANIMATION_CREATING,
+        ANIMATION_ACTIVE,
+        ANIMATION_EXPLODING,
+        ANIMATION_HELMET
+    }
 
     protected abstract class SpriteAnimation<T extends GameUnit> extends Transition {
 
@@ -118,6 +126,12 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
             setInterpolator(Interpolator.LINEAR);
             this.imageView = imageView;
         }
+
+        public SpriteAnimation(ImageView imageView) { // for case when we dont need animation at all
+            this.imageView = imageView;
+        }
+
+        protected abstract String getAnimationId();
 
     }
 }

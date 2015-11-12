@@ -79,6 +79,18 @@ public enum YabcSprite {
     BONUS_TANK, BONUS_GUN,
     //bullets
     BULLET_PLAYER, BULLET_ENEMY,
+    EXPLOSION_SMALL(new Rectangle2D[]{
+            new Rectangle2D(144, 687, 32, 32),
+            new Rectangle2D(207, 687, 32, 32),
+            new Rectangle2D(269, 687, 32, 32)
+    }),
+    EXPLOSION_BIG(new Rectangle2D[]{
+            new Rectangle2D(0, 672, 64, 64),
+            new Rectangle2D(64, 672, 64, 64),
+            new Rectangle2D(128, 687, 32, 32),
+            new Rectangle2D(192, 687, 32, 32),
+            new Rectangle2D(256, 687, 32, 32)
+    }),
     //special for UI
     SMALL_ENEMY_TANK_FOR_COUNTER(new Rectangle2D[]{new Rectangle2D(0, 800, 16, 16)}),
     DIGIT_0(new Rectangle2D[]{new Rectangle2D(0, 768, 16, 16)}),

@@ -75,7 +75,7 @@ public class SpriteTest extends Application {
         propertiesEditorController.initPropertyShit(secondTank);
         //  firstTank.setEngineOn(true);
         //    firstTank.setStars();
-//        brickUnit.setTileState(TileUnit.TileState.STATE_1001);
+        brickUnit.setTileState(TileUnit.TileState.STATE_1001);
 //        waterUnit.setPause(false);
         primaryStage.setScene(scene);
         primaryStage.show();

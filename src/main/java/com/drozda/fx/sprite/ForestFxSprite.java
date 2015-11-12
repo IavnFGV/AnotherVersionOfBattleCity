@@ -9,21 +9,29 @@ import javafx.scene.image.ImageView;
  */
 public class ForestFxSprite extends FxSprite<TileUnit> {
 
-    Rectangle2D[] viewPorts = YabcSprite.TILE_FOREST.viewports;
+    static Rectangle2D[] viewPorts = YabcSprite.TILE_FOREST.viewports;
 
     public ForestFxSprite(TileUnit gameUnit) {
         super(gameUnit);
-        initSprite();
-        baseImageView.setViewport(viewPorts[0]);
     }
 
     @Override
-    protected SpriteAnimation<TileUnit> createAnimation(ImageView imageView) {
-        return null;
-    }
+    protected void initSprite() {
+        ImageView imageView = new ImageView(baseImage);
+        SpriteAnimation spriteAnimation = new SpriteAnimation(imageView) {
+            @Override
+            protected String getAnimationId() {
+                return NO_ANIMATION;
+            }
 
-    @Override
-    protected Rectangle2D nextSprite(int index) {
-        return null;
+            @Override
+            protected void interpolate(double frac) {
+
+            }
+        };
+        bindImageViewToGameUnit(imageView, 0, 0);
+        imageView.setViewport(viewPorts[0]);
+        animationSet.add(spriteAnimation);
+        super.initSprite();
     }
 }

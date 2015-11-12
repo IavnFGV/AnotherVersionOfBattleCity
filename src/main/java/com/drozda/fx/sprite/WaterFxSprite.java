@@ -1,7 +1,7 @@
 package com.drozda.fx.sprite;
 
 import com.drozda.battlecity.unit.TileUnit;
-import javafx.animation.Animation;
+import javafx.animation.Transition;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
@@ -11,45 +11,57 @@ import javafx.util.Duration;
  */
 public class WaterFxSprite extends FxSprite<TileUnit> {
 
-    Rectangle2D[] viewPorts = YabcSprite.TILE_WATER.viewports;
+    public static String BASIC_WATER_ANIMATION = "BASIC_WATER_ANIMATION";
+    static Rectangle2D[] viewPorts = YabcSprite.TILE_WATER.viewports;
 
 
     public WaterFxSprite(TileUnit gameUnit) {
         super(gameUnit);
-        initSprite();
-        allAnimations.play();
+
+        animationSet.forEach(Transition::play);
+        //allAnimations.play();
     }
 
     @Override
-    protected SpriteAnimation<TileUnit> createAnimation(ImageView imageView) {
-        return new WaterAnimation(Duration.seconds(1), 3,
-                Animation.INDEFINITE, imageView);
+    protected void initSprite() {
+        ImageView basicImageView = new ImageView(baseImage);
+        WaterAnimation waterAnimation = new WaterAnimation(Duration.millis(500), basicImageView);
+        bindImageViewToGameUnit(basicImageView, 0, 0);
+        basicImageView.setViewport(nextViewport(waterAnimation.getAnimationId(), 0));
+        animationSet.add(waterAnimation);
+        super.initSprite();
     }
 
     @Override
-    protected Rectangle2D nextSprite(int index) {
-
-        return viewPorts[index];
+    protected Rectangle2D nextViewport(String animationId, int index) {
+        if (animationId.equals(BASIC_WATER_ANIMATION)) {
+            return viewPorts[index];
+        }
+        return super.nextViewport(animationId, index);
     }
 
     protected class WaterAnimation extends SpriteAnimation<TileUnit> {
 
-        private int count;
+        private int count = 3;
         private int lastIndex;
 
-        public WaterAnimation(Duration duration, int count, int cycleCount, ImageView imageView) {
+        public WaterAnimation(Duration duration, ImageView imageView) {
             super(duration, imageView);
-            this.count = count;
-            setCycleCount(cycleCount);
+            setCycleCount(INDEFINITE);
         }
 
         @Override
         protected void interpolate(double k) {
             final int index = Math.min((int) Math.floor(k * count), count - 1);
             if (index != lastIndex) {
-                imageView.setViewport(nextSprite(index));
+                imageView.setViewport(nextViewport(getAnimationId(), index));
                 lastIndex = index;
             }
+        }
+
+        @Override
+        protected String getAnimationId() {
+            return BASIC_WATER_ANIMATION;
         }
     }
 }
