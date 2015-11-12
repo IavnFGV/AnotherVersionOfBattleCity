@@ -27,8 +27,8 @@ public class ExplodingFxSprite<T extends GameUnit> extends FxSprite<T> {
     protected void initSprite() {
         SpriteAnimation basicAnimation = animationSet.stream().
                 filter(moveableUnitSpriteAnimation ->
-                        moveableUnitSpriteAnimation.getAnimationId().
-                                equals(EXPLODING_ANIMATION)).findAny().orElse(null);
+                        moveableUnitSpriteAnimation.getAnimationType().
+                                equals(AnimationType.ANIMATION_EXPLODING)).findAny().orElse(null);
         if (basicAnimation == null) {
             if (gameUnit instanceof BulletUnit) {
                 initSmallExplosionAnimation();
@@ -44,44 +44,59 @@ public class ExplodingFxSprite<T extends GameUnit> extends FxSprite<T> {
 
     protected void initSmallExplosionAnimation() {
         ImageView imageView = new ImageView(baseImage);
-        ImageView basicImageView = new ImageView(baseImage);
-        SmallExplosionAnimation smallExplosionAnimation = new SmallExplosionAnimation(Duration.millis(gameUnit
-                .getTimeInState(GameUnit.State.EXPLODING) / 1000), imageView);
-        bindImageViewToGameUnit(basicImageView, 0, 0);
-        basicImageView.setViewport(nextViewport(smallExplosionAnimation.getAnimationId(), 0));
-
+        ExplosionAnimation smallExplosionAnimation = new ExplosionAnimation(Duration.millis(gameUnit
+                .getTimeInState(GameUnit.State.EXPLODING) / 1000_000), explosionSmallViewports.length, imageView);
+        bindImageViewToGameUnit(imageView, -12, -12);
+        imageView.setViewport(nextViewport(smallExplosionAnimation.getAnimationType(), 0));
+        imageView.setVisible(false);
+        animationSet.add(smallExplosionAnimation);
     }
 
     protected void initBigExplosionAnimation() {
-
+        ImageView imageView = new ImageView(baseImage);
+        ExplosionAnimation bigExplosionAnimation = new ExplosionAnimation(Duration.millis(gameUnit
+                .getTimeInState(GameUnit.State.EXPLODING) / 1000_000), explosionBigViewports.length, imageView);
+        bindImageViewToGameUnit(imageView, -16, -16);
+        imageView.setViewport(nextViewport(bigExplosionAnimation.getAnimationType(), 0));
+        imageView.setVisible(false);
+        animationSet.add(bigExplosionAnimation);
     }
 
-    protected class SmallExplosionAnimation extends SpriteAnimation<T> {
+    @Override
+    protected Rectangle2D nextViewport(AnimationType animationType, int index) {
+        if (gameUnit instanceof BulletUnit) {
+            return explosionSmallViewports[index];
+        }
+        if ((gameUnit instanceof TankUnit) || (gameUnit instanceof EagleBaseUnit)) {
+            return explosionBigViewports[index];
+        }
+        return super.nextViewport(animationType, index);
+    }
 
-        private int count = explosionSmallViewports.length;
+    protected class ExplosionAnimation extends SpriteAnimation<T> {
+
+        private int count;
         private int lastIndex;
 
-        public SmallExplosionAnimation(Duration duration, ImageView imageView) {
+        public ExplosionAnimation(Duration duration, int count, ImageView imageView) {
             super(duration, imageView);
+            setCycleCount(1);
+            this.count = count;
         }
 
         @Override
         protected void interpolate(double k) {
+            if (!imageView.isVisible()) return;
             final int index = Math.min((int) Math.floor(k * count), count - 1);
-            if (gameUnit.getCurrentState() == GameUnit.State.EXPLODING) {
-                imageView.setVisible(true);
-                if (index != lastIndex) {
-                    imageView.setViewport(nextViewport(getAnimationId(), index));
-                    lastIndex = index;
-                }
-            } else {
-                imageView.setVisible(false);
+            if (index != lastIndex) {
+                imageView.setViewport(nextViewport(getAnimationType(), index));
+                lastIndex = index;
             }
         }
 
         @Override
-        protected String getAnimationId() {
-            return EXPLODING_ANIMATION;
+        protected AnimationType getAnimationType() {
+            return AnimationType.ANIMATION_EXPLODING;
         }
     }
 

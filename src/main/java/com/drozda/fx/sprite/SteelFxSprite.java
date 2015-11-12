@@ -20,8 +20,8 @@ public class SteelFxSprite extends FxSprite<TileUnit> {
         imageView.setViewport(viewPorts[0]);
         SpriteAnimation spriteAnimation = new SpriteAnimation(imageView) {
             @Override
-            protected String getAnimationId() {
-                return NO_ANIMATION;
+            protected AnimationType getAnimationType() {
+                return AnimationType.ANIMATION_ACTIVE;
             }
 
             @Override
@@ -35,7 +35,7 @@ public class SteelFxSprite extends FxSprite<TileUnit> {
     }
 
     @Override
-    protected Rectangle2D nextViewport(String animationId, int index) {
+    protected Rectangle2D nextViewport(AnimationType animationType, int index) {
         return null;
     }
 }

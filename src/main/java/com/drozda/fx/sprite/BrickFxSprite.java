@@ -24,8 +24,8 @@ public class BrickFxSprite extends FxSprite<TileUnit> {
         bindImageViewToGameUnit(imageView, 0, 0);
         SpriteAnimation brickAnimation = new SpriteAnimation(imageView) {
             @Override
-            protected String getAnimationId() {
-                return NO_ANIMATION;
+            protected AnimationType getAnimationType() {
+                return AnimationType.ANIMATION_ACTIVE;
             }
 
             @Override

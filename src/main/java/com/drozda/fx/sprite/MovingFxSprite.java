@@ -20,8 +20,8 @@ public abstract class MovingFxSprite<T extends MoveableUnit> extends ExplodingFx
         SpriteAnimation basicAnimation =
                 animationSet.stream().
                         filter(moveableUnitSpriteAnimation ->
-                                moveableUnitSpriteAnimation.getAnimationId().
-                                        equals(BASIC_MOVING_ANIMATION)).findAny().orElse(null);
+                                moveableUnitSpriteAnimation.getAnimationType().
+                                        equals(AnimationType.ANIMATION_ACTIVE)).findAny().orElse(null);
         if (basicAnimation == null) {
             throw new RuntimeException("Something wrong! BASIC_MOVING_ANIMATION MUST be in set till this moment!");
         }

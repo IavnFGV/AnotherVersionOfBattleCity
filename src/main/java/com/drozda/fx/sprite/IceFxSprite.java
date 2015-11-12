@@ -20,8 +20,8 @@ public class IceFxSprite extends FxSprite<TileUnit> {
         basicImageView.setViewport(viewPorts[0]);
         SpriteAnimation spriteAnimation = new SpriteAnimation(basicImageView) {
             @Override
-            protected String getAnimationId() {
-                return NO_ANIMATION;
+            protected AnimationType getAnimationType() {
+                return AnimationType.ANIMATION_ACTIVE;
             }
 
             @Override

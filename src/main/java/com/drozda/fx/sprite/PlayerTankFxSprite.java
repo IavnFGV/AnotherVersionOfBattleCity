@@ -1,7 +1,9 @@
 package com.drozda.fx.sprite;
 
+import com.drozda.battlecity.unit.BonusUnit;
 import com.drozda.battlecity.unit.TankUnit;
 import javafx.animation.Transition;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
@@ -14,7 +16,7 @@ import java.util.Map;
 /**
  * Created by GFH on 11.11.2015.
  */
-public class PlayerTankFxSprite extends MovingFxSprite<TankUnit> {
+public class PlayerTankFxSprite extends TankFxSprite {
     private static final Logger log = LoggerFactory.getLogger(PlayerTankFxSprite.class);
     public static String HELMET_TANK_ANIMATION = "HELMET_TANK_ANIMATION";
     static Rectangle2D[] helmetViewports = YabcSprite.BONUS_HELMET.viewports;
@@ -56,36 +58,68 @@ public class PlayerTankFxSprite extends MovingFxSprite<TankUnit> {
         ImageView basicImageView = new ImageView(baseImage);
         BasicTankMoveAnimation basicTankMoveAnimation = new BasicTankMoveAnimation(Duration.millis(200), basicImageView);
         bindImageViewToGameUnit(basicImageView, 0, 0);
-        basicImageView.setViewport(nextViewport(basicTankMoveAnimation.getAnimationId(), 0));
-
+        basicImageView.setViewport(nextViewport(basicTankMoveAnimation.getAnimationType(), 0));
 
         gameUnit.starsProperty().addListener((observable, oldValue, newValue) -> {
-            basicImageView.setViewport(nextViewport(basicTankMoveAnimation.getAnimationId(), 0));
+            basicImageView.setViewport(nextViewport(basicTankMoveAnimation.getAnimationType(), 0));
         });
         ImageView helmetImageView = new ImageView(baseImage);
+        helmetImageView.setVisible(false);
         HelmetAnimation helmetAnimation = new HelmetAnimation(Duration.millis(100), helmetImageView);
         bindImageViewToGameUnit(helmetImageView, 0, 0);
-        helmetImageView.setViewport(nextViewport(helmetAnimation.getAnimationId(), 0));
+        helmetImageView.setViewport(nextViewport(helmetAnimation.getAnimationType(), 0));
+
+        gameUnit.getBonusList().addListener(
+                new ListChangeListener<BonusUnit.BonusType>() {
+                    @Override
+                    public void onChanged(Change<? extends BonusUnit.BonusType> c) {
+                        while (c.next()) {
+                            if (c.wasPermutated()) {
+                                for (int i = c.getFrom(); i < c.getTo(); ++i) {
+                                    //permutate
+                                }
+                            } else if (c.wasUpdated()) {
+                                //update item
+                            } else {
+                                for (BonusUnit.BonusType remitem : c.getRemoved()) {
+                                    if (remitem == BonusUnit.BonusType.HELMET) {
+                                        turnOffAnimation(AnimationType.ANIMATION_HELMET);
+                                    }
+                                }
+                                for (BonusUnit.BonusType additem : c.getAddedSubList()) {
+                                    if (additem == BonusUnit.BonusType.HELMET) {
+                                        turnOnAnimation(AnimationType.ANIMATION_HELMET);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+        );
+
         animationSet.add(helmetAnimation);
         animationSet.add(basicTankMoveAnimation);
-        super.initSprite();
+        super.
+
+                initSprite();
     }
 
     @Override
-    protected Rectangle2D nextViewport(String animationId, int index) {
-        if (animationId.equals(BASIC_MOVING_ANIMATION)) {
+    protected Rectangle2D nextViewport(AnimationType animationType, int index) {
+        if (animationType.equals(AnimationType.ANIMATION_ACTIVE)) {
             return viewportsMap.get(gameUnit.getStars())[index];
         }
-        if (animationId.equals(HELMET_TANK_ANIMATION)) {
+        if (animationType.equals(AnimationType.ANIMATION_HELMET)) {
             return helmetViewports[index];
         }
-        return super.nextViewport(animationId, index);
+        return super.nextViewport(animationType, index);
     }
 
     protected class HelmetAnimation extends SpriteAnimation<TankUnit> {
 
         private int count = 2;
         private int lastIndex;
+
         public HelmetAnimation(Duration duration, ImageView imageView) {
             super(duration, imageView);
             setCycleCount(INDEFINITE);
@@ -96,7 +130,7 @@ public class PlayerTankFxSprite extends MovingFxSprite<TankUnit> {
             if (imageView.isVisible()) {
                 final int index = Math.min((int) Math.floor(k * count), count - 1);
                 if (index != lastIndex) {
-                    imageView.setViewport(nextViewport(getAnimationId(), index));
+                    imageView.setViewport(nextViewport(getAnimationType(), index));
                     lastIndex = index;
                 }
 
@@ -104,20 +138,19 @@ public class PlayerTankFxSprite extends MovingFxSprite<TankUnit> {
         }
 
         @Override
-        protected String getAnimationId() {
-            return HELMET_TANK_ANIMATION;
+        protected AnimationType getAnimationType() {
+            return AnimationType.ANIMATION_HELMET;
         }
     }
 
     protected class BasicTankMoveAnimation extends SpriteAnimation<TankUnit> {
         private int count = 2;
+        private int lastIndex;
 
         @Override
-        protected String getAnimationId() {
-            return BASIC_MOVING_ANIMATION;
+        protected AnimationType getAnimationType() {
+            return AnimationType.ANIMATION_ACTIVE;
         }
-
-        private int lastIndex;
 
         public BasicTankMoveAnimation(
                 Duration duration,
@@ -133,7 +166,7 @@ public class PlayerTankFxSprite extends MovingFxSprite<TankUnit> {
         protected void interpolate(double k) {
             final int index = Math.min((int) Math.floor(k * count), count - 1);
             if ((index != lastIndex) && (gameUnit.getEngineOn())) {
-                imageView.setViewport(nextViewport(getAnimationId(), index));
+                imageView.setViewport(nextViewport(getAnimationType(), index));
                 lastIndex = index;
             }
         }

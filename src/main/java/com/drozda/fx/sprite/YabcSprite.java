@@ -80,29 +80,95 @@ public enum YabcSprite {
     //bullets
     BULLET_PLAYER, BULLET_ENEMY,
     EXPLOSION_SMALL(new Rectangle2D[]{
-            new Rectangle2D(144, 687, 32, 32),
+            new Rectangle2D(269, 687, 32, 32),
             new Rectangle2D(207, 687, 32, 32),
-            new Rectangle2D(269, 687, 32, 32)
+            new Rectangle2D(144, 687, 32, 32),
     }),
     EXPLOSION_BIG(new Rectangle2D[]{
-            new Rectangle2D(0, 672, 64, 64),
+            new Rectangle2D(256, 672, 64, 64),
+            new Rectangle2D(192, 672, 64, 64),
+            new Rectangle2D(128, 672, 64, 64),
             new Rectangle2D(64, 672, 64, 64),
-            new Rectangle2D(128, 687, 32, 32),
-            new Rectangle2D(192, 687, 32, 32),
-            new Rectangle2D(256, 687, 32, 32)
+            new Rectangle2D(0, 672, 64, 64)
+    }),
+    CREATING(new Rectangle2D[]{
+            new Rectangle2D(0, 384, 32, 32),
+            new Rectangle2D(32, 384, 32, 32),
+            new Rectangle2D(64, 384, 32, 32),
+            new Rectangle2D(96, 384, 32, 32),
+            new Rectangle2D(128, 384, 32, 32),
+            new Rectangle2D(160, 384, 32, 32),
+            new Rectangle2D(192, 384, 32, 32),
+            new Rectangle2D(224, 384, 32, 32),
+            new Rectangle2D(256, 384, 32, 32),
+            new Rectangle2D(288, 384, 32, 32)
     }),
     //special for UI
-    SMALL_ENEMY_TANK_FOR_COUNTER(new Rectangle2D[]{new Rectangle2D(0, 800, 16, 16)}),
-    DIGIT_0(new Rectangle2D[]{new Rectangle2D(0, 768, 16, 16)}),
-    DIGIT_1(new Rectangle2D[]{new Rectangle2D(16, 768, 16, 16)}),
-    DIGIT_2(new Rectangle2D[]{new Rectangle2D(32, 768, 16, 16)}),
-    DIGIT_3(new Rectangle2D[]{new Rectangle2D(48, 768, 16, 16)}),
-    DIGIT_4(new Rectangle2D[]{new Rectangle2D(64, 768, 16, 16)}),
-    DIGIT_5(new Rectangle2D[]{new Rectangle2D(0, 784, 16, 16)}),
-    DIGIT_6(new Rectangle2D[]{new Rectangle2D(16, 784, 16, 16)}),
-    DIGIT_7(new Rectangle2D[]{new Rectangle2D(32, 784, 16, 16)}),
-    DIGIT_8(new Rectangle2D[]{new Rectangle2D(48, 784, 16, 16)}),
-    DIGIT_9(new Rectangle2D[]{new Rectangle2D(64, 784, 16, 16)});
+    SMALL_ENEMY_TANK_FOR_COUNTER(new Rectangle2D[]{
+            new Rectangle2D(0, 800, 16, 16)
+    }
+
+    ),
+
+    DIGIT_0(new Rectangle2D[]{
+            new Rectangle2D(0, 768, 16, 16)
+    }
+
+    ),
+
+    DIGIT_1(new Rectangle2D[]{
+            new Rectangle2D(16, 768, 16, 16)
+    }
+
+    ),
+
+    DIGIT_2(new Rectangle2D[]{
+            new Rectangle2D(32, 768, 16, 16)
+    }
+
+    ),
+
+    DIGIT_3(new Rectangle2D[]{
+            new Rectangle2D(48, 768, 16, 16)
+    }
+
+    ),
+
+    DIGIT_4(new Rectangle2D[]{
+            new Rectangle2D(64, 768, 16, 16)
+    }
+
+    ),
+
+    DIGIT_5(new Rectangle2D[]{
+            new Rectangle2D(0, 784, 16, 16)
+    }
+
+    ),
+
+    DIGIT_6(new Rectangle2D[]{
+            new Rectangle2D(16, 784, 16, 16)
+    }
+
+    ),
+
+    DIGIT_7(new Rectangle2D[]{
+            new Rectangle2D(32, 784, 16, 16)
+    }
+
+    ),
+
+    DIGIT_8(new Rectangle2D[]{
+            new Rectangle2D(48, 784, 16, 16)
+    }
+
+    ),
+
+    DIGIT_9(new Rectangle2D[]{
+            new Rectangle2D(64, 784, 16, 16)
+    }
+
+    );
     protected static final Logger log = LoggerFactory.getLogger(YabcSprite.class);
     public static Image baseImage = new Image(YabcSprite.class.getResource("BattleCity.png").toExternalForm());
     protected Rectangle2D[] viewports;

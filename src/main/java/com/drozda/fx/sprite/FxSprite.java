@@ -7,7 +7,6 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 import java.util.LinkedHashSet;
@@ -31,7 +30,6 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
         this.gameUnit = gameUnit;
 
         gameUnit.pauseProperty().addListener((observable, oldValue, newValue) -> {
-            // if (allAnimations.get)
             if (!oldValue && newValue) {
                 animationSet.forEach(Transition::pause);
             }
@@ -40,21 +38,7 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
             }
         });
         gameUnit.currentStateProperty().addListener((observable, oldValue, newValue) -> {
-                    switch (newValue) {
-
-                        case CREATING:
-                            toCreatingState();
-                            break;
-                        case ACTIVE:
-                            toActiveState();
-                            break;
-                        case EXPLODING:
-                            toExplodingState();
-                            break;
-                        case DEAD:
-                            toDeadState();
-                            break;
-                    }
+                    handleCurrentStateChange(newValue);
                 }
         );
         initSprite();
@@ -62,25 +46,25 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
 
 
     protected void toCreatingState() {
-        SpriteAnimation helmetAnimation = animationSet.stream().filter(tSpriteAnimation -> tSpriteAnimation
-                .getAnimationId().equals("HELMET_TANK_ANIMATION")).findFirst().orElse(null);
-        //helmetAnimation.stop();
-        helmetAnimation.imageView.setVisible(true);
+        turnOnAnimation(AnimationType.ANIMATION_CREATING);
+        turnOffAnimation(AnimationType.ANIMATION_ACTIVE, AnimationType.ANIMATION_HELMET, AnimationType.ANIMATION_EXPLODING);
     }
 
     protected void toActiveState() {
-        SpriteAnimation helmetAnimation = animationSet.stream().filter(tSpriteAnimation -> tSpriteAnimation
-                .getAnimationId().equals("HELMET_TANK_ANIMATION")).findFirst().orElse(null);
-        helmetAnimation.imageView.setVisible(false);
+        turnOnAnimation(AnimationType.ANIMATION_ACTIVE);
+        turnOffAnimation(AnimationType.ANIMATION_CREATING, AnimationType.ANIMATION_HELMET, AnimationType.ANIMATION_EXPLODING);
 
     }
 
     protected void toExplodingState() {
+        turnOffAnimation(AnimationType.ANIMATION_ACTIVE, AnimationType.ANIMATION_HELMET, AnimationType.ANIMATION_CREATING);
+        turnOnAnimation(AnimationType.ANIMATION_EXPLODING);
     }
 
     protected void toDeadState() {
         //allAnimations.stop();
-        ((Pane) this.getParent()).getChildren().removeAll(this); // todo REPLACE AS Consumer???
+        //((Pane) this.getParent()).getChildren().removeAll(this); // todo REPLACE AS Consumer???
+        turnOffAnimation(AnimationType.values());
     }
 
     /**
@@ -92,9 +76,51 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
             tSpriteAnimation.imageView.toBack();
             //   allAnimations.getChildren().add(tSpriteAnimation);
         });
+        handleCurrentStateChange(gameUnit.getCurrentState());
     }
 
-    protected Rectangle2D nextViewport(String animationId, int index) {
+    protected void handleCurrentStateChange(GameUnit.State state) {
+        if (state == null) return;
+        switch (state) {
+            case CREATING:
+                toCreatingState();
+                break;
+            case ACTIVE:
+                toActiveState();
+                break;
+            case EXPLODING:
+                toExplodingState();
+                break;
+            case DEAD:
+                toDeadState();
+                break;
+        }
+
+    }
+
+    protected void turnOnAnimation(AnimationType... animationType) {
+        for (AnimationType aType : animationType) {
+            animationSet.stream()
+                    .filter(tSpriteAnimation -> tSpriteAnimation.getAnimationType() == aType)
+                    .forEach(tSpriteAnimation -> {
+                        tSpriteAnimation.imageView.setVisible(true);
+                        tSpriteAnimation.play();
+                    });
+        }
+    }
+
+    protected void turnOffAnimation(AnimationType... animationType) {
+        for (AnimationType aType : animationType) {
+            animationSet.stream()
+                    .filter(tSpriteAnimation -> tSpriteAnimation.getAnimationType() == aType)
+                    .forEach(tSpriteAnimation -> {
+                        tSpriteAnimation.imageView.setVisible(false);
+                        tSpriteAnimation.pause();
+                    });
+        }
+    }
+
+    protected Rectangle2D nextViewport(AnimationType animationType, int index) {
         throw new RuntimeException("Something wrong! In cant be happened in properly animation hierarchy");
     }
 
@@ -131,7 +157,7 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
             this.imageView = imageView;
         }
 
-        protected abstract String getAnimationId();
+        protected abstract AnimationType getAnimationType();
 
     }
 }

@@ -22,6 +22,7 @@ import static java.util.Arrays.asList;
 public class GameUnit extends Observable implements CanChangeState<GameUnit.State>, CanPause {
     private static final Logger log = LoggerFactory.getLogger(GameUnit.class);
     protected static Map<State, Long> defaultTimeInState = new EnumMap<>(State.class);
+    protected static List<State> defaultStateFlow = asList(State.CREATING, State.ACTIVE, State.EXPLODING, State.DEAD);
 
     static {
         defaultTimeInState.put(State.CREATING, 2 * ONE_SECOND);
@@ -31,7 +32,6 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
     }
 
     private final StateFlowModifier<GameUnit> stateFlowModifier;
-    protected List<State> defaultStateFlow = asList(State.CREATING, State.ACTIVE, State.EXPLODING, State.DEAD);
     protected ObjectProperty<Bounds> bounds = new SimpleObjectProperty<>(new BoundingBox(0, 0, 0, 0));
     protected LongProperty heartBeats = new SimpleLongProperty();
     private Map<State, Long> timeInState = new EnumMap<>(State.class);
@@ -45,13 +45,18 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
         this.setBounds(new BoundingBox(minX, minY, width, height));
         if (stateFlow == null) {
             this.stateFlow.addAll(defaultStateFlow);
-            this.timeInState.putAll(defaultTimeInState);
         } else {
-            this.timeInState.putAll(timeInState);
-            for (State state : stateFlow) {
-                this.timeInState.putIfAbsent(state, defaultTimeInState.get(state));
+            this.stateFlow.addAll(stateFlow);
+        }
+        if (timeInState != null) {
+            for (State state : this.stateFlow) {
+                this.timeInState.putIfAbsent(state, timeInState.get(state));
             }
         }
+        for (State state : this.stateFlow) {
+            this.timeInState.putIfAbsent(state, defaultTimeInState.get(state));
+        }
+
         stateFlowModifier = new StateFlowModifier<>(this, playground);
     }
 
@@ -111,16 +116,16 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
                 "} " + super.toString();
     }
 
-    @Override
-    public State getCurrentState() {
-        return currentState.get();
-    }
-
     public enum State {
         CREATING,
         ACTIVE,
         EXPLODING,
         DEAD
+    }
+
+    @Override
+    public State getCurrentState() {
+        return currentState.get();
     }
 
 

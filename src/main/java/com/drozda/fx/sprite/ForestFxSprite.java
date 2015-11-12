@@ -20,8 +20,8 @@ public class ForestFxSprite extends FxSprite<TileUnit> {
         ImageView imageView = new ImageView(baseImage);
         SpriteAnimation spriteAnimation = new SpriteAnimation(imageView) {
             @Override
-            protected String getAnimationId() {
-                return NO_ANIMATION;
+            protected AnimationType getAnimationType() {
+                return AnimationType.ANIMATION_ACTIVE;
             }
 
             @Override

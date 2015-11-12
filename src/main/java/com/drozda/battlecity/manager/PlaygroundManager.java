@@ -28,7 +28,7 @@ public class PlaygroundManager {
             log.error(e.getMessage(), e);
             return null;
         }
-        yabcPlayground.start();
+        yabcPlayground.createActiveUnits();
         return yabcPlayground;
     }
 }

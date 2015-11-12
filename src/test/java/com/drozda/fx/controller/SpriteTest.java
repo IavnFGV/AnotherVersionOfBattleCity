@@ -4,6 +4,7 @@ import com.drozda.appflow.AppModel;
 import com.drozda.appflow.AppState;
 import com.drozda.battlecity.loader.LevelLoader;
 import com.drozda.battlecity.loader.TestLoader;
+import com.drozda.battlecity.playground.PlaygroundState;
 import com.drozda.battlecity.playground.YabcBattleGround;
 import com.drozda.battlecity.unit.TankUnit;
 import com.drozda.battlecity.unit.TileUnit;
@@ -46,6 +47,8 @@ public class SpriteTest extends Application {
 //        YabcBattleGround yabcBattleGround = battle.playgroundManager.getPlayground(AppModel.stageNumberForLoading, 2,
 //                2, YabcBattleGround.BattleType.SINGLE_PLAYER);
         battle.loadPlayground(yabcBattleGround);
+        yabcBattleGround.initialize(0l);
+        yabcBattleGround.setState(PlaygroundState.PAUSED);
         TileUnit brickUnit = yabcBattleGround.getUnitList().stream()
                 .filter(gameUnit -> (gameUnit instanceof TileUnit))
                 .map(gameUnit1 -> (TileUnit) gameUnit1)
@@ -70,12 +73,12 @@ public class SpriteTest extends Application {
                 .filter(tankUnit -> tankUnit.getTankType() == TankUnit.TankType.TANK_SECOND_PLAYER)
                 .findFirst().get();
         readyForTest();
-        //     firstTank.getBonusList().add(BonusUnit.BonusType.HELMET);
-//        propertiesEditorController.initPropertyShit(firstTank);
-        propertiesEditorController.initPropertyShit(secondTank);
+//        firstTank.getBonusList().add(BonusUnit.BonusType.HELMET);
+        propertiesEditorController.initPropertyShit(firstTank);
+        //     propertiesEditorController.initPropertyShit(secondTank);
         //  firstTank.setEngineOn(true);
         //    firstTank.setStars();
-        brickUnit.setTileState(TileUnit.TileState.STATE_1001);
+//        brickUnit.setTileState(TileUnit.TileState.STATE_1001);
 //        waterUnit.setPause(false);
         primaryStage.setScene(scene);
         primaryStage.show();

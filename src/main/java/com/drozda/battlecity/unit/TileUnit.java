@@ -18,6 +18,7 @@ public class TileUnit extends GameUnit implements Destroyable {
     public TileUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long> timeInState, HasGameUnits playground, TileType tileType) {
         super(minX, minY, width, height, stateFlow, timeInState, playground);
         this.tileType = tileType;
+        this.setCurrentState(State.ACTIVE);
     }
 
     public TileState getTileState() {

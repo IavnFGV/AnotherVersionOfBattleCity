@@ -27,17 +27,17 @@ public class WaterFxSprite extends FxSprite<TileUnit> {
         ImageView basicImageView = new ImageView(baseImage);
         WaterAnimation waterAnimation = new WaterAnimation(Duration.millis(500), basicImageView);
         bindImageViewToGameUnit(basicImageView, 0, 0);
-        basicImageView.setViewport(nextViewport(waterAnimation.getAnimationId(), 0));
+        basicImageView.setViewport(nextViewport(waterAnimation.getAnimationType(), 0));
         animationSet.add(waterAnimation);
         super.initSprite();
     }
 
     @Override
-    protected Rectangle2D nextViewport(String animationId, int index) {
-        if (animationId.equals(BASIC_WATER_ANIMATION)) {
+    protected Rectangle2D nextViewport(AnimationType animationType, int index) {
+        if (animationType.equals(AnimationType.ANIMATION_ACTIVE)) {
             return viewPorts[index];
         }
-        return super.nextViewport(animationId, index);
+        return super.nextViewport(animationType, index);
     }
 
     protected class WaterAnimation extends SpriteAnimation<TileUnit> {
@@ -52,16 +52,17 @@ public class WaterFxSprite extends FxSprite<TileUnit> {
 
         @Override
         protected void interpolate(double k) {
+            if (!imageView.isVisible()) return;
             final int index = Math.min((int) Math.floor(k * count), count - 1);
             if (index != lastIndex) {
-                imageView.setViewport(nextViewport(getAnimationId(), index));
+                imageView.setViewport(nextViewport(getAnimationType(), index));
                 lastIndex = index;
             }
         }
 
         @Override
-        protected String getAnimationId() {
-            return BASIC_WATER_ANIMATION;
+        protected AnimationType getAnimationType() {
+            return AnimationType.ANIMATION_ACTIVE;
         }
     }
 }

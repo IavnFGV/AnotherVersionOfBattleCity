@@ -4,15 +4,16 @@ import com.drozda.battlecity.interfaces.BattleGround;
 import com.drozda.battlecity.unit.GameUnit;
 import com.drozda.battlecity.unit.TankUnit;
 import com.drozda.battlecity.unit.TileUnit;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.EnumSet;
+
+import static java.util.Arrays.asList;
 
 /**
  * Created by GFH on 27.09.2015.
@@ -20,7 +21,10 @@ import org.slf4j.LoggerFactory;
 public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     private static final Logger log = LoggerFactory.getLogger(YabcBattleGround.class);
 
-    private PlaygroundState state;
+    private static final EnumSet<PlaygroundState> notPauseStates = EnumSet.of(PlaygroundState.ACTIVE);
+    private static final EnumSet<PlaygroundState> pauseStates = EnumSet.complementOf(notPauseStates);
+
+    //    private PlaygroundState state;
     private Point2D gamePixel;
     private int worldWiddthCells = 26;
     private int worldHeightCells = 26;
@@ -29,9 +33,27 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     private int worldSizeCells = worldWiddthCells * worldHeightCells;
     private ListProperty<GameUnit> unitList = new SimpleListProperty<>(FXCollections.observableArrayList());
     private ObjectProperty<BattleType> battleType = new SimpleObjectProperty<>(BattleType.SINGLE_PLAYER);
-
+    private ObjectProperty<PlaygroundState> state = new SimpleObjectProperty<>(PlaygroundState.INITIALIZING);
+    private ReadOnlyBooleanWrapper pause = new ReadOnlyBooleanWrapper();
     private Point2D firstPlayerRespawn;
     private Point2D secondPlayerRespawn;
+
+    {
+        state.addListener((observable, oldValue, newValue) ->
+        {
+            if (notPauseStates.contains(newValue)) {
+                pause.setValue(false);
+            }
+            if (pauseStates.contains(newValue)) {
+                pause.setValue(true);
+            }
+        });
+        pauseProperty().addListener((observable, oldValue, newValue) -> {
+                    unitList.forEach(gameUnit -> gameUnit.setPause(newValue));
+                }
+        );
+
+    }
 
     public YabcBattleGround(int multX, int multY, BattleType battleType) {
         gamePixel = new Point2D(multX, multY);
@@ -49,18 +71,34 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
         return 8 * gamePixel.getY();
     }
 
+    public ReadOnlyBooleanProperty pauseProperty() {
+        return pause.getReadOnlyProperty();
+    }
+
     public PlaygroundState getState() {
-        return state;
+        return state.get();
     }
 
     public void setState(PlaygroundState state) {
-        this.state = state;
+        this.state.set(state);
     }
 
-    public void initialize() {
-        setState(PlaygroundState.INITIALIZING);
-        setState(PlaygroundState.PAUSED);
+    public ObjectProperty<PlaygroundState> stateProperty() {
+        return state;
+    }
 
+    public void initialize(long tickTime) {
+        setState(PlaygroundState.INITIALIZING);
+        unitList.stream().forEach(gameUnit -> {
+            gameUnit.initialize(tickTime);
+            gameUnit.setPause(this.isPause());
+        });
+
+        setState(PlaygroundState.PAUSED);
+    }
+
+    public boolean isPause() {
+        return pause.get();
     }
 
     @Override
@@ -79,7 +117,7 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     @Override
     public boolean addCell(int x, int y, TileUnit.TileType tileType) {
         TileUnit tileUnit = new TileUnit(x * getCellWidth(), y * getCellHeight(), getCellWidth(), getCellHeight(),
-                null, null, this, tileType);
+                asList(GameUnit.State.ACTIVE, GameUnit.State.DEAD), null, this, tileType);
         unitList.add(tileUnit);
         return true;
     }
@@ -97,7 +135,7 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     }
 
     @Override
-    public void start() {
+    public void createActiveUnits() {
         createFirstPlayer();
         if (getBattleType() == BattleType.DOUBLE_PLAYER) {
             createSecondPlayer();
