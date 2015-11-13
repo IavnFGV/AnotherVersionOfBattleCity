@@ -4,8 +4,7 @@ import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.BulletMovingModifier;
 import com.drozda.battlecity.modifier.MovingModifier;
 
-import java.util.List;
-import java.util.Map;
+import static java.util.Arrays.asList;
 
 /**
  * Created by GFH on 27.09.2015.
@@ -16,9 +15,10 @@ public class BulletUnit extends MoveableUnit {
 
     private Type type;
 
-    public BulletUnit(double minX, double minY, double width, double height, List<State> stateFlow,
-                      Map<State, Long> timeInState, HasGameUnits playground, long velocity, GameUnit parent, Type type) {
-        super(minX, minY, width, height, stateFlow, timeInState, playground, velocity);
+    public BulletUnit(double minX, double minY, double width, double height, HasGameUnits playground, long velocity,
+                      GameUnit parent, Type type) {
+        super(minX, minY, width, height, asList(GameUnit.State.ACTIVE, State.EXPLODING, GameUnit.State.DEAD), null,
+                playground, velocity);
         this.parent = parent;
         this.type = type;
     }
@@ -46,7 +46,7 @@ public class BulletUnit extends MoveableUnit {
 
     public enum Type {
         SIMPLE,
-        POWERFUL;
+        POWERFUL
     }
 
 }

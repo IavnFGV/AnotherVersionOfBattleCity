@@ -63,11 +63,13 @@ public class ExplodingFxSprite<T extends GameUnit> extends FxSprite<T> {
 
     @Override
     protected Rectangle2D nextViewport(AnimationType animationType, int index) {
-        if (gameUnit instanceof BulletUnit) {
-            return explosionSmallViewports[index];
-        }
-        if ((gameUnit instanceof TankUnit) || (gameUnit instanceof EagleBaseUnit)) {
-            return explosionBigViewports[index];
+        if (animationType == AnimationType.ANIMATION_EXPLODING) {
+            if (gameUnit instanceof BulletUnit) {
+                return explosionSmallViewports[index];
+            }
+            if ((gameUnit instanceof TankUnit) || (gameUnit instanceof EagleBaseUnit)) {
+                return explosionBigViewports[index];
+            }
         }
         return super.nextViewport(animationType, index);
     }

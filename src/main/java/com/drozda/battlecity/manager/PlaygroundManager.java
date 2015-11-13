@@ -29,6 +29,7 @@ public class PlaygroundManager {
             return null;
         }
         yabcPlayground.createActiveUnits();
+        yabcPlayground.testCreateAllEnemies(); //todo REMOVE it is for test!!
         return yabcPlayground;
     }
 }

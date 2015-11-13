@@ -13,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.EnumSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 
@@ -38,6 +40,7 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     private ReadOnlyBooleanWrapper pause = new ReadOnlyBooleanWrapper();
     private Point2D firstPlayerRespawn;
     private Point2D secondPlayerRespawn;
+    private List<GameUnit> wereNotInPauseState;
 
     {
         state.addListener((observable, oldValue, newValue) ->
@@ -50,11 +53,15 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
             }
         });
         pauseProperty().addListener((observable, oldValue, newValue) -> {
-                    unitList.forEach(gameUnit -> gameUnit.setPause(newValue));
                     if (newValue) {
                         FxSprite.pauseBackgroundAnimation();
+                        wereNotInPauseState = unitList.stream()
+                                .filter(gameUnit1 -> !gameUnit1.isPause())
+                                .collect(Collectors.toList());
+                        wereNotInPauseState.forEach(gameUnit -> gameUnit.setPause(true));
                     } else {
                         FxSprite.startBackgroundAnimation();
+                        wereNotInPauseState.forEach(gameUnit -> gameUnit.setPause(false));
                     }
                 }
         );
@@ -126,8 +133,7 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
 
     @Override
     public boolean addCell(int x, int y, TileUnit.TileType tileType) {
-        TileUnit tileUnit = new TileUnit(x * getCellWidth(), y * getCellHeight(), getCellWidth(), getCellHeight(),
-                asList(GameUnit.State.ACTIVE, GameUnit.State.DEAD), null, this, tileType);
+        TileUnit tileUnit = new TileUnit(x * getCellWidth(), y * getCellHeight(), getCellWidth(), getCellHeight(), this, tileType);
         unitList.add(tileUnit);
         return true;
     }
@@ -162,6 +168,19 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
         TankUnit firstPlayer = new TankUnit(firstPlayerRespawn.getX(), firstPlayerRespawn.getY(), getTankWidth(),
                 getTankHeight(), this, TankUnit.TankType.TANK_FIRST_PLAYER);
         unitList.add(firstPlayer);
+    }
+
+    public void testCreateAllEnemies() {
+        List<TankUnit.TankType> typelist = asList(TankUnit.TankType.values());
+        double x = 128;
+        double y = 128;
+        for (TankUnit.TankType tankType : typelist) {
+            unitList.add(
+                    new TankUnit(x, y, getTankWidth(), getTankHeight(), this, tankType)
+            );
+            x += 32;
+            y += 32;
+        }
     }
 
     public double getTankWidth() {

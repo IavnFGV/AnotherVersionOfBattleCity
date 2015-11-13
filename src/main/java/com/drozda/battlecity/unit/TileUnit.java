@@ -5,8 +5,7 @@ import com.drozda.battlecity.interfaces.HasGameUnits;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-import java.util.List;
-import java.util.Map;
+import static java.util.Arrays.asList;
 
 /**
  * Created by GFH on 27.09.2015.
@@ -15,8 +14,8 @@ public class TileUnit extends GameUnit implements Destroyable {
     private TileType tileType;
     private ObjectProperty<TileState> tileState = new SimpleObjectProperty<>(TileState.STATE_1111);
 
-    public TileUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long> timeInState, HasGameUnits playground, TileType tileType) {
-        super(minX, minY, width, height, stateFlow, timeInState, playground);
+    public TileUnit(double minX, double minY, double width, double height, HasGameUnits playground, TileType tileType) {
+        super(minX, minY, width, height, asList(GameUnit.State.ACTIVE, GameUnit.State.DEAD), null, playground);
         this.tileType = tileType;
         this.setCurrentState(State.ACTIVE);
     }

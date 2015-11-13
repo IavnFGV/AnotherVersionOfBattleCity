@@ -65,5 +65,32 @@ public class TankFxSprite extends MovingFxSprite<TankUnit> {
         }
     }
 
+    protected class BasicTankMoveAnimation extends SpriteAnimation<TankUnit> {
+        private int count = 2;
+        private int lastIndex;
 
+        public BasicTankMoveAnimation(
+                Duration duration,
+                ImageView imageView
+        ) {
+            super(duration, imageView);
+            setCycleDuration(duration);
+            setCycleCount(INDEFINITE);
+        }
+
+        @Override
+        protected AnimationType getAnimationType() {
+            return AnimationType.ANIMATION_ACTIVE;
+        }
+
+
+        @Override
+        protected void interpolate(double k) {
+            final int index = Math.min((int) Math.floor(k * count), count - 1);
+            if ((index != lastIndex) && (gameUnit.getEngineOn())) {
+                imageView.setViewport(nextViewport(getAnimationType(), index));
+                lastIndex = index;
+            }
+        }
+    }
 }

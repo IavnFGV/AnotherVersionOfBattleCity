@@ -6,6 +6,8 @@ import com.drozda.battlecity.loader.LevelLoader;
 import com.drozda.battlecity.loader.TestLoader;
 import com.drozda.battlecity.playground.PlaygroundState;
 import com.drozda.battlecity.playground.YabcBattleGround;
+import com.drozda.battlecity.unit.BonusUnit;
+import com.drozda.battlecity.unit.GameUnit;
 import com.drozda.battlecity.unit.TankUnit;
 import com.drozda.battlecity.unit.TileUnit;
 import javafx.application.Application;
@@ -42,10 +44,10 @@ public class SpriteTest extends Application {
         Scene scene = new Scene(appState.getYabcFrame().getRoot());
         Battle battle = (Battle) appState.getController();
 
-//        YabcBattleGround yabcBattleGround = battle.playgroundManager.getPlayground(AppModel.stageNumberForLoading, 2,
-//                2, levelLoader, YabcBattleGround.BattleType.DOUBLE_PLAYER);
         YabcBattleGround yabcBattleGround = battle.playgroundManager.getPlayground(AppModel.stageNumberForLoading, 2,
-                2, YabcBattleGround.BattleType.DOUBLE_PLAYER);
+                2, levelLoader, YabcBattleGround.BattleType.DOUBLE_PLAYER);
+//        YabcBattleGround yabcBattleGround = battle.playgroundManager.getPlayground(AppModel.stageNumberForLoading, 2,
+//                2, YabcBattleGround.BattleType.DOUBLE_PLAYER);
         battle.loadPlayground(yabcBattleGround);
         yabcBattleGround.initialize(0l);
         yabcBattleGround.setState(PlaygroundState.ACTIVE);
@@ -72,8 +74,16 @@ public class SpriteTest extends Application {
                 .map(gameUnit1 -> (TankUnit) gameUnit1)
                 .filter(tankUnit -> tankUnit.getTankType() == TankUnit.TankType.TANK_SECOND_PLAYER)
                 .findFirst().get();
+
+        yabcBattleGround.getUnitList().forEach(gameUnit -> gameUnit.setCurrentState(GameUnit.State.ACTIVE));
+        yabcBattleGround.getUnitList().stream()
+                .filter(gameUnit -> gameUnit instanceof TankUnit)
+                .forEach(gameUnit1 -> {
+//                    gameUnit1.setPause(false);
+                    ((TankUnit) gameUnit1).setEngineOn(true);
+                });
         readyForTest();
-//        firstTank.getBonusList().add(BonusUnit.BonusType.HELMET);
+        firstTank.getBonusList().add(BonusUnit.BonusType.HELMET);
         propertiesEditorController.initPropertyShit(firstTank);
         //     propertiesEditorController.initPropertyShit(secondTank);
         //  firstTank.setEngineOn(true);
