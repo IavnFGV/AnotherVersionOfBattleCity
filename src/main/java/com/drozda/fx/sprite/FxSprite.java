@@ -2,6 +2,7 @@ package com.drozda.fx.sprite;
 
 import com.drozda.battlecity.unit.GameUnit;
 import javafx.animation.Interpolator;
+import javafx.animation.ParallelTransition;
 import javafx.animation.Transition;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
@@ -17,26 +18,15 @@ import java.util.Set;
  */
 public abstract class FxSprite<T extends GameUnit> extends Group {
 
+    private static final ParallelTransition backgroundAnimation = new ParallelTransition();
     public static Image baseImage = YabcSprite.baseImage;
-    public static String NO_ANIMATION = "NO_ANIMATION";
-    //    protected final List<SpriteAnimation<T>> animations = new ArrayList<>();
-    //  protected final ParallelTransition allAnimations = new ParallelTransition();
     protected final T gameUnit;
-    //    protected final List<ImageView> imageViews = new ArrayList<>();
-    //    protected ImageView baseImageView = new ImageView(baseImage);
     protected Set<SpriteAnimation<T>> animationSet = new LinkedHashSet<>();
 
     public FxSprite(T gameUnit) {
         this.gameUnit = gameUnit;
 
-        gameUnit.pauseProperty().addListener((observable, oldValue, newValue) -> {
-            if (!oldValue && newValue) {
-                animationSet.forEach(Transition::pause);
-            }
-            if (oldValue && !newValue) {
-                animationSet.forEach(Transition::play);
-            }
-        });
+
         gameUnit.currentStateProperty().addListener((observable, oldValue, newValue) -> {
                     handleCurrentStateChange(newValue);
                 }
@@ -44,6 +34,13 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
         initSprite();
     }
 
+    public static void startBackgroundAnimation() {
+        backgroundAnimation.play();
+    }
+
+    public static void pauseBackgroundAnimation() {
+        backgroundAnimation.pause();
+    }
 
     protected void toCreatingState() {
         turnOnAnimation(AnimationType.ANIMATION_CREATING);
@@ -76,6 +73,25 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
             tSpriteAnimation.imageView.toBack();
             //   allAnimations.getChildren().add(tSpriteAnimation);
         });
+
+        animationSet.stream()
+                .filter(tSpriteAnimation -> tSpriteAnimation.isBackGroundAnimation())
+                .forEach(tSpriteAnimation1 -> backgroundAnimation.getChildren().add(tSpriteAnimation1));
+
+        gameUnit.pauseProperty().addListener((observable, oldValue, newValue) -> {
+            if (!oldValue && newValue) {
+                animationSet.stream()
+                        .filter(tSpriteAnimation -> !tSpriteAnimation.isBackGroundAnimation())
+                        .forEach(Transition::pause);
+            }
+            if (oldValue && !newValue) {
+                animationSet.stream()
+                        .filter(tSpriteAnimation -> !tSpriteAnimation.isBackGroundAnimation())
+                        .forEach(Transition::play);
+            }
+        });
+
+
         handleCurrentStateChange(gameUnit.getCurrentState());
     }
 
@@ -102,6 +118,7 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
         for (AnimationType aType : animationType) {
             animationSet.stream()
                     .filter(tSpriteAnimation -> tSpriteAnimation.getAnimationType() == aType)
+                    .filter(tSpriteAnimation -> !tSpriteAnimation.isBackGroundAnimation())
                     .forEach(tSpriteAnimation -> {
                         tSpriteAnimation.imageView.setVisible(true);
                         tSpriteAnimation.play();
@@ -113,6 +130,7 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
         for (AnimationType aType : animationType) {
             animationSet.stream()
                     .filter(tSpriteAnimation -> tSpriteAnimation.getAnimationType() == aType)
+                    .filter(tSpriteAnimation -> !tSpriteAnimation.isBackGroundAnimation())
                     .forEach(tSpriteAnimation -> {
                         tSpriteAnimation.imageView.setVisible(false);
                         tSpriteAnimation.pause();
@@ -159,5 +177,8 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
 
         protected abstract AnimationType getAnimationType();
 
+        protected boolean isBackGroundAnimation() {
+            return false;
+        }
     }
 }

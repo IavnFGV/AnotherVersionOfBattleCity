@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ExplodingFxSprite<T extends GameUnit> extends FxSprite<T> {
     private static final Logger log = LoggerFactory.getLogger(ExplodingFxSprite.class);
-    public static String EXPLODING_ANIMATION = "EXPLODING_ANIMATION";
     static Rectangle2D[] explosionSmallViewports = YabcSprite.EXPLOSION_SMALL.viewports;
     static Rectangle2D[] explosionBigViewports = YabcSprite.EXPLOSION_BIG.viewports;
 

@@ -42,13 +42,13 @@ public class SpriteTest extends Application {
         Scene scene = new Scene(appState.getYabcFrame().getRoot());
         Battle battle = (Battle) appState.getController();
 
-        YabcBattleGround yabcBattleGround = battle.playgroundManager.getPlayground(AppModel.stageNumberForLoading, 2,
-                2, levelLoader, YabcBattleGround.BattleType.DOUBLE_PLAYER);
 //        YabcBattleGround yabcBattleGround = battle.playgroundManager.getPlayground(AppModel.stageNumberForLoading, 2,
-//                2, YabcBattleGround.BattleType.SINGLE_PLAYER);
+//                2, levelLoader, YabcBattleGround.BattleType.DOUBLE_PLAYER);
+        YabcBattleGround yabcBattleGround = battle.playgroundManager.getPlayground(AppModel.stageNumberForLoading, 2,
+                2, YabcBattleGround.BattleType.DOUBLE_PLAYER);
         battle.loadPlayground(yabcBattleGround);
         yabcBattleGround.initialize(0l);
-        yabcBattleGround.setState(PlaygroundState.PAUSED);
+        yabcBattleGround.setState(PlaygroundState.ACTIVE);
         TileUnit brickUnit = yabcBattleGround.getUnitList().stream()
                 .filter(gameUnit -> (gameUnit instanceof TileUnit))
                 .map(gameUnit1 -> (TileUnit) gameUnit1)

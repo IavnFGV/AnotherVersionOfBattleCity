@@ -4,6 +4,7 @@ import com.drozda.battlecity.interfaces.BattleGround;
 import com.drozda.battlecity.unit.GameUnit;
 import com.drozda.battlecity.unit.TankUnit;
 import com.drozda.battlecity.unit.TileUnit;
+import com.drozda.fx.sprite.FxSprite;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -50,6 +51,11 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
         });
         pauseProperty().addListener((observable, oldValue, newValue) -> {
                     unitList.forEach(gameUnit -> gameUnit.setPause(newValue));
+                    if (newValue) {
+                        FxSprite.pauseBackgroundAnimation();
+                    } else {
+                        FxSprite.startBackgroundAnimation();
+                    }
                 }
         );
 
@@ -93,7 +99,11 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
             gameUnit.initialize(tickTime);
             gameUnit.setPause(this.isPause());
         });
-
+        if (this.isPause()) {
+            FxSprite.pauseBackgroundAnimation();
+        } else {
+            FxSprite.startBackgroundAnimation();
+        }
         setState(PlaygroundState.PAUSED);
     }
 

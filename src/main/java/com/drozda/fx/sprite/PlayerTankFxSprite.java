@@ -18,7 +18,6 @@ import java.util.Map;
  */
 public class PlayerTankFxSprite extends TankFxSprite {
     private static final Logger log = LoggerFactory.getLogger(PlayerTankFxSprite.class);
-    public static String HELMET_TANK_ANIMATION = "HELMET_TANK_ANIMATION";
     static Rectangle2D[] helmetViewports = YabcSprite.BONUS_HELMET.viewports;
     static Map<Integer, Rectangle2D[]> firstPlayerviewportsMap = new HashMap<>();
     static Map<Integer, Rectangle2D[]> secondPlayerviewportsMap = new HashMap<>();
@@ -147,11 +146,6 @@ public class PlayerTankFxSprite extends TankFxSprite {
         private int count = 2;
         private int lastIndex;
 
-        @Override
-        protected AnimationType getAnimationType() {
-            return AnimationType.ANIMATION_ACTIVE;
-        }
-
         public BasicTankMoveAnimation(
                 Duration duration,
                 ImageView imageView
@@ -159,6 +153,11 @@ public class PlayerTankFxSprite extends TankFxSprite {
             super(duration, imageView);
             setCycleDuration(duration);
             setCycleCount(INDEFINITE);
+        }
+
+        @Override
+        protected AnimationType getAnimationType() {
+            return AnimationType.ANIMATION_ACTIVE;
         }
 
 

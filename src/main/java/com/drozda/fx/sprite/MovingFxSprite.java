@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class MovingFxSprite<T extends MoveableUnit> extends ExplodingFxSprite<T> {
     private static final Logger log = LoggerFactory.getLogger(MovingFxSprite.class);
-    public static String BASIC_MOVING_ANIMATION = "BASIC_MOVING_ANIMATION";
 
     public MovingFxSprite(T gameUnit) {
         super(gameUnit);

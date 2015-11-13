@@ -1,7 +1,6 @@
 package com.drozda.fx.sprite;
 
 import com.drozda.battlecity.unit.TileUnit;
-import javafx.animation.Transition;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
@@ -11,15 +10,11 @@ import javafx.util.Duration;
  */
 public class WaterFxSprite extends FxSprite<TileUnit> {
 
-    public static String BASIC_WATER_ANIMATION = "BASIC_WATER_ANIMATION";
     static Rectangle2D[] viewPorts = YabcSprite.TILE_WATER.viewports;
 
 
     public WaterFxSprite(TileUnit gameUnit) {
         super(gameUnit);
-
-        animationSet.forEach(Transition::play);
-        //allAnimations.play();
     }
 
     @Override
@@ -63,6 +58,11 @@ public class WaterFxSprite extends FxSprite<TileUnit> {
         @Override
         protected AnimationType getAnimationType() {
             return AnimationType.ANIMATION_ACTIVE;
+        }
+
+        @Override
+        protected boolean isBackGroundAnimation() {
+            return true;
         }
     }
 }
