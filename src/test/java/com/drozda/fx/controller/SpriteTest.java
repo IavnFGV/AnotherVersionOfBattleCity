@@ -82,9 +82,20 @@ public class SpriteTest extends Application {
 //                    gameUnit1.setPause(false);
                     ((TankUnit) gameUnit1).setEngineOn(true);
                 });
+        yabcBattleGround.setState(PlaygroundState.ACTIVE);
+
+        BonusUnit bonusStar = yabcBattleGround.getUnitList().stream()
+                .filter(gameUnit -> (gameUnit instanceof BonusUnit))
+                .map(gameUnit1 -> (BonusUnit) gameUnit1)
+                .filter(bonusUnit -> bonusUnit.getBonusType() == BonusUnit.BonusType.STAR)
+                .findFirst().get();
+
+
         readyForTest();
-        firstTank.getBonusList().add(new BonusUnit(0, 0, 0, 0, null, null, yabcBattleGround, BonusUnit.BonusType.HELMET));
-        propertiesEditorController.initPropertyShit(firstTank);
+
+        // firstTank.getBonusList().add(new BonusUnit(0, 0, 0, 0, yabcBattleGround, BonusUnit.BonusType.HELMET));
+//        propertiesEditorController.initPropertyShit(firstTank);
+        propertiesEditorController.initPropertyShit(bonusStar);
         //     propertiesEditorController.initPropertyShit(secondTank);
         //  firstTank.setEngineOn(true);
         //    firstTank.setStars();

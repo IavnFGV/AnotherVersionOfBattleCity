@@ -9,7 +9,7 @@ import javafx.scene.image.ImageView;
  */
 public class ForestFxSprite extends FxSprite<TileUnit> {
 
-    static Rectangle2D[] viewPorts = YabcSprite.TILE_FOREST.viewports;
+    static Rectangle2D[] viewports = YabcSprite.TILE_FOREST.viewports;
 
     public ForestFxSprite(TileUnit gameUnit) {
         super(gameUnit);
@@ -30,7 +30,7 @@ public class ForestFxSprite extends FxSprite<TileUnit> {
             }
         };
         bindImageViewToGameUnit(imageView, 0, 0);
-        imageView.setViewport(viewPorts[0]);
+        imageView.setViewport(viewports[0]);
         animationSet.add(spriteAnimation);
         super.initSprite();
     }

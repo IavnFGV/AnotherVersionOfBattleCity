@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class PlayerTankFxSprite extends TankFxSprite {
     private static final Logger log = LoggerFactory.getLogger(PlayerTankFxSprite.class);
-    static Rectangle2D[] helmetViewports = YabcSprite.BONUS_HELMET.viewports;
+    static Rectangle2D[] helmetViewports = YabcSprite.BONUS_HELMET_ON_TANK.viewports;
     static Map<Integer, Rectangle2D[]> firstPlayerviewportsMap = new HashMap<>();
     static Map<Integer, Rectangle2D[]> secondPlayerviewportsMap = new HashMap<>();
 

@@ -1,10 +1,7 @@
 package com.drozda.fx.sprite;
 
 import com.drozda.battlecity.StaticServices;
-import com.drozda.battlecity.unit.BulletUnit;
-import com.drozda.battlecity.unit.GameUnit;
-import com.drozda.battlecity.unit.TankUnit;
-import com.drozda.battlecity.unit.TileUnit;
+import com.drozda.battlecity.unit.*;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
@@ -100,12 +97,24 @@ public enum YabcSprite {
     TANK_POWER_ENEMY_X(new Rectangle2D[]{
             new Rectangle2D(0, 64, 32, 32),
             new Rectangle2D(32, 64, 32, 32)}),
-    //bonuses
-    BONUS_HELMET(new Rectangle2D[]{
+    BONUS_HELMET_ON_TANK(new Rectangle2D[]{
             new Rectangle2D(0, 320, 32, 32),
             new Rectangle2D(32, 320, 32, 32)}),
-    BONUS_CLOCK, BONUS_SPADE, BONUS_STAR, BONUS_GRENADE,
-    BONUS_TANK, BONUS_GUN,
+    //bonuses on playground
+    BONUS_HELMET(new Rectangle2D[]{
+            new Rectangle2D(0, 449, 32, 32)}),
+    BONUS_CLOCK(new Rectangle2D[]{
+            new Rectangle2D(0, 481, 32, 32)}),
+    BONUS_SPADE(new Rectangle2D[]{
+            new Rectangle2D(0, 513, 32, 32)}),
+    BONUS_STAR(new Rectangle2D[]{
+            new Rectangle2D(0, 577, 32, 32)}),
+    BONUS_GRENADE(new Rectangle2D[]{
+            new Rectangle2D(0, 417, 32, 32)}),
+    BONUS_TANK(new Rectangle2D[]{
+            new Rectangle2D(0, 545, 32, 32)}),
+    BONUS_GUN(new Rectangle2D[]{
+            new Rectangle2D(0, 609, 32, 32)}),
     BULLET(new Rectangle2D[]{
             new Rectangle2D(64, 47, 8, 8)}),
     EXPLOSION_SMALL(new Rectangle2D[]{
@@ -225,6 +234,10 @@ public enum YabcSprite {
             BulletUnit bulletUnit = (BulletUnit) gameUnit;
             log.debug(bulletUnit.toString());
             return new BulletFxSprite(bulletUnit);
+        }
+        if (gameUnit instanceof BonusUnit) {
+            BonusUnit bonusUnit = (BonusUnit) gameUnit;
+            return new BonusFxSprite(bonusUnit);
         }
         return getDigit(0); //  STUB
     }

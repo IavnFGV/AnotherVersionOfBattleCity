@@ -1,6 +1,7 @@
 package com.drozda.battlecity.playground;
 
 import com.drozda.battlecity.interfaces.BattleGround;
+import com.drozda.battlecity.unit.BonusUnit;
 import com.drozda.battlecity.unit.GameUnit;
 import com.drozda.battlecity.unit.TankUnit;
 import com.drozda.battlecity.unit.TileUnit;
@@ -33,6 +34,8 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     private int worldHeightCells = 26;
     private int tankHeightCells = 2;
     private int tankWidthCells = 2;
+    private int bonusHeightCells = 2;
+    private int bonusWidthCells = 2;
     private int worldSizeCells = worldWiddthCells * worldHeightCells;
     private ListProperty<GameUnit> unitList = new SimpleListProperty<>(FXCollections.observableArrayList());
     private ObjectProperty<BattleType> battleType = new SimpleObjectProperty<>(BattleType.SINGLE_PLAYER);
@@ -186,14 +189,13 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
 
     public void testCreateAllEnemies() {
         List<TankUnit.TankType> typelist = asList(TankUnit.TankType.values());
-        double x = 128;
-        double y = 128;
+        double x = 98;
+        double y = 98;
         for (TankUnit.TankType tankType : typelist) {
             unitList.add(
                     new TankUnit(x, y, getTankWidth(), getTankHeight(), this, tankType)
             );
             x += 32;
-            y += 32;
         }
     }
 
@@ -203,6 +205,28 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
 
     public double getTankHeight() {
         return tankHeightCells * getCellHeight();
+    }
+
+    public void testCreateAllBonuses() {
+        List<BonusUnit.BonusType> typeList = asList(BonusUnit.BonusType.values());
+
+        double x = 98;
+        double y = 98 + 32;
+        for (BonusUnit.BonusType bonusType : typeList) {
+            if (bonusType == BonusUnit.BonusType.START_GAME_HELMET) continue;
+            unitList.add(
+                    new BonusUnit(x, y, getBonusWidth(), getBonusHeight(), this, bonusType)
+            );
+            x += 32;
+        }
+    }
+
+    public double getBonusWidth() {
+        return bonusWidthCells * getCellWidth();
+    }
+
+    public double getBonusHeight() {
+        return bonusHeightCells * getCellHeight();
     }
 
     public enum BattleType {

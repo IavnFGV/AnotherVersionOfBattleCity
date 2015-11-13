@@ -110,8 +110,27 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
             case DEAD:
                 toDeadState();
                 break;
+            case ARMOR:
+                toArmorState();
+                break;
+            case BLINK:
+                toBlinkState();
+                break;
+            case IN_POCKET:
+                toInPocketState();
+                break;
         }
 
+    }
+
+    protected void toInPocketState() {
+    }
+
+    protected void toBlinkState() {
+
+    }
+
+    protected void toArmorState() {
     }
 
     protected void turnOnAnimation(AnimationType... animationType) {

@@ -30,6 +30,8 @@ public class PlaygroundManager {
         }
         yabcPlayground.createActiveUnits();
         yabcPlayground.testCreateAllEnemies(); //todo REMOVE it is for test!!
+        yabcPlayground.testCreateAllBonuses(); //todo REMOVE it is for test!!
+
         return yabcPlayground;
     }
 }
