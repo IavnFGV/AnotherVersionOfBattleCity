@@ -21,7 +21,7 @@ import java.util.Map;
 public class TankUnit extends MoveableUnit implements Destroyable {
 
     protected final PositionFixingModifier<MoveableUnit> fixingModifier;
-    protected ListProperty<BonusUnit.BonusType> bonusList = new SimpleListProperty<>(FXCollections.observableArrayList());
+    protected ListProperty<BonusUnit> bonusList = new SimpleListProperty<>(FXCollections.observableArrayList());
     protected TankType tankType;
     protected IntegerProperty stars = new SimpleIntegerProperty(0);
     protected IntegerProperty lifes = new SimpleIntegerProperty(1);
@@ -93,15 +93,15 @@ public class TankUnit extends MoveableUnit implements Destroyable {
         return stars;
     }
 
-    public ObservableList<BonusUnit.BonusType> getBonusList() {
+    public ObservableList<BonusUnit> getBonusList() {
         return bonusList.get();
     }
 
-    public void setBonusList(ObservableList<BonusUnit.BonusType> bonusList) {
+    public void setBonusList(ObservableList<BonusUnit> bonusList) {
         this.bonusList.set(bonusList);
     }
 
-    public ListProperty<BonusUnit.BonusType> bonusListProperty() {
+    public ListProperty<BonusUnit> bonusListProperty() {
         return bonusList;
     }
 

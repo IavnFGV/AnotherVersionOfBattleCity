@@ -121,7 +121,9 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
         DEAD,
         //special for changeableTile
         ARMOR,
-        BLINK
+        BLINK,
+        //special for bonusTile
+        IN_POCKET
     }
 
     @Override
@@ -143,6 +145,7 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
 
     @Override
     public void goToNextState() {
+        if (getCurrentState() == State.DEAD) return;
         int curIndex = stateFlow.indexOf(getCurrentState());
         int nextIndex = (curIndex == stateFlow.size() - 1) ? 0 : curIndex + 1;
 //        if (curIndex < stateFlow.size() - 1) {

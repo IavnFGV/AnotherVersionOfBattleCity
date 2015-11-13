@@ -42,6 +42,9 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     private Point2D secondPlayerRespawn;
     private List<GameUnit> wereNotInPauseState;
 
+    private TankUnit firstPlayer;
+    private TankUnit secondPlayer;
+
     {
         state.addListener((observable, oldValue, newValue) ->
         {
@@ -82,6 +85,25 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
 
     public double getCellHeight() {
         return 8 * gamePixel.getY();
+    }
+
+    public TankUnit getFirstPlayer() {
+        return firstPlayer;
+    }
+
+    public TankUnit getSecondPlayer() {
+        if (getBattleType() == BattleType.DOUBLE_PLAYER) {
+            return secondPlayer;
+        }
+        return null;
+    }
+
+    public BattleType getBattleType() {
+        return battleType.get();
+    }
+
+    public void setBattleType(BattleType battleType) {
+        this.battleType.set(battleType);
     }
 
     public ReadOnlyBooleanProperty pauseProperty() {
@@ -138,14 +160,6 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
         return true;
     }
 
-    public BattleType getBattleType() {
-        return battleType.get();
-    }
-
-    public void setBattleType(BattleType battleType) {
-        this.battleType.set(battleType);
-    }
-
     public ObjectProperty<BattleType> battleTypeProperty() {
         return battleType;
     }
@@ -159,13 +173,13 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     }
 
     private void createSecondPlayer() {
-        TankUnit secondPlayer = new TankUnit(secondPlayerRespawn.getX(), secondPlayerRespawn.getY(), getTankWidth(),
+        secondPlayer = new TankUnit(secondPlayerRespawn.getX(), secondPlayerRespawn.getY(), getTankWidth(),
                 getTankHeight(), this, TankUnit.TankType.TANK_SECOND_PLAYER);
         unitList.add(secondPlayer);
     }
 
     private void createFirstPlayer() {
-        TankUnit firstPlayer = new TankUnit(firstPlayerRespawn.getX(), firstPlayerRespawn.getY(), getTankWidth(),
+        firstPlayer = new TankUnit(firstPlayerRespawn.getX(), firstPlayerRespawn.getY(), getTankWidth(),
                 getTankHeight(), this, TankUnit.TankType.TANK_FIRST_PLAYER);
         unitList.add(firstPlayer);
     }

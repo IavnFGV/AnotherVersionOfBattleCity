@@ -83,7 +83,7 @@ public class SpriteTest extends Application {
                     ((TankUnit) gameUnit1).setEngineOn(true);
                 });
         readyForTest();
-        firstTank.getBonusList().add(BonusUnit.BonusType.HELMET);
+        firstTank.getBonusList().add(new BonusUnit(0, 0, 0, 0, null, null, yabcBattleGround, BonusUnit.BonusType.HELMET));
         propertiesEditorController.initPropertyShit(firstTank);
         //     propertiesEditorController.initPropertyShit(secondTank);
         //  firstTank.setEngineOn(true);

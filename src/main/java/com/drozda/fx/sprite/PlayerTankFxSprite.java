@@ -66,29 +66,22 @@ public class PlayerTankFxSprite extends TankFxSprite {
         helmetImageView.setViewport(nextViewport(helmetAnimation.getAnimationType(), 0));
 
         gameUnit.getBonusList().addListener(
-                new ListChangeListener<BonusUnit.BonusType>() {
-                    @Override
-                    public void onChanged(Change<? extends BonusUnit.BonusType> c) {
-                        while (c.next()) {
-                            if (c.wasPermutated()) {
-                                for (int i = c.getFrom(); i < c.getTo(); ++i) {
-                                    //permutate
-                                }
-                            } else if (c.wasUpdated()) {
-                                //update item
-                            } else {
-                                for (BonusUnit.BonusType remitem : c.getRemoved()) {
-                                    if (remitem == BonusUnit.BonusType.HELMET) {
-                                        turnOffAnimation(AnimationType.ANIMATION_HELMET);
-                                    }
-                                }
-                                for (BonusUnit.BonusType additem : c.getAddedSubList()) {
-                                    if (additem == BonusUnit.BonusType.HELMET) {
-                                        turnOnAnimation(AnimationType.ANIMATION_HELMET);
-                                    }
+                (ListChangeListener<BonusUnit>) c -> {
+                    while (c.next()) {
+                        if (c.wasRemoved()) {
+                            for (BonusUnit remitem : c.getRemoved()) {
+                                if ((remitem.getBonusType() == BonusUnit.BonusType.HELMET) ||
+                                        (remitem.getBonusType() == BonusUnit.BonusType.START_GAME_HELMET)) {
+                                    turnOffAnimation(AnimationType.ANIMATION_HELMET);
                                 }
                             }
-                        }
+                        } else if (c.wasAdded())
+                            for (BonusUnit additem : c.getAddedSubList()) {
+                                if ((additem.getBonusType() == BonusUnit.BonusType.HELMET) ||
+                                        (additem.getBonusType() == BonusUnit.BonusType.START_GAME_HELMET)) {
+                                    turnOnAnimation(AnimationType.ANIMATION_HELMET);
+                                }
+                            }
                     }
                 }
         );
