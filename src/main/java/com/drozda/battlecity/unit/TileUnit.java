@@ -5,6 +5,9 @@ import com.drozda.battlecity.interfaces.HasGameUnits;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
+import java.util.List;
+import java.util.Map;
+
 import static java.util.Arrays.asList;
 
 /**
@@ -17,6 +20,12 @@ public class TileUnit extends GameUnit implements Destroyable {
     public TileUnit(double minX, double minY, double width, double height, HasGameUnits playground, TileType tileType) {
         super(minX, minY, width, height, asList(GameUnit.State.ACTIVE, GameUnit.State.DEAD), null, playground);
         this.tileType = tileType;
+        this.setCurrentState(State.ACTIVE);
+    }
+
+    public TileUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long>
+            timeInState, HasGameUnits playground) {
+        super(minX, minY, width, height, stateFlow, timeInState, playground);
         this.setCurrentState(State.ACTIVE);
     }
 
@@ -48,7 +57,8 @@ public class TileUnit extends GameUnit implements Destroyable {
             }
         }
         if (type == BulletUnit.Type.POWERFUL) {
-            if (getTileType() == TileType.STEEL) {
+            if ((getTileType() == TileType.STEEL) ||
+                    (getTileType() == TileType.BRICK)) {
                 return true;
             }
         }

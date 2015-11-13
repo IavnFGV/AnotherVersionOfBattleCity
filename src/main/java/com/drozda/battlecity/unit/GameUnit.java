@@ -31,7 +31,7 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
         defaultTimeInState.put(State.DEAD, 0L);
     }
 
-    private final StateFlowModifier<GameUnit> stateFlowModifier;
+    protected StateFlowModifier<GameUnit> stateFlowModifier = new StateFlowModifier<>(this);
     protected ObjectProperty<Bounds> bounds = new SimpleObjectProperty<>(new BoundingBox(0, 0, 0, 0));
     protected LongProperty heartBeats = new SimpleLongProperty();
     private Map<State, Long> timeInState = new EnumMap<>(State.class);
@@ -56,8 +56,6 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
         for (State state : this.stateFlow) {
             this.timeInState.putIfAbsent(state, defaultTimeInState.get(state));
         }
-
-        stateFlowModifier = new StateFlowModifier<>(this, playground);
     }
 
     public void heartBeat(long currentTime) {
@@ -120,7 +118,10 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
         CREATING,
         ACTIVE,
         EXPLODING,
-        DEAD
+        DEAD,
+        //special for changeableTile
+        ARMOR,
+        BLINK
     }
 
     @Override
@@ -143,10 +144,11 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
     @Override
     public void goToNextState() {
         int curIndex = stateFlow.indexOf(getCurrentState());
-        if (curIndex < stateFlow.size() - 1) {
-            setCurrentState(stateFlow.get(curIndex + 1));
-            setChanged();
-        }
+        int nextIndex = (curIndex == stateFlow.size() - 1) ? 0 : curIndex + 1;
+//        if (curIndex < stateFlow.size() - 1) {
+        setCurrentState(stateFlow.get(nextIndex));
+        setChanged();
+//        }
     }
 
 

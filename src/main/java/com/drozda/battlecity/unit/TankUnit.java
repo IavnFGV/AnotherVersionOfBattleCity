@@ -57,7 +57,7 @@ public class TankUnit extends MoveableUnit implements Destroyable {
         setVelocity(velocity);
         if ((tankType == TankType.TANK_ARMOR_ENEMY) ||
                 (tankType == TankType.TANK_ARMOR_ENEMY_X)) {
-            setLifes(3);
+            setLifes(4);
         }
     }
 

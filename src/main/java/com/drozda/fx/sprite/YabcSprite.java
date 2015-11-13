@@ -76,11 +76,21 @@ public enum YabcSprite {
     TANK_POWER_ENEMY(new Rectangle2D[]{
             new Rectangle2D(0, 224, 32, 32),
             new Rectangle2D(32, 224, 32, 32)}),
-    TANK_ARMOR_ENEMY_4_LIFES_X(new Rectangle2D[]{}),
-    TANK_ARMOR_ENEMY_4_LIFES(new Rectangle2D[]{}),
-    TANK_ARMOR_ENEMY_3_LIFES(new Rectangle2D[]{}),
-    TANK_ARMOR_ENEMY_2_LIFES(new Rectangle2D[]{}),
-    TANK_ARMOR_ENEMY_1_LIFES(new Rectangle2D[]{}),
+    TANK_ARMOR_ENEMY_4_LIFES_X(new Rectangle2D[]{
+            new Rectangle2D(0, 96, 32, 32),
+            new Rectangle2D(32, 96, 32, 32)}),
+    TANK_ARMOR_ENEMY_4_LIFES(new Rectangle2D[]{
+            new Rectangle2D(0, 128, 32, 32),
+            new Rectangle2D(32, 128, 32, 32)}),
+    TANK_ARMOR_ENEMY_3_LIFES(new Rectangle2D[]{
+            new Rectangle2D(64, 128, 32, 32),
+            new Rectangle2D(96, 128, 32, 32)}),
+    TANK_ARMOR_ENEMY_2_LIFES(new Rectangle2D[]{
+            new Rectangle2D(128, 128, 32, 32),
+            new Rectangle2D(160, 128, 32, 32)}),
+    TANK_ARMOR_ENEMY_1_LIFES(new Rectangle2D[]{
+            new Rectangle2D(192, 128, 32, 32),
+            new Rectangle2D(224, 128, 32, 32)}),
     TANK_SIMPLE_ENEMY_X(new Rectangle2D[]{
             new Rectangle2D(0, 0, 32, 32),
             new Rectangle2D(32, 0, 32, 32)}),
@@ -200,15 +210,15 @@ public enum YabcSprite {
                 case TANK_POWER_ENEMY:
                     return new SimpleEnemyTankFxSprite(tankUnit);
                 case TANK_ARMOR_ENEMY:
-                    break;
+                    return new ArmorEnemyTankFxSprite(tankUnit);
                 case TANK_SIMPLE_ENEMY_X:
                     return new SimpleEnemyTankFxSprite(tankUnit);
                 case TANK_FAST_ENEMY_X:
                     return new SimpleEnemyTankFxSprite(tankUnit);
                 case TANK_POWER_ENEMY_X:
-                    break;
+                    return new SimpleEnemyTankFxSprite(tankUnit);
                 case TANK_ARMOR_ENEMY_X:
-                    break;
+                    return new ArmorEnemyTankFxSprite(tankUnit);
             }
         }
         if (gameUnit instanceof BulletUnit) {

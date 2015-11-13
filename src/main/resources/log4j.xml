@@ -15,7 +15,7 @@
     </logger>
 
     <logger name="com.drozda.battlecity.modifier">
-        <level value="FATAL"/>
+        <level value="DEBUG"/>
     </logger>
 
     <root>
