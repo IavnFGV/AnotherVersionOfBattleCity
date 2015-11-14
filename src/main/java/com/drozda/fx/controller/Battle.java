@@ -5,7 +5,9 @@ import com.drozda.battlecity.manager.PlaygroundManager;
 import com.drozda.battlecity.playground.YabcBattleGround;
 import com.drozda.battlecity.unit.BonusUnit;
 import com.drozda.battlecity.unit.GameUnit;
+import com.drozda.fx.sprite.ForestFxSprite;
 import com.drozda.fx.sprite.YabcSprite;
+import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
@@ -221,6 +223,9 @@ public class Battle {
                 (newValue == YabcBattleGround.BattleType.SINGLE_PLAYER ? 1 : 2));
         setSingleOrDouble
                 (battleGround.getBattleType() == YabcBattleGround.BattleType.SINGLE_PLAYER ? 1 : 2);
+        centerPane.getChildren().stream()
+                .filter(node -> (node instanceof ForestFxSprite))
+                .forEach(node1 -> Platform.runLater(() -> node1.toFront()));
 
     }
 
