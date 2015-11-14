@@ -2,14 +2,19 @@ package com.drozda.fx.controller;
 
 import com.drozda.appflow.AppModel;
 import com.drozda.appflow.AppState;
+import com.drozda.battlecity.controller.KeyboardActionCommandGenerator;
+import com.drozda.battlecity.interfaces.ActionCommandGenerator;
 import com.drozda.battlecity.loader.LevelLoader;
 import com.drozda.battlecity.loader.TestLoader;
+import com.drozda.battlecity.playground.PlaygroundState;
 import com.drozda.battlecity.playground.YabcBattleGround;
 import com.drozda.battlecity.unit.*;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -24,6 +29,9 @@ public class SpriteTest extends Application {
     private static Stage mainStage;
     AppState appState = AppState.Battle;
     LevelLoader levelLoader = new TestLoader();
+
+    ActionCommandGenerator actionCommandGenerator = new KeyboardActionCommandGenerator(KeyCode.W, KeyCode.S, KeyCode.A,
+            KeyCode.D, KeyCode.SPACE);
 
     public static void main(String[] args) {
         launch(args);
@@ -45,7 +53,7 @@ public class SpriteTest extends Application {
 //        YabcBattleGround yabcBattleGround = battle.playgroundManager.getPlayground(AppModel.stageNumberForLoading, 2,
 //                2, YabcBattleGround.BattleType.DOUBLE_PLAYER);
         battle.loadPlayground(yabcBattleGround);
-        yabcBattleGround.initialize(0l);
+        //       yabcBattleGround.initialize(0l);
 //        yabcBattleGround.setState(PlaygroundState.ACTIVE);
         TileUnit brickUnit = yabcBattleGround.getUnitList().stream()
                 .filter(gameUnit -> (gameUnit instanceof TileUnit))
@@ -105,7 +113,25 @@ public class SpriteTest extends Application {
         readyForTest();
         spadeZoneTileUnit.setCurrentState(GameUnit.State.ARMOR);
         spadeZoneTileUnit.setPause(false);
+        firstTank.setActionCommandGenerator(actionCommandGenerator);
 
+        scene.setOnKeyReleased((KeyboardActionCommandGenerator) actionCommandGenerator);
+        scene.setOnKeyPressed((KeyboardActionCommandGenerator) actionCommandGenerator);
+
+        AnimationTimer mainLoop = new AnimationTimer() {
+            private Boolean init = false;
+
+            @Override
+            public void handle(long now) {
+                if (!init) {
+                    yabcBattleGround.initialize(now);
+                    yabcBattleGround.setState(PlaygroundState.ACTIVE);
+                    init = true;
+                }
+                yabcBattleGround.heartBeat(now);
+            }
+        };
+        mainLoop.start();
 
 //        firstTank.getBonusList().add(new BonusUnit(0, 0, 0, 0, yabcBattleGround, BonusUnit.BonusType.HELMET));
 //        firstTank.getBonusList().add(new BonusUnit(0, 0, 0, 0, yabcBattleGround, BonusUnit.BonusType

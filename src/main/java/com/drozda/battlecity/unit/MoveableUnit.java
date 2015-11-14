@@ -1,5 +1,6 @@
 package com.drozda.battlecity.unit;
 
+import com.drozda.battlecity.interfaces.ActionCommandGenerator;
 import com.drozda.battlecity.interfaces.CanMove;
 import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.MovingModifier;
@@ -23,6 +24,7 @@ public abstract class MoveableUnit extends GameUnit implements CanMove {
     protected final MovingModifier<MoveableUnit> movingModifier;
     protected BooleanProperty engineOn = new SimpleBooleanProperty(false);
     protected ObjectProperty<Direction> direction = new SimpleObjectProperty<>(Direction.UP);
+    protected ActionCommandGenerator actionCommandGenerator;
     private long velocity;
 
     public MoveableUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long> timeInState, HasGameUnits playground, long velocity) {
@@ -33,11 +35,12 @@ public abstract class MoveableUnit extends GameUnit implements CanMove {
 
     abstract protected MovingModifier<MoveableUnit> createMovingModifier(HasGameUnits playground);
 
-    @Override
-    public void initialize(long startTime) {
-        super.initialize(startTime);
-        log.debug("MoveableUnit.initialize");
-        heartBeats.addListener(movingModifier);
+    public ActionCommandGenerator getActionCommandGenerator() {
+        return actionCommandGenerator;
+    }
+
+    public void setActionCommandGenerator(ActionCommandGenerator actionCommandGenerator) {
+        this.actionCommandGenerator = actionCommandGenerator;
     }
 
     public boolean canMove() {
@@ -78,6 +81,37 @@ public abstract class MoveableUnit extends GameUnit implements CanMove {
         return direction;
     }
 
+    @Override
+    public void heartBeat(long currentTime) {
+        if (actionCommandGenerator != null) {
+            ProcessActionCommandResult processActionCommandResult =
+                    processActionCommand(actionCommandGenerator.extractActionCommand());
+            log.debug(processActionCommandResult.toString());
+        }
+        super.heartBeat(currentTime);
+    }
+
+    @Override
+    public void initialize(long startTime) {
+        super.initialize(startTime);
+        log.debug("MoveableUnit.initialize");
+        heartBeats.addListener(movingModifier);
+    }
+
+    public ProcessActionCommandResult processActionCommand(ActionCommand actionCommand) {
+        try {
+            if (isPause()) return ProcessActionCommandResult.IGNORED;
+            if (actionCommand.direction != null) {
+                this.setDirection(actionCommand.direction);
+                return ProcessActionCommandResult.SUCCESS;
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return ProcessActionCommandResult.EXCEPTION;
+        }
+        return ProcessActionCommandResult.IGNORED;
+    }
+
     //protected CollisionManager collisionManager;
 //  private Bounds newBounds;
     public enum Direction {
@@ -85,6 +119,22 @@ public abstract class MoveableUnit extends GameUnit implements CanMove {
         LEFT,
         DOWN,
         RIGHT
+    }
+
+    public enum ProcessActionCommandResult {
+        SUCCESS,
+        IGNORED,
+        EXCEPTION
+    }
+
+    public static class ActionCommand {
+        public Direction direction;
+        public boolean fire;
+
+        public ActionCommand(Direction direction, boolean fire) {
+            this.direction = direction;
+            this.fire = fire;
+        }
     }
 
 }

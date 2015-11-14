@@ -17,6 +17,10 @@ public class StateFlowModifier<T extends CanPause & CanChangeState> extends Numb
         super(gameUnit, null);
     }
 
+    public void resetTimeInCurrentState() {
+        timeInCurrentState = 0;
+    }
+
     @Override
     protected void perform(long deltaTime) {
         log.info("StateFlowModifier.perform");

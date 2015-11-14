@@ -114,6 +114,10 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
                 "} " + super.toString();
     }
 
+    public void resetTimeInCurrentState() {
+        stateFlowModifier.resetTimeInCurrentState();
+    }
+
     public enum State {
         CREATING,
         ACTIVE,

@@ -47,6 +47,18 @@ public class BonusUnit extends GameUnit {
     }
 
     public void takeToPocket(TankUnit tankUnit) {
+        if (!getBonusType().isOneTime) {
+            BonusUnit bonusUnit = tankUnit.getBonusList().stream()
+                    .filter(bonusUnit1 -> bonusUnit1.getBonusType() == getBonusType())
+                    .findFirst().orElse(null);
+            if (bonusUnit != null) {
+                bonusUnit.resetTimeInCurrentState();
+                if (!this.isAux()) {
+                    this.setCurrentState(State.DEAD);
+                }
+                return;
+            }
+        }
         this.setCurrentState(State.IN_POCKET);
         tankUnit.getBonusList().add(this);
         this.currentStateProperty().addListener((observable, oldValue, newValue) -> {
@@ -54,10 +66,6 @@ public class BonusUnit extends GameUnit {
                 tankUnit.getBonusList().remove(this);
             }
         });
-    }
-
-    public boolean isOneTime() {
-        return getBonusType().isOneTime;
     }
 
     public BonusType getBonusType() {
@@ -68,11 +76,15 @@ public class BonusUnit extends GameUnit {
         return getBonusType().isAux;
     }
 
+    public boolean isOneTime() {
+        return getBonusType().isOneTime;
+    }
+
     @Override
     public String toString() {
         return "BonusUnit{" +
                 "bonusType=" + bonusType +
-                "} " + super.toString();
+                "}";
     }
 
     public enum BonusType {

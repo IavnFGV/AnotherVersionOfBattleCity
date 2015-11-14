@@ -105,6 +105,10 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
         return 8 * gamePixel.getY();
     }
 
+    public void heartBeat(long now) {
+        unitList.forEach(gameUnit -> gameUnit.heartBeat(now));
+    }
+
     public TankUnit getFirstPlayer() {
         return firstPlayer;
     }
@@ -151,7 +155,7 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
         } else {
             FxSprite.startBackgroundAnimation();
         }
-        setState(PlaygroundState.PAUSED);
+//        setState(PlaygroundState.PAUSED);
     }
 
     public boolean isPause() {

@@ -120,6 +120,17 @@ public class PlayerTankFxSprite extends TankFxSprite {
         return super.nextViewport(animationType, index);
     }
 
+    @Override
+    protected void toActiveState() {
+        super.toActiveState();
+        gameUnit.getBonusList().stream()
+                .filter(bonusUnit ->
+                        (((bonusUnit.getBonusType() == BonusUnit.BonusType.HELMET)) ||
+                                (bonusUnit.getBonusType() == BonusUnit.BonusType.START_GAME_HELMET)))
+                .findFirst()
+                .ifPresent(bonusUnit1 -> showAnimation(AnimationType.ANIMATION_HELMET));
+    }
+
     protected class HelmetAnimation extends SpriteAnimation<TankUnit> {
 
         private int count = 2;

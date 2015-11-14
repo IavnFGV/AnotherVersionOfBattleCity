@@ -69,9 +69,9 @@ public class TankUnit extends MoveableUnit implements Destroyable {
             friendlyfireGift = new BonusUnit(playground, BonusUnit.BonusType.FRIENDLYFIRE_GIFT);
             playground.getUnitList().addAll(startGameHelmet, friendlyfireGift);
             currentStateProperty().addListener((observable, oldValue, newValue) -> {
-                        if (newValue == State.ACTIVE) {
+                        if ((oldValue == State.CREATING) &&
+                                (newValue == State.ACTIVE)) {
                             Platform.runLater(() -> startGameHelmet.takeToPocket(this));
-
                         }
                     }
             );
