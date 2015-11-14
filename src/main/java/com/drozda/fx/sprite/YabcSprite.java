@@ -38,6 +38,9 @@ public enum YabcSprite {
             new Rectangle2D(0, 848, 16, 16),
             new Rectangle2D(16, 848, 16, 16),
             new Rectangle2D(32, 848, 16, 16)}),
+    EAGLE_BASE(new Rectangle2D[]{
+            new Rectangle2D(0, 912, 32, 32),
+            new Rectangle2D(32, 912, 32, 32)}),
     //players
     TANK_FIRST_PLAYER_0_STAR(new Rectangle2D[]{
             new Rectangle2D(0, 255, 32, 32),
@@ -238,6 +241,10 @@ public enum YabcSprite {
         if (gameUnit instanceof BonusUnit) {
             BonusUnit bonusUnit = (BonusUnit) gameUnit;
             return new BonusFxSprite(bonusUnit);
+        }
+        if (gameUnit instanceof EagleBaseUnit) {
+            EagleBaseUnit eagleBaseUnit = (EagleBaseUnit) gameUnit;
+            return new EagleBaseFxSprite(eagleBaseUnit);
         }
         return getDigit(0); //  STUB
     }

@@ -58,12 +58,12 @@ public class BonusFxSprite extends FxSprite<BonusUnit> {
 
     @Override
     protected void toInPocketState() {
-        turnOffAnimation(AnimationType.ANIMATION_ACTIVE);
+        hideAnimation(AnimationType.ANIMATION_ACTIVE);
     }
 
     @Override
     protected void toBlinkState() {
-        turnOnAnimation(AnimationType.ANIMATION_ACTIVE);
+        showAnimation(AnimationType.ANIMATION_ACTIVE);
     }
 
     protected class BonusAnimation extends SpriteAnimation<BonusUnit> {

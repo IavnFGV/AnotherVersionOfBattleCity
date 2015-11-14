@@ -8,7 +8,7 @@ import javafx.scene.image.ImageView;
  * Created by GFH on 10.11.2015.
  */
 public class SteelFxSprite extends FxSprite<TileUnit> {
-    static Rectangle2D[] viewPorts = YabcSprite.TILE_STEEL.viewports;
+    static Rectangle2D[] viewports = YabcSprite.TILE_STEEL.viewports;
 
     public SteelFxSprite(TileUnit gameUnit) {
         super(gameUnit);
@@ -17,7 +17,7 @@ public class SteelFxSprite extends FxSprite<TileUnit> {
     @Override
     protected void initSprite() {
         ImageView imageView = new ImageView(baseImage);
-        imageView.setViewport(viewPorts[0]);
+        imageView.setViewport(viewports[0]);
         SpriteAnimation spriteAnimation = new SpriteAnimation(imageView) {
             @Override
             protected AnimationType getAnimationType() {

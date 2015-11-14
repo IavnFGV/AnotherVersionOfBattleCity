@@ -6,10 +6,7 @@ import com.drozda.battlecity.loader.LevelLoader;
 import com.drozda.battlecity.loader.TestLoader;
 import com.drozda.battlecity.playground.PlaygroundState;
 import com.drozda.battlecity.playground.YabcBattleGround;
-import com.drozda.battlecity.unit.BonusUnit;
-import com.drozda.battlecity.unit.GameUnit;
-import com.drozda.battlecity.unit.TankUnit;
-import com.drozda.battlecity.unit.TileUnit;
+import com.drozda.battlecity.unit.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -90,12 +87,19 @@ public class SpriteTest extends Application {
                 .filter(bonusUnit -> bonusUnit.getBonusType() == BonusUnit.BonusType.STAR)
                 .findFirst().get();
 
+        EagleBaseUnit eagleBase = yabcBattleGround.getUnitList().stream()
+                .filter(gameUnit -> (gameUnit instanceof EagleBaseUnit))
+                .map(gameUnit1 -> (EagleBaseUnit) gameUnit1)
+                        //.filter(bonusUnit -> bonusUnit.getBonusType() == BonusUnit.BonusType.STAR)
+                .findFirst().get();
+
 
         readyForTest();
 
         // firstTank.getBonusList().add(new BonusUnit(0, 0, 0, 0, yabcBattleGround, BonusUnit.BonusType.HELMET));
 //        propertiesEditorController.initPropertyShit(firstTank);
-        propertiesEditorController.initPropertyShit(bonusStar);
+//        propertiesEditorController.initPropertyShit(bonusStar);
+        propertiesEditorController.initPropertyShit(eagleBase);
         //     propertiesEditorController.initPropertyShit(secondTank);
         //  firstTank.setEngineOn(true);
         //    firstTank.setStars();

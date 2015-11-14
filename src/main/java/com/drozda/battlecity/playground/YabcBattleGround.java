@@ -1,10 +1,7 @@
 package com.drozda.battlecity.playground;
 
 import com.drozda.battlecity.interfaces.BattleGround;
-import com.drozda.battlecity.unit.BonusUnit;
-import com.drozda.battlecity.unit.GameUnit;
-import com.drozda.battlecity.unit.TankUnit;
-import com.drozda.battlecity.unit.TileUnit;
+import com.drozda.battlecity.unit.*;
 import com.drozda.fx.sprite.FxSprite;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -36,6 +33,8 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     private int tankWidthCells = 2;
     private int bonusHeightCells = 2;
     private int bonusWidthCells = 2;
+    private int eagleBaseHeightCells = 2;
+    private int eagleBaseWidthCells = 2;
     private int worldSizeCells = worldWiddthCells * worldHeightCells;
     private ListProperty<GameUnit> unitList = new SimpleListProperty<>(FXCollections.observableArrayList());
     private ObjectProperty<BattleType> battleType = new SimpleObjectProperty<>(BattleType.SINGLE_PLAYER);
@@ -43,6 +42,7 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     private ReadOnlyBooleanWrapper pause = new ReadOnlyBooleanWrapper();
     private Point2D firstPlayerRespawn;
     private Point2D secondPlayerRespawn;
+    private Point2D eagleBaseRespawn;
     private List<GameUnit> wereNotInPauseState;
 
     private TankUnit firstPlayer;
@@ -80,6 +80,7 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
         setBattleType(battleType);
         firstPlayerRespawn = new Point2D(8 * getCellWidth(), 24 * getCellHeight());
         secondPlayerRespawn = new Point2D(16 * getCellWidth(), 24 * getCellHeight());
+        eagleBaseRespawn = new Point2D(12 * getCellWidth(), 24 * getCellHeight());
     }
 
     public double getCellWidth() {
@@ -169,10 +170,21 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
 
     @Override
     public void createActiveUnits() {
+        createEagleBase();
         createFirstPlayer();
         if (getBattleType() == BattleType.DOUBLE_PLAYER) {
             createSecondPlayer();
         }
+    }
+
+    private void createEagleBase() {
+        EagleBaseUnit eagleBaseUnit = new EagleBaseUnit(eagleBaseRespawn.getX(), eagleBaseRespawn.getY(),
+                getEagleBaseWidth(), getEagleBaseHeight(), this);
+        unitList.add(eagleBaseUnit);
+    }
+
+    private double getEagleBaseHeight() {
+        return eagleBaseHeightCells * getCellHeight();
     }
 
     private void createSecondPlayer() {
@@ -227,6 +239,10 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
 
     public double getBonusHeight() {
         return bonusHeightCells * getCellHeight();
+    }
+
+    public double getEagleBaseWidth() {
+        return eagleBaseWidthCells * getCellWidth();
     }
 
     public enum BattleType {

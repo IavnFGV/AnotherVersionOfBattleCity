@@ -31,7 +31,7 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
                     handleCurrentStateChange(newValue);
                 }
         );
-        initSprite();
+        initSprite();// good example of how you MUST NOT DO // todo replace initialization in constructor
     }
 
     public static void startBackgroundAnimation() {
@@ -43,25 +43,25 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
     }
 
     protected void toCreatingState() {
-        turnOnAnimation(AnimationType.ANIMATION_CREATING);
-        turnOffAnimation(AnimationType.ANIMATION_ACTIVE, AnimationType.ANIMATION_HELMET, AnimationType.ANIMATION_EXPLODING);
+        showAnimation(AnimationType.ANIMATION_CREATING);
+        hideAnimation(AnimationType.ANIMATION_ACTIVE, AnimationType.ANIMATION_HELMET, AnimationType.ANIMATION_EXPLODING);
     }
 
     protected void toActiveState() {
-        turnOnAnimation(AnimationType.ANIMATION_ACTIVE);
-        turnOffAnimation(AnimationType.ANIMATION_CREATING, AnimationType.ANIMATION_HELMET, AnimationType.ANIMATION_EXPLODING);
+        showAnimation(AnimationType.ANIMATION_ACTIVE);
+        hideAnimation(AnimationType.ANIMATION_CREATING, AnimationType.ANIMATION_HELMET, AnimationType.ANIMATION_EXPLODING);
 
     }
 
     protected void toExplodingState() {
-        turnOffAnimation(AnimationType.ANIMATION_ACTIVE, AnimationType.ANIMATION_HELMET, AnimationType.ANIMATION_CREATING);
-        turnOnAnimation(AnimationType.ANIMATION_EXPLODING);
+        hideAnimation(AnimationType.ANIMATION_ACTIVE, AnimationType.ANIMATION_HELMET, AnimationType.ANIMATION_CREATING);
+        showAnimation(AnimationType.ANIMATION_EXPLODING);
     }
 
     protected void toDeadState() {
         //allAnimations.stop();
         //((Pane) this.getParent()).getChildren().removeAll(this); // todo REPLACE AS Consumer???
-        turnOffAnimation(AnimationType.values());
+        hideAnimation(AnimationType.values());
     }
 
     /**
@@ -133,7 +133,7 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
     protected void toArmorState() {
     }
 
-    protected void turnOnAnimation(AnimationType... animationType) {
+    protected void showAnimation(AnimationType... animationType) {
         for (AnimationType aType : animationType) {
             animationSet.stream()
                     .filter(tSpriteAnimation -> tSpriteAnimation.getAnimationType() == aType)
@@ -145,7 +145,7 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
         }
     }
 
-    protected void turnOffAnimation(AnimationType... animationType) {
+    protected void hideAnimation(AnimationType... animationType) {
         for (AnimationType aType : animationType) {
             animationSet.stream()
                     .filter(tSpriteAnimation -> tSpriteAnimation.getAnimationType() == aType)

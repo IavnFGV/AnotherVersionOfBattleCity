@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by GFH on 12.11.2015.
  */
-public class ExplodingFxSprite<T extends GameUnit> extends FxSprite<T> {
+public abstract class ExplodingFxSprite<T extends GameUnit> extends FxSprite<T> {
     private static final Logger log = LoggerFactory.getLogger(ExplodingFxSprite.class);
     static Rectangle2D[] explosionSmallViewports = YabcSprite.EXPLOSION_SMALL.viewports;
     static Rectangle2D[] explosionBigViewports = YabcSprite.EXPLOSION_BIG.viewports;

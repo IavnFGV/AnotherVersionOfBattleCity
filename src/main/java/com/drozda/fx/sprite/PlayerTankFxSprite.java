@@ -72,14 +72,14 @@ public class PlayerTankFxSprite extends TankFxSprite {
                             for (BonusUnit remitem : c.getRemoved()) {
                                 if ((remitem.getBonusType() == BonusUnit.BonusType.HELMET) ||
                                         (remitem.getBonusType() == BonusUnit.BonusType.START_GAME_HELMET)) {
-                                    turnOffAnimation(AnimationType.ANIMATION_HELMET);
+                                    hideAnimation(AnimationType.ANIMATION_HELMET);
                                 }
                             }
                         } else if (c.wasAdded())
                             for (BonusUnit additem : c.getAddedSubList()) {
                                 if ((additem.getBonusType() == BonusUnit.BonusType.HELMET) ||
                                         (additem.getBonusType() == BonusUnit.BonusType.START_GAME_HELMET)) {
-                                    turnOnAnimation(AnimationType.ANIMATION_HELMET);
+                                    showAnimation(AnimationType.ANIMATION_HELMET);
                                 }
                             }
                     }
