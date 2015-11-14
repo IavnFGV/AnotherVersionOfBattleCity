@@ -8,7 +8,7 @@ import javafx.geometry.Bounds;
  */
 public interface CanMove {
 
-    //  boolean getEngineOn();
+    IsMoveAllowedResult isMoveAllowed(boolean isInWorldBounds);
 
     boolean canMove();
 
@@ -19,4 +19,10 @@ public interface CanMove {
     void setBounds(Bounds bounds);
 
     long getVelocity();
+
+    enum IsMoveAllowedResult {
+        ALLOW,
+        STOP,
+        DESTROY
+    }
 }

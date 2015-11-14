@@ -10,10 +10,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by GFH on 27.09.2015.
  */
-public abstract class NumberListenerModifier extends UnitModifier implements ChangeListener<Number> {
+public abstract class NumberListenerModifier<T extends CanPause> extends UnitModifier<T> implements ChangeListener<Number> {
     private static final Logger log = LoggerFactory.getLogger(NumberListenerModifier.class);
 
-    public NumberListenerModifier(CanPause gameUnit, HasGameUnits playground) {
+    public NumberListenerModifier(T gameUnit, HasGameUnits playground) {
         super(gameUnit, playground);
     }
 

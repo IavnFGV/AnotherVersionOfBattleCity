@@ -1,6 +1,7 @@
 package com.drozda.battlecity.playground;
 
 import com.drozda.battlecity.interfaces.BattleGround;
+import com.drozda.battlecity.interfaces.CanMove;
 import com.drozda.battlecity.unit.*;
 import com.drozda.fx.sprite.FxSprite;
 import javafx.beans.property.*;
@@ -23,10 +24,8 @@ import static java.util.Arrays.asList;
  */
 public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     private static final Logger log = LoggerFactory.getLogger(YabcBattleGround.class);
-
     private static final EnumSet<PlaygroundState> notPauseStates = EnumSet.of(PlaygroundState.ACTIVE);
     private static final EnumSet<PlaygroundState> pauseStates = EnumSet.complementOf(notPauseStates);
-
     //    private PlaygroundState state;
     private Point2D gamePixel;
     private int worldWiddthCells = 26;
@@ -48,7 +47,6 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     private List<Point2D> spadeZone;
     private List<TileUnit> wereInSpadeZone = new LinkedList<>();
     private List<GameUnit> wereNotInPauseState;
-
     private TankUnit firstPlayer;
     private TankUnit secondPlayer;
 
@@ -169,6 +167,14 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     @Override
     public ObservableList<GameUnit> getUnitList() {
         return unitList.get();
+    }
+
+    @Override
+    public boolean isInWorldBounds(double newX, double newY, CanMove moveUnit) {
+        return !(newX < 0 ||
+                newX > worldHeightCells * getCellHeight() - moveUnit.getBounds().getHeight() ||
+                newY < 0 ||
+                newY > worldWiddthCells * getCellWidth() - moveUnit.getBounds().getWidth());
     }
 
     public void setUnitList(ObservableList<GameUnit> unitList) {

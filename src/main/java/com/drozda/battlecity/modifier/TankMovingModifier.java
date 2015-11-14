@@ -1,11 +1,7 @@
 package com.drozda.battlecity.modifier;
 
-import com.drozda.battlecity.interfaces.CanPause;
 import com.drozda.battlecity.interfaces.HasGameUnits;
-import com.drozda.battlecity.unit.BulletUnit;
-import com.drozda.battlecity.unit.GameUnit;
-import com.drozda.battlecity.unit.MoveableUnit;
-import com.drozda.battlecity.unit.TileUnit;
+import com.drozda.battlecity.unit.*;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -19,17 +15,17 @@ import java.util.function.Predicate;
 /**
  * Created by GFH on 30.09.2015.
  */
-public class TankMovingModifier extends MovingModifier<MoveableUnit> {
+public class TankMovingModifier extends MovingModifier<TankUnit> {
     private static final Logger log = LoggerFactory.getLogger(TankMovingModifier.class);
 
     private static Set<TileUnit.TileType> rideTiles = EnumSet.of(TileUnit.TileType.FOREST, TileUnit.TileType.ICE);
 
-    public TankMovingModifier(CanPause gameUnit, HasGameUnits playground) {
+    public TankMovingModifier(TankUnit gameUnit, HasGameUnits playground) {
         super(gameUnit, playground);
     }
 
     @Override
-    protected void confirmNewPosition(MoveableUnit activeUnit, double newValueX, double newValueY, HasGameUnits playground) {
+    protected void confirmNewPosition(TankUnit activeUnit, double newValueX, double newValueY, HasGameUnits playground) {
         Bounds newFixedBounds = new BoundingBox(newValueX + 1,
                 // newBounds will always intersects another bounds if we are absolutely near another
                 // so we give 1 pixel on every direction to handle this situation
@@ -43,10 +39,12 @@ public class TankMovingModifier extends MovingModifier<MoveableUnit> {
         Point2D result = new Point2D(newValueX, newValueY);
         Predicate<GameUnit> notMe = u -> (u != activeUnit);
         Predicate<GameUnit> notBullet = u -> (!(u instanceof BulletUnit));
+        Predicate<GameUnit> notBonus = u -> (!(u instanceof BonusUnit));
 
         Point2D newPosition = playground.getUnitList().stream()
                 .filter(notMe)
                 .filter(notBullet)
+                .filter(notBonus)
                 .map(u -> {
                             if (!canRide(u) && u.getBounds().intersects(newFixedBounds)) {
 //                        System.out.println("OtherUnit =" + u.getClass() + ";activeUnit = [" + activeUnit

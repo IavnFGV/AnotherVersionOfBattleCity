@@ -21,7 +21,7 @@ public abstract class MoveableUnit extends GameUnit implements CanMove {
     private static final Logger log = LoggerFactory.getLogger(MoveableUnit.class);
     public static long fastSpeed = 8l;
     public static long normalSpeed = 6l;
-    protected final MovingModifier<MoveableUnit> movingModifier;
+    protected final MovingModifier<? extends MoveableUnit> movingModifier;
     protected BooleanProperty engineOn = new SimpleBooleanProperty(false);
     protected ObjectProperty<Direction> direction = new SimpleObjectProperty<>(Direction.UP);
     protected ActionCommandGenerator actionCommandGenerator;
@@ -33,7 +33,7 @@ public abstract class MoveableUnit extends GameUnit implements CanMove {
         this.movingModifier = createMovingModifier(playground);
     }
 
-    abstract protected MovingModifier<MoveableUnit> createMovingModifier(HasGameUnits playground);
+    abstract protected MovingModifier<? extends MoveableUnit> createMovingModifier(HasGameUnits playground);
 
     public ActionCommandGenerator getActionCommandGenerator() {
         return actionCommandGenerator;

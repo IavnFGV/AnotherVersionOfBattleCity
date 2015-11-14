@@ -79,6 +79,11 @@ public class TankUnit extends MoveableUnit implements Destroyable {
         }
     }
 
+    @Override
+    public IsMoveAllowedResult isMoveAllowed(boolean isInWorldBounds) {
+        return isInWorldBounds ? IsMoveAllowedResult.ALLOW : IsMoveAllowedResult.STOP;
+    }
+
     public BonusUnit getStartGameHelmet() {
         return startGameHelmet;
     }
@@ -140,7 +145,7 @@ public class TankUnit extends MoveableUnit implements Destroyable {
     }
 
     @Override
-    protected MovingModifier<MoveableUnit> createMovingModifier(HasGameUnits playground) {
+    protected MovingModifier<TankUnit> createMovingModifier(HasGameUnits playground) {
         return new TankMovingModifier(this, playground);
     }
 

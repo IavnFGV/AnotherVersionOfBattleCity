@@ -24,7 +24,7 @@ public class BulletUnit extends MoveableUnit {
     }
 
     @Override
-    protected MovingModifier<MoveableUnit> createMovingModifier(HasGameUnits playground) {
+    protected MovingModifier<BulletUnit> createMovingModifier(HasGameUnits playground) {
         return new BulletMovingModifier(this, playground);
     }
 
@@ -42,6 +42,14 @@ public class BulletUnit extends MoveableUnit {
 
     public void setType(Type type) {
         this.type = type;
+    }
+
+    @Override
+    public IsMoveAllowedResult isMoveAllowed(boolean isInWorldBounds) {
+        if (!isInWorldBounds) {
+            setCurrentState(State.EXPLODING);
+        }
+        return isInWorldBounds ? IsMoveAllowedResult.ALLOW : IsMoveAllowedResult.DESTROY;
     }
 
     public enum Type {

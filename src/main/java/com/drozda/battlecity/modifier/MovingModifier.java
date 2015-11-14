@@ -8,25 +8,26 @@ import com.drozda.battlecity.interfaces.HasGameUnits;
 /**
  * Created by GFH on 27.09.2015.
  */
-public abstract class MovingModifier<T extends CanPause & CanMove> extends NumberListenerModifier {
+public abstract class MovingModifier<T extends CanPause & CanMove> extends NumberListenerModifier<T> {
     private long moveAccumulator = 0l;
     private HasGameUnits playground;
 
 
-    public MovingModifier(CanPause gameUnit, HasGameUnits playground) {
+    public MovingModifier(T gameUnit, HasGameUnits playground) {
         super(gameUnit, playground);
         this.playground = playground;
     }
+
     @Override
     protected void perform(long deltaTime) {
         moveAccumulator += deltaTime;
-        if (gameUnit().canMove() &&
-                (moveAccumulator >= StaticServices.ONE_SECOND / 64)) {
+        if (gameUnit.canMove() &&
+                (moveAccumulator >= StaticServices.ONE_SECOND / 40)) {
             moveAccumulator = 0l;
-            double newX = gameUnit().getBounds().getMinX();
-            double newY = gameUnit().getBounds().getMinY();
-            double deltaPosition = (gameUnit().getVelocity());
-            switch (gameUnit().getDirection()) {
+            double newX = gameUnit.getBounds().getMinX();
+            double newY = gameUnit.getBounds().getMinY();
+            double deltaPosition = (gameUnit.getVelocity());
+            switch (gameUnit.getDirection()) {
                 case UP:
                     newY = (newY - deltaPosition);
                     break;
@@ -40,13 +41,13 @@ public abstract class MovingModifier<T extends CanPause & CanMove> extends Numbe
                     newX = (newX + deltaPosition);
                     break;
             }
-            confirmNewPosition(gameUnit(), newX, newY, playground);
+            boolean isInWorldBounds = playground.isInWorldBounds(newX, newY, gameUnit);
+            if (gameUnit.isMoveAllowed(isInWorldBounds) == CanMove.IsMoveAllowedResult.ALLOW) {
+                confirmNewPosition(gameUnit, newX, newY, playground);
+            }
         }
     }
 
-    protected T gameUnit() {
-        return (T) gameUnit;
-    }
 
     abstract protected void confirmNewPosition(T gameUnit, double newX, double newY, HasGameUnits playground);
 }

@@ -8,4 +8,8 @@ import javafx.collections.ObservableList;
  */
 public interface HasGameUnits {
     ObservableList<GameUnit> getUnitList();
+
+    boolean isInWorldBounds(double newX, double newY, CanMove moveUnit);
+
+
 }

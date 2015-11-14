@@ -5,7 +5,8 @@ import com.drozda.battlecity.manager.PlaygroundManager;
 import com.drozda.battlecity.playground.YabcBattleGround;
 import com.drozda.battlecity.unit.BonusUnit;
 import com.drozda.battlecity.unit.GameUnit;
-import com.drozda.fx.sprite.ForestFxSprite;
+import com.drozda.battlecity.unit.TileUnit;
+import com.drozda.fx.sprite.BonusFxSprite;
 import com.drozda.fx.sprite.YabcSprite;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
@@ -214,19 +215,23 @@ public class Battle {
                     (((BonusUnit) gameUnit).isAux())) {
                 continue;
             }
-            //  if (gameUnit instanceof TileUnit) {
             Node node = YabcSprite.getFullSprite(gameUnit);
             centerPane.getChildren().add(node);
-            //  }
+            if ((gameUnit instanceof TileUnit) && (((TileUnit) gameUnit).getTileType() == TileUnit.TileType.FOREST)) {
+                node.toFront();
+            } else {
+                node.toBack();
+            }
         }
+        centerPane.getChildren().stream()
+                .filter(node -> (node instanceof BonusFxSprite))
+                .forEach(node1 -> Platform.runLater(() -> node1.toFront()));
+
+
         battleGround.battleTypeProperty().addListener((observable, oldValue, newValue) -> setSingleOrDouble
                 (newValue == YabcBattleGround.BattleType.SINGLE_PLAYER ? 1 : 2));
         setSingleOrDouble
                 (battleGround.getBattleType() == YabcBattleGround.BattleType.SINGLE_PLAYER ? 1 : 2);
-        centerPane.getChildren().stream()
-                .filter(node -> (node instanceof ForestFxSprite))
-                .forEach(node1 -> Platform.runLater(() -> node1.toFront()));
-
     }
 
 }
