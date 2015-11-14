@@ -103,7 +103,10 @@ public abstract class MoveableUnit extends GameUnit implements CanMove {
             if (isPause()) return ProcessActionCommandResult.IGNORED;
             if (actionCommand.direction != null) {
                 this.setDirection(actionCommand.direction);
+                this.setEngineOn(true);
                 return ProcessActionCommandResult.SUCCESS;
+            } else {
+                setEngineOn(false);
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);

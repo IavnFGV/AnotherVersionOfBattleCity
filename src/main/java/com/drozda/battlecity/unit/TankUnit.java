@@ -55,6 +55,7 @@ public class TankUnit extends MoveableUnit implements Destroyable {
         super(minX, minY, width, height, stateFlow, timeInState, playground, 0l);
         fixingModifier = new PositionFixingModifier<>(this, playground);
         this.tankType = tankType;
+        this.directionProperty().addListener(fixingModifier);
         long velocity;
         if ((tankType == TankType.TANK_FAST_ENEMY) ||
                 (tankType == TankType.TANK_FAST_ENEMY_X)) {

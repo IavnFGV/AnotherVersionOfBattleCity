@@ -11,11 +11,11 @@
     </appender>
 
     <logger name="com.drozda">
-        <level value="DEBUG"/>
+        <level value="ERROR"/>
     </logger>
 
     <logger name="com.drozda.battlecity.modifier">
-        <level value="DEBUG"/>
+        <level value="ERROR"/>
     </logger>
 
     <root>

@@ -41,7 +41,7 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     private ListProperty<GameUnit> unitList = new SimpleListProperty<>(FXCollections.observableArrayList());
     private ObjectProperty<BattleType> battleType = new SimpleObjectProperty<>(BattleType.SINGLE_PLAYER);
     private ObjectProperty<PlaygroundState> state = new SimpleObjectProperty<>(PlaygroundState.INITIALIZING);
-    private ReadOnlyBooleanWrapper pause = new ReadOnlyBooleanWrapper();
+    private ReadOnlyBooleanWrapper pause = new ReadOnlyBooleanWrapper(true);
     private Point2D firstPlayerRespawn;
     private Point2D secondPlayerRespawn;
     private Point2D eagleBaseRespawn;
@@ -71,7 +71,11 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
                         wereNotInPauseState.forEach(gameUnit -> gameUnit.setPause(true));
                     } else {
                         FxSprite.startBackgroundAnimation();
-                        wereNotInPauseState.forEach(gameUnit -> gameUnit.setPause(false));
+                        if ((wereNotInPauseState == null) || (wereNotInPauseState.isEmpty())) {
+                            unitList.forEach(gameUnit -> gameUnit.setPause(false));
+                        } else {
+                            wereNotInPauseState.forEach(gameUnit -> gameUnit.setPause(false));
+                        }
                     }
                 }
         );
@@ -155,7 +159,7 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
         } else {
             FxSprite.startBackgroundAnimation();
         }
-//        setState(PlaygroundState.PAUSED);
+        setState(PlaygroundState.PAUSED);
     }
 
     public boolean isPause() {
