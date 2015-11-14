@@ -43,8 +43,11 @@ public abstract class ExplodingFxSprite<T extends GameUnit> extends FxSprite<T> 
 
     protected void initSmallExplosionAnimation() {
         ImageView imageView = new ImageView(baseImage);
-        ExplosionAnimation smallExplosionAnimation = new ExplosionAnimation(Duration.millis(gameUnit
-                .getTimeInState(GameUnit.State.EXPLODING) / 1000_000), explosionSmallViewports.length, imageView);
+        ExplosionAnimation smallExplosionAnimation = new ExplosionAnimation(
+                Duration.millis(gameUnit.getTimeInState(GameUnit.State.EXPLODING) / 1000_000),
+                explosionSmallViewports.length,
+                imageView,
+                AnimationType.ANIMATION_EXPLODING);
         bindImageViewToGameUnit(imageView, -12, -12);
         imageView.setViewport(nextViewport(smallExplosionAnimation.getAnimationType(), 0));
         imageView.setVisible(false);
@@ -53,8 +56,12 @@ public abstract class ExplodingFxSprite<T extends GameUnit> extends FxSprite<T> 
 
     protected void initBigExplosionAnimation() {
         ImageView imageView = new ImageView(baseImage);
-        ExplosionAnimation bigExplosionAnimation = new ExplosionAnimation(Duration.millis(gameUnit
-                .getTimeInState(GameUnit.State.EXPLODING) / 1000_000), explosionBigViewports.length, imageView);
+        ExplosionAnimation bigExplosionAnimation = new ExplosionAnimation(
+                Duration.millis(gameUnit.getTimeInState(GameUnit.State.EXPLODING) / 1000_000),
+                explosionBigViewports.length,
+                imageView,
+                AnimationType.ANIMATION_EXPLODING
+        );
         bindImageViewToGameUnit(imageView, -16, -16);
         imageView.setViewport(nextViewport(bigExplosionAnimation.getAnimationType(), 0));
         imageView.setVisible(false);
@@ -79,8 +86,8 @@ public abstract class ExplodingFxSprite<T extends GameUnit> extends FxSprite<T> 
         private int count;
         private int lastIndex;
 
-        public ExplosionAnimation(Duration duration, int count, ImageView imageView) {
-            super(duration, imageView);
+        public ExplosionAnimation(Duration duration, int count, ImageView imageView, AnimationType animationType) {
+            super(duration, imageView, animationType);
             setCycleCount(1);
             this.count = count;
         }
@@ -93,11 +100,6 @@ public abstract class ExplodingFxSprite<T extends GameUnit> extends FxSprite<T> 
                 imageView.setViewport(nextViewport(getAnimationType(), index));
                 lastIndex = index;
             }
-        }
-
-        @Override
-        protected AnimationType getAnimationType() {
-            return AnimationType.ANIMATION_EXPLODING;
         }
     }
 

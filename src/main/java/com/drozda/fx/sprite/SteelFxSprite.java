@@ -18,24 +18,9 @@ public class SteelFxSprite extends FxSprite<TileUnit> {
     protected void initSprite() {
         ImageView imageView = new ImageView(baseImage);
         imageView.setViewport(viewports[0]);
-        SpriteAnimation spriteAnimation = new SpriteAnimation(imageView) {
-            @Override
-            protected AnimationType getAnimationType() {
-                return AnimationType.ANIMATION_ACTIVE;
-            }
-
-            @Override
-            protected void interpolate(double frac) {
-
-            }
-        };
+        SpriteAnimation spriteAnimation = new BlankSpriteAnimation(imageView, AnimationType.ANIMATION_ACTIVE);
         bindImageViewToGameUnit(imageView, 0, 0);
         animationSet.add(spriteAnimation);
         super.initSprite();
-    }
-
-    @Override
-    protected Rectangle2D nextViewport(AnimationType animationType, int index) {
-        return null;
     }
 }

@@ -18,11 +18,7 @@ public class IceFxSprite extends FxSprite<TileUnit> {
     protected void initSprite() {
         ImageView basicImageView = new ImageView(baseImage);
         basicImageView.setViewport(viewPorts[0]);
-        SpriteAnimation spriteAnimation = new SpriteAnimation(basicImageView) {
-            @Override
-            protected AnimationType getAnimationType() {
-                return AnimationType.ANIMATION_ACTIVE;
-            }
+        SpriteAnimation spriteAnimation = new SpriteAnimation(basicImageView, AnimationType.ANIMATION_ACTIVE) {
 
             @Override
             protected void interpolate(double frac) {

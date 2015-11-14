@@ -21,8 +21,6 @@ public class BonusFxSprite extends FxSprite<BonusUnit> {
     protected void initSprite() {
         switch (gameUnit.getBonusType()) {
 
-            case START_GAME_HELMET:
-                throw new RuntimeException(gameUnit.getBonusType() + " is not visual sprite");
             case HELMET:
                 viewports = YabcSprite.BONUS_HELMET.viewports;
                 break;
@@ -44,11 +42,14 @@ public class BonusFxSprite extends FxSprite<BonusUnit> {
             case GUN:
                 viewports = YabcSprite.BONUS_GUN.viewports;
                 break;
+            default: //START_GAME_HELMET:
+                throw new RuntimeException(gameUnit.getBonusType() + " is not visual sprite");
         }
         ImageView imageView = new ImageView(baseImage);
         BonusAnimation bonusAnimation = new BonusAnimation(
-                Duration.millis(gameUnit.getTimeInState(GameUnit.State.BLINK) / 1000_000 / 5)
-                , imageView);
+                Duration.millis(gameUnit.getTimeInState(GameUnit.State.BLINK) / 1000_000 / 5),
+                imageView,
+                AnimationType.ANIMATION_ACTIVE);
         bindImageViewToGameUnit(imageView, 0, 0);
         imageView.setViewport(viewports[0]);
         animationSet.add(bonusAnimation);
@@ -71,8 +72,8 @@ public class BonusFxSprite extends FxSprite<BonusUnit> {
         private int count = 2;
         private int lastIndex;
 
-        public BonusAnimation(Duration duration, ImageView imageView) {
-            super(duration, imageView);
+        public BonusAnimation(Duration duration, ImageView imageView, AnimationType animationType) {
+            super(duration, imageView, animationType);
             setCycleCount(INDEFINITE);
         }
 
@@ -84,11 +85,6 @@ public class BonusFxSprite extends FxSprite<BonusUnit> {
                 imageView.setVisible(!imageView.isVisible());
                 lastIndex = index;
             }
-        }
-
-        @Override
-        protected AnimationType getAnimationType() {
-            return AnimationType.ANIMATION_ACTIVE;
         }
     }
 

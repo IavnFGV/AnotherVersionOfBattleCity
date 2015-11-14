@@ -3,6 +3,7 @@ package com.drozda.fx.controller;
 import com.drozda.appflow.AppModel;
 import com.drozda.battlecity.manager.PlaygroundManager;
 import com.drozda.battlecity.playground.YabcBattleGround;
+import com.drozda.battlecity.unit.BonusUnit;
 import com.drozda.battlecity.unit.GameUnit;
 import com.drozda.fx.sprite.YabcSprite;
 import javafx.beans.property.IntegerProperty;
@@ -207,9 +208,13 @@ public class Battle {
 
     public void loadPlayground(YabcBattleGround battleGround) {
         for (GameUnit gameUnit : battleGround.getUnitList()) {
+            if ((gameUnit instanceof BonusUnit) &&
+                    (((BonusUnit) gameUnit).isAux())) {
+                continue;
+            }
             //  if (gameUnit instanceof TileUnit) {
-                Node node = YabcSprite.getFullSprite(gameUnit);
-                centerPane.getChildren().add(node);
+            Node node = YabcSprite.getFullSprite(gameUnit);
+            centerPane.getChildren().add(node);
             //  }
         }
         battleGround.battleTypeProperty().addListener((observable, oldValue, newValue) -> setSingleOrDouble

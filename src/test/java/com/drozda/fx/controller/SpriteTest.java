@@ -4,7 +4,6 @@ import com.drozda.appflow.AppModel;
 import com.drozda.appflow.AppState;
 import com.drozda.battlecity.loader.LevelLoader;
 import com.drozda.battlecity.loader.TestLoader;
-import com.drozda.battlecity.playground.PlaygroundState;
 import com.drozda.battlecity.playground.YabcBattleGround;
 import com.drozda.battlecity.unit.*;
 import javafx.application.Application;
@@ -47,7 +46,7 @@ public class SpriteTest extends Application {
 //                2, YabcBattleGround.BattleType.DOUBLE_PLAYER);
         battle.loadPlayground(yabcBattleGround);
         yabcBattleGround.initialize(0l);
-        yabcBattleGround.setState(PlaygroundState.ACTIVE);
+//        yabcBattleGround.setState(PlaygroundState.ACTIVE);
         TileUnit brickUnit = yabcBattleGround.getUnitList().stream()
                 .filter(gameUnit -> (gameUnit instanceof TileUnit))
                 .map(gameUnit1 -> (TileUnit) gameUnit1)
@@ -72,14 +71,14 @@ public class SpriteTest extends Application {
                 .filter(tankUnit -> tankUnit.getTankType() == TankUnit.TankType.TANK_SECOND_PLAYER)
                 .findFirst().get();
 
-        yabcBattleGround.getUnitList().forEach(gameUnit -> gameUnit.setCurrentState(GameUnit.State.ACTIVE));
+//        yabcBattleGround.getUnitList().forEach(gameUnit -> gameUnit.setCurrentState(GameUnit.State.ACTIVE));
         yabcBattleGround.getUnitList().stream()
                 .filter(gameUnit -> gameUnit instanceof TankUnit)
                 .forEach(gameUnit1 -> {
 //                    gameUnit1.setPause(false);
                     ((TankUnit) gameUnit1).setEngineOn(true);
                 });
-        yabcBattleGround.setState(PlaygroundState.ACTIVE);
+//        yabcBattleGround.setState(PlaygroundState.ACTIVE);
 
         BonusUnit bonusStar = yabcBattleGround.getUnitList().stream()
                 .filter(gameUnit -> (gameUnit instanceof BonusUnit))
@@ -93,13 +92,29 @@ public class SpriteTest extends Application {
                         //.filter(bonusUnit -> bonusUnit.getBonusType() == BonusUnit.BonusType.STAR)
                 .findFirst().get();
 
+        SpadeZoneTileUnit spadeZoneTileUnit = yabcBattleGround.getUnitList().stream()
+                .filter(gameUnit -> (gameUnit instanceof SpadeZoneTileUnit))
+                .map(gameUnit1 -> (SpadeZoneTileUnit) gameUnit1)
+                        //.filter(bonusUnit -> bonusUnit.getBonusType() == BonusUnit.BonusType.STAR)
+                .findFirst().get();
 
+
+        //   BonusUnit bonusUnit = new BonusUnit(yabcBattleGround, BonusUnit.BonusType.FRIENDLYFIRE_GIFT);
+        //    bonusUnit.setCurrentState(GameUnit.State.IN_POCKET);
+//        firstTank.getBonusList().add(bonusUnit);
         readyForTest();
+        spadeZoneTileUnit.setCurrentState(GameUnit.State.ARMOR);
+        spadeZoneTileUnit.setPause(false);
 
-        // firstTank.getBonusList().add(new BonusUnit(0, 0, 0, 0, yabcBattleGround, BonusUnit.BonusType.HELMET));
-//        propertiesEditorController.initPropertyShit(firstTank);
+
+//        firstTank.getBonusList().add(new BonusUnit(0, 0, 0, 0, yabcBattleGround, BonusUnit.BonusType.HELMET));
+//        firstTank.getBonusList().add(new BonusUnit(0, 0, 0, 0, yabcBattleGround, BonusUnit.BonusType
+//                .START_GAME_HELMET));
+        propertiesEditorController.initPropertyShit(firstTank);
 //        propertiesEditorController.initPropertyShit(bonusStar);
-        propertiesEditorController.initPropertyShit(eagleBase);
+//        propertiesEditorController.initPropertyShit(brickUnit);
+//        propertiesEditorController.initPropertyShit(spadeZoneTileUnit);
+//        propertiesEditorController.initPropertyShit(eagleBase);
         //     propertiesEditorController.initPropertyShit(secondTank);
         //  firstTank.setEngineOn(true);
         //    firstTank.setStars();

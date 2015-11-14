@@ -23,8 +23,10 @@ public class TankFxSprite extends MovingFxSprite<TankUnit> {
     protected void initSprite() {
         ImageView basicImageView = new ImageView(baseImage);
         CreatingAnimation creatingAnimation = new CreatingAnimation(
-                Duration.millis(gameUnit.getTimeInState(GameUnit.State.CREATING)
-                        / 1000_000), creatingViewports.length, basicImageView);
+                Duration.millis(gameUnit.getTimeInState(GameUnit.State.CREATING) / 1000_000),
+                creatingViewports.length,
+                basicImageView,
+                AnimationType.ANIMATION_CREATING);
         bindImageViewToGameUnit(basicImageView, 0, 0);
         basicImageView.setViewport(nextViewport(creatingAnimation.getAnimationType(), 0));
         animationSet.add(creatingAnimation);
@@ -44,8 +46,8 @@ public class TankFxSprite extends MovingFxSprite<TankUnit> {
         private int count;
         private int lastIndex;
 
-        public CreatingAnimation(Duration duration, int count, ImageView imageView) {
-            super(duration, imageView);
+        public CreatingAnimation(Duration duration, int count, ImageView imageView, AnimationType animationType) {
+            super(duration, imageView, animationType);
             this.count = count;
         }
 
@@ -58,11 +60,6 @@ public class TankFxSprite extends MovingFxSprite<TankUnit> {
                 lastIndex = index;
             }
         }
-
-        @Override
-        protected AnimationType getAnimationType() {
-            return AnimationType.ANIMATION_CREATING;
-        }
     }
 
     protected class BasicTankMoveAnimation extends SpriteAnimation<TankUnit> {
@@ -71,18 +68,13 @@ public class TankFxSprite extends MovingFxSprite<TankUnit> {
 
         public BasicTankMoveAnimation(
                 Duration duration,
-                ImageView imageView
+                ImageView imageView,
+                AnimationType animationType
         ) {
-            super(duration, imageView);
+            super(duration, imageView, animationType);
             setCycleDuration(duration);
             setCycleCount(INDEFINITE);
         }
-
-        @Override
-        protected AnimationType getAnimationType() {
-            return AnimationType.ANIMATION_ACTIVE;
-        }
-
 
         @Override
         protected void interpolate(double k) {

@@ -31,17 +31,7 @@ public class EagleBaseFxSprite extends ExplodingFxSprite<EagleBaseUnit> {
     @Override
     protected void initSprite() {
         imageView = new ImageView(baseImage);
-        SpriteAnimation spriteAnimation = new SpriteAnimation(imageView) {
-            @Override
-            protected AnimationType getAnimationType() {
-                return AnimationType.ANIMATION_ACTIVE;
-            }
-
-            @Override
-            protected void interpolate(double frac) {
-
-            }
-        };
+        SpriteAnimation spriteAnimation = new BlankSpriteAnimation(imageView, AnimationType.ANIMATION_ACTIVE);
         bindImageViewToGameUnit(imageView, 0, 0);
         imageView.setViewport(viewports[0]);
         animationSet.add(spriteAnimation);

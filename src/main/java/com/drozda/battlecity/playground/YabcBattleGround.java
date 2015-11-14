@@ -11,7 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -43,6 +45,8 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     private Point2D firstPlayerRespawn;
     private Point2D secondPlayerRespawn;
     private Point2D eagleBaseRespawn;
+    private List<Point2D> spadeZone;
+    private List<TileUnit> wereInSpadeZone = new LinkedList<>();
     private List<GameUnit> wereNotInPauseState;
 
     private TankUnit firstPlayer;
@@ -81,6 +85,16 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
         firstPlayerRespawn = new Point2D(8 * getCellWidth(), 24 * getCellHeight());
         secondPlayerRespawn = new Point2D(16 * getCellWidth(), 24 * getCellHeight());
         eagleBaseRespawn = new Point2D(12 * getCellWidth(), 24 * getCellHeight());
+        spadeZone = asList(
+                new Point2D(11 * getCellWidth(), 25 * getCellHeight()),
+                new Point2D(11 * getCellWidth(), 24 * getCellHeight()),
+                new Point2D(11 * getCellWidth(), 23 * getCellHeight()),
+                new Point2D(12 * getCellWidth(), 23 * getCellHeight()),
+                new Point2D(13 * getCellWidth(), 23 * getCellHeight()),
+                new Point2D(14 * getCellWidth(), 23 * getCellHeight()),
+                new Point2D(14 * getCellWidth(), 24 * getCellHeight()),
+                new Point2D(14 * getCellWidth(), 25 * getCellHeight())
+        );
     }
 
     public double getCellWidth() {
@@ -172,9 +186,47 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     public void createActiveUnits() {
         createEagleBase();
         createFirstPlayer();
+        markAndCreateSpadeZone();
+        activateSpadeZone(); // TODO REMOVE AFTER TESTING
         if (getBattleType() == BattleType.DOUBLE_PLAYER) {
             createSecondPlayer();
         }
+    }
+
+    private void activateSpadeZone() {
+        wereInSpadeZone.forEach(tileUnit -> tileUnit.setCurrentState(GameUnit.State.DEAD));
+        unitList.stream()
+                .filter(gameUnit -> gameUnit instanceof SpadeZoneTileUnit)
+                .forEach(gameUnit1 -> gameUnit1.setCurrentState(GameUnit.State.ACTIVE));
+    }
+
+    private void markAndCreateSpadeZone() {
+        markSpadeZone();
+        createSpadeZone();
+    }
+
+    private void createSpadeZone() {
+        for (Point2D p : spadeZone) {
+            SpadeZoneTileUnit spadeZoneTileUnit = new SpadeZoneTileUnit(p.getX(), p.getY(), getCellWidth(),
+                    getCellHeight(), this);
+            unitList.add(spadeZoneTileUnit);
+        }
+    }
+
+    private void markSpadeZone() {
+        Function<Point2D, List<TileUnit>> marker = new Function<Point2D, List<TileUnit>>() {
+            @Override
+            public List<TileUnit> apply(Point2D point2D) {
+                return unitList.stream()
+                        .filter(gameUnit -> gameUnit instanceof TileUnit)
+                        .filter(gameUnit1 -> gameUnit1.getBounds().contains(point2D))
+                        .map(gameUnit2 -> (TileUnit) gameUnit2)
+                        .collect(Collectors.toList());
+            }
+        };
+        spadeZone.stream()
+                .map(marker)
+                .forEach(tileUnits -> wereInSpadeZone.addAll(tileUnits));
     }
 
     private void createEagleBase() {
@@ -189,13 +241,13 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
 
     private void createSecondPlayer() {
         secondPlayer = new TankUnit(secondPlayerRespawn.getX(), secondPlayerRespawn.getY(), getTankWidth(),
-                getTankHeight(), this, TankUnit.TankType.TANK_SECOND_PLAYER);
+                getTankHeight(), this, TankUnit.TankType.TANK_SECOND_PLAYER, 3);
         unitList.add(secondPlayer);
     }
 
     private void createFirstPlayer() {
         firstPlayer = new TankUnit(firstPlayerRespawn.getX(), firstPlayerRespawn.getY(), getTankWidth(),
-                getTankHeight(), this, TankUnit.TankType.TANK_FIRST_PLAYER);
+                getTankHeight(), this, TankUnit.TankType.TANK_FIRST_PLAYER, 3);
         unitList.add(firstPlayer);
     }
 
@@ -205,7 +257,7 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
         double y = 98;
         for (TankUnit.TankType tankType : typelist) {
             unitList.add(
-                    new TankUnit(x, y, getTankWidth(), getTankHeight(), this, tankType)
+                    new TankUnit(x, y, getTankWidth(), getTankHeight(), this, tankType, 4)
             );
             x += 32;
         }
@@ -226,6 +278,7 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
         double y = 98 + 32;
         for (BonusUnit.BonusType bonusType : typeList) {
             if (bonusType == BonusUnit.BonusType.START_GAME_HELMET) continue;
+            if (bonusType == BonusUnit.BonusType.FRIENDLYFIRE_GIFT) continue;
             unitList.add(
                     new BonusUnit(x, y, getBonusWidth(), getBonusHeight(), this, bonusType)
             );

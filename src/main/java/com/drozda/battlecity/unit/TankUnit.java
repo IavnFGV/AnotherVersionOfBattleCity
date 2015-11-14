@@ -5,12 +5,15 @@ import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.MovingModifier;
 import com.drozda.battlecity.modifier.PositionFixingModifier;
 import com.drozda.battlecity.modifier.TankMovingModifier;
+import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -20,25 +23,30 @@ import java.util.Map;
  */
 public class TankUnit extends MoveableUnit implements Destroyable {
 
+    private static final Logger log = LoggerFactory.getLogger(TankUnit.class);
     protected final PositionFixingModifier<MoveableUnit> fixingModifier;
     protected ListProperty<BonusUnit> bonusList = new SimpleListProperty<>(FXCollections.observableArrayList());
     protected TankType tankType;
     protected IntegerProperty stars = new SimpleIntegerProperty(0);
     protected IntegerProperty lifes = new SimpleIntegerProperty(1);
+    protected BonusUnit startGameHelmet;
+    protected BonusUnit friendlyfireGift;
+
+//    public TankUnit(double minX, double minY, double width, double height,
+//                    List<State> stateFlow, Map<State, Long> timeInState,
+//                    HasGameUnits playground, long velocity,
+//                    TankType tankType, int lifes) {
+//        super(minX, minY, width, height, stateFlow, timeInState, playground, velocity);
+//        fixingModifier = new PositionFixingModifier<>(this, playground);
+//        this.tankType = tankType;
+//        this.setLifes(lifes);
+//    }
+
 
     public TankUnit(double minX, double minY, double width, double height,
-                    List<State> stateFlow, Map<State, Long> timeInState,
-                    HasGameUnits playground, long velocity,
-                    TankType tankType, int lifes) {
-        super(minX, minY, width, height, stateFlow, timeInState, playground, velocity);
-        fixingModifier = new PositionFixingModifier<>(this, playground);
-        this.tankType = tankType;
-        this.setLifes(lifes);
-    }
-
-    public TankUnit(double minX, double minY, double width, double height,
-                    HasGameUnits playground, TankType tankType) {
+                    HasGameUnits playground, TankType tankType, int lifes) {
         this(minX, minY, width, height, null, null, playground, tankType);
+        setLifes(lifes);
     }
 
     public TankUnit(double minX, double minY, double width, double height,
@@ -55,10 +63,35 @@ public class TankUnit extends MoveableUnit implements Destroyable {
             velocity = normalSpeed;
         }
         setVelocity(velocity);
-        if ((tankType == TankType.TANK_ARMOR_ENEMY) ||
-                (tankType == TankType.TANK_ARMOR_ENEMY_X)) {
-            setLifes(4);
+        if ((tankType == TankType.TANK_FIRST_PLAYER) ||
+                (tankType == TankType.TANK_SECOND_PLAYER)) {
+            startGameHelmet = new BonusUnit(playground, BonusUnit.BonusType.START_GAME_HELMET);
+            friendlyfireGift = new BonusUnit(playground, BonusUnit.BonusType.FRIENDLYFIRE_GIFT);
+            playground.getUnitList().addAll(startGameHelmet, friendlyfireGift);
+            currentStateProperty().addListener((observable, oldValue, newValue) -> {
+                        if (newValue == State.ACTIVE) {
+                            Platform.runLater(() -> startGameHelmet.takeToPocket(this));
+
+                        }
+                    }
+            );
         }
+    }
+
+    public BonusUnit getStartGameHelmet() {
+        return startGameHelmet;
+    }
+
+    public void setStartGameHelmet(BonusUnit startGameHelmet) {
+        this.startGameHelmet = startGameHelmet;
+    }
+
+    public BonusUnit getFriendlyfireGift() {
+        return friendlyfireGift;
+    }
+
+    public void setFriendlyfireGift(BonusUnit friendlyfireGift) {
+        this.friendlyfireGift = friendlyfireGift;
     }
 
     public int getLifes() {

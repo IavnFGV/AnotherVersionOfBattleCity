@@ -45,7 +45,8 @@ public class SimpleEnemyTankFxSprite extends TankFxSprite {
         }
 
         ImageView basicImageView = new ImageView(baseImage);
-        BasicTankMoveAnimation basicTankMoveAnimation = new BasicTankMoveAnimation(Duration.millis(200), basicImageView);
+        BasicTankMoveAnimation basicTankMoveAnimation =
+                new BasicTankMoveAnimation(Duration.millis(200), basicImageView, AnimationType.ANIMATION_ACTIVE);
         bindImageViewToGameUnit(basicImageView, 0, 0);
         basicImageView.setViewport(nextViewport(basicTankMoveAnimation.getAnimationType(), 0));
         animationSet.add(basicTankMoveAnimation);

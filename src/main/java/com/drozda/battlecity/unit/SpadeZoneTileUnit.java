@@ -15,25 +15,23 @@ import static java.util.Arrays.asList;
 /**
  * Created by GFH on 13.11.2015.
  */
-public class ChangeableTileUnit extends TileUnit {
-    private static final Logger log = LoggerFactory.getLogger(ChangeableTileUnit.class);
-    private ObjectProperty<TileType> tileType = new SimpleObjectProperty<>(TileType.BRICK);
+public class SpadeZoneTileUnit extends TileUnit {
+    private static final Logger log = LoggerFactory.getLogger(SpadeZoneTileUnit.class);
+    private ObjectProperty<TileType> tileType = new SimpleObjectProperty<>(TileType.STEEL);
 
     {
         StateFlowModifier stateFlowModifier1 = new ChangeableTileUnitStateFlowModifier(this);
         stateFlowModifier = stateFlowModifier1;
     }
 
-    public ChangeableTileUnit(double minX, double minY, double width, double height, HasGameUnits playground,
-                              TileType tileType) {
-        super(minX, minY, width, height, asList(State.ACTIVE, State.ARMOR, State.BLINK, State.ACTIVE, State.DEAD),
+    public SpadeZoneTileUnit(double minX, double minY, double width, double height, HasGameUnits playground) {
+        super(minX, minY, width, height, asList(State.CREATING, State.ACTIVE, State.ARMOR, State.BLINK, State.ACTIVE, State.DEAD),
                 new HashMap<State, Long>() {{
+                    put(State.CREATING, 0l);
                     put(State.ARMOR, StaticServices.ONE_SECOND * 16);
                     put(State.BLINK, StaticServices.ONE_SECOND * 4);
                 }},
                 playground);
-        setTileType(tileType);
-
     }
 
 
@@ -50,10 +48,10 @@ public class ChangeableTileUnit extends TileUnit {
         return tileType;
     }
 
-    private class ChangeableTileUnitStateFlowModifier extends StateFlowModifier<ChangeableTileUnit> {
+    private class ChangeableTileUnitStateFlowModifier extends StateFlowModifier<SpadeZoneTileUnit> {
         private long timeInSubState; //forBlinking
 
-        public ChangeableTileUnitStateFlowModifier(ChangeableTileUnit gameUnit) {
+        public ChangeableTileUnitStateFlowModifier(SpadeZoneTileUnit gameUnit) {
             super(gameUnit);
             currentStateProperty().addListener((observable, oldValue, newValue) -> {
                 if ((oldValue == State.ACTIVE) &&

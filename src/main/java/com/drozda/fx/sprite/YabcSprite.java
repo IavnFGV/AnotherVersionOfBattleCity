@@ -191,6 +191,10 @@ public enum YabcSprite {
 
     public static Node getFullSprite(GameUnit gameUnit) {
         if (gameUnit instanceof TileUnit) {
+            if (gameUnit instanceof SpadeZoneTileUnit) {
+                SpadeZoneTileUnit spadeZoneTileUnit = (SpadeZoneTileUnit) gameUnit;
+                return new SpadeZoneFxSprite(spadeZoneTileUnit);
+            }
             TileUnit tileUnit = (TileUnit) gameUnit;
             log.debug(tileUnit.getTileType().toString());
             switch (tileUnit.getTileType()) {

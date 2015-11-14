@@ -20,7 +20,8 @@ public class WaterFxSprite extends FxSprite<TileUnit> {
     @Override
     protected void initSprite() {
         ImageView basicImageView = new ImageView(baseImage);
-        WaterAnimation waterAnimation = new WaterAnimation(Duration.millis(500), basicImageView);
+        WaterAnimation waterAnimation =
+                new WaterAnimation(Duration.millis(600), basicImageView, AnimationType.ANIMATION_ACTIVE);
         bindImageViewToGameUnit(basicImageView, 0, 0);
         basicImageView.setViewport(nextViewport(waterAnimation.getAnimationType(), 0));
         animationSet.add(waterAnimation);
@@ -40,9 +41,10 @@ public class WaterFxSprite extends FxSprite<TileUnit> {
         private int count = 3;
         private int lastIndex;
 
-        public WaterAnimation(Duration duration, ImageView imageView) {
-            super(duration, imageView);
+        public WaterAnimation(Duration duration, ImageView imageView, AnimationType animationType) {
+            super(duration, imageView, animationType);
             setCycleCount(INDEFINITE);
+            inBackground = true;
         }
 
         @Override
@@ -53,16 +55,6 @@ public class WaterFxSprite extends FxSprite<TileUnit> {
                 imageView.setViewport(nextViewport(getAnimationType(), index));
                 lastIndex = index;
             }
-        }
-
-        @Override
-        protected AnimationType getAnimationType() {
-            return AnimationType.ANIMATION_ACTIVE;
-        }
-
-        @Override
-        protected boolean isBackGroundAnimation() {
-            return true;
         }
     }
 }

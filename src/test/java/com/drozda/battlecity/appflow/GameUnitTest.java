@@ -1,7 +1,7 @@
 package com.drozda.battlecity.appflow;
 
-import com.drozda.battlecity.unit.ChangeableTileUnit;
 import com.drozda.battlecity.unit.GameUnit;
+import com.drozda.battlecity.unit.SpadeZoneTileUnit;
 import org.junit.Test;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public class GameUnitTest {
 
     @Test
     public void testChangeableTileUnit() {
-        ChangeableTileUnit testUnit = new ChangeableTileUnit(0, 0, 0, 0, null, null);
+        SpadeZoneTileUnit testUnit = new SpadeZoneTileUnit(0, 0, 0, 0, null);
         testUnit.initialize(0l);
 
         testUnit.currentStateProperty().addListener((observable, oldValue, newValue) -> {

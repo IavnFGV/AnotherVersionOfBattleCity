@@ -2,6 +2,8 @@ package com.drozda.fx.sprite;
 
 import com.drozda.battlecity.unit.BonusUnit;
 import com.drozda.battlecity.unit.TankUnit;
+import javafx.animation.FadeTransition;
+import javafx.animation.Timeline;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
@@ -36,6 +38,7 @@ public class PlayerTankFxSprite extends TankFxSprite {
 
     protected Map<Integer, Rectangle2D[]> viewportsMap;
 
+    private FadeTransition fadeTransition; // for friendlyfire
 
     public PlayerTankFxSprite(TankUnit gameUnit) {
         super(gameUnit);
@@ -52,16 +55,25 @@ public class PlayerTankFxSprite extends TankFxSprite {
         }
 
         ImageView basicImageView = new ImageView(baseImage);
-        BasicTankMoveAnimation basicTankMoveAnimation = new BasicTankMoveAnimation(Duration.millis(200), basicImageView);
+        BasicTankMoveAnimation basicTankMoveAnimation =
+                new BasicTankMoveAnimation(Duration.millis(200), basicImageView, AnimationType.ANIMATION_ACTIVE);
         bindImageViewToGameUnit(basicImageView, 0, 0);
         basicImageView.setViewport(nextViewport(basicTankMoveAnimation.getAnimationType(), 0));
+
+        fadeTransition = new FadeTransition(Duration.millis(300), basicImageView);
+        fadeTransition.setFromValue(1.0);
+        fadeTransition.setToValue(0.);
+        fadeTransition.setCycleCount(Timeline.INDEFINITE);
+        fadeTransition.setAutoReverse(true);
+
 
         gameUnit.starsProperty().addListener((observable, oldValue, newValue) -> {
             basicImageView.setViewport(nextViewport(basicTankMoveAnimation.getAnimationType(), 0));
         });
         ImageView helmetImageView = new ImageView(baseImage);
         helmetImageView.setVisible(false);
-        HelmetAnimation helmetAnimation = new HelmetAnimation(Duration.millis(100), helmetImageView);
+        HelmetAnimation helmetAnimation =
+                new HelmetAnimation(Duration.millis(100), helmetImageView, AnimationType.ANIMATION_HELMET);
         bindImageViewToGameUnit(helmetImageView, 0, 0);
         helmetImageView.setViewport(nextViewport(helmetAnimation.getAnimationType(), 0));
 
@@ -74,12 +86,18 @@ public class PlayerTankFxSprite extends TankFxSprite {
                                         (remitem.getBonusType() == BonusUnit.BonusType.START_GAME_HELMET)) {
                                     hideAnimation(AnimationType.ANIMATION_HELMET);
                                 }
+                                if (remitem.getBonusType() == BonusUnit.BonusType.FRIENDLYFIRE_GIFT) {
+                                    fadeTransition.pause();
+                                }
                             }
                         } else if (c.wasAdded())
                             for (BonusUnit additem : c.getAddedSubList()) {
                                 if ((additem.getBonusType() == BonusUnit.BonusType.HELMET) ||
                                         (additem.getBonusType() == BonusUnit.BonusType.START_GAME_HELMET)) {
                                     showAnimation(AnimationType.ANIMATION_HELMET);
+                                }
+                                if (additem.getBonusType() == BonusUnit.BonusType.FRIENDLYFIRE_GIFT) {
+                                    fadeTransition.play();
                                 }
                             }
                     }
@@ -107,8 +125,8 @@ public class PlayerTankFxSprite extends TankFxSprite {
         private int count = 2;
         private int lastIndex;
 
-        public HelmetAnimation(Duration duration, ImageView imageView) {
-            super(duration, imageView);
+        public HelmetAnimation(Duration duration, ImageView imageView, AnimationType animationType) {
+            super(duration, imageView, animationType);
             setCycleCount(INDEFINITE);
         }
 
@@ -122,11 +140,6 @@ public class PlayerTankFxSprite extends TankFxSprite {
                 }
 
             }
-        }
-
-        @Override
-        protected AnimationType getAnimationType() {
-            return AnimationType.ANIMATION_HELMET;
         }
     }
 
