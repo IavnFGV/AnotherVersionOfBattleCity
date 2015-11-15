@@ -55,6 +55,7 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
         for (State state : this.stateFlow) {
             this.timeInState.putIfAbsent(state, defaultTimeInState.get(state));
         }
+        currentState.setValue(this.stateFlow.get(0));
     }
 
     public void heartBeat(long currentTime) {
@@ -102,7 +103,6 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
     @Override
     public String toString() {
         return "GameUnit{" +
-                "defaultStateFlow=" + defaultStateFlow +
                 ", bounds=" + bounds +
                 ", timeInState=" + timeInState +
                 ", currentState=" + currentState +

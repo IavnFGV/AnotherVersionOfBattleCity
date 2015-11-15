@@ -1,6 +1,7 @@
 package com.drozda.battlecity.unit;
 
 import com.drozda.battlecity.StaticServices;
+import com.drozda.battlecity.interfaces.Collideable;
 import com.drozda.battlecity.interfaces.HasGameUnits;
 import javafx.geometry.Bounds;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -32,8 +33,33 @@ public class EnemyTankUnit extends TankUnit<EnemyTankUnit.EnemyTankType> {
     }
 
     @Override
-    public ImmutablePair<CollideResult, CollideResult> collide(GameUnit gameUnit) {
+    public ImmutablePair<CollideResult, CollideResult> activeCollide(Collideable other) {
         return null;
+    }
+
+    @Override
+    public CollideResult passiveCollide(Collideable other) {
+        if (other instanceof BulletUnit) {
+            BulletUnit bulletUnit = (BulletUnit) other;
+            if (bulletUnit.getParent() instanceof PlayerTankUnit) {
+                return decLifes(bulletUnit.getType());
+            }
+        }
+        return CollideResult.NOTHING;
+    }
+
+    private CollideResult decLifes(BulletUnit.Type bulletType) {
+        int curLifes = getLifes();
+        if (bulletType == BulletUnit.Type.SIMPLE) {
+            setLifes(curLifes - 1);
+        } else {
+            setLifes(curLifes - 1);
+        }
+        if (getLifes() > 0) {
+            return CollideResult.INNER_STATE_CHANGE;
+        } else {
+            return CollideResult.STATE_CHANGE;
+        }
     }
 
     @Override

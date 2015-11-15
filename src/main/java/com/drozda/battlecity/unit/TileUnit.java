@@ -14,7 +14,7 @@ import static java.util.Arrays.asList;
 /**
  * Created by GFH on 27.09.2015.
  */
-public class TileUnit extends GameUnit implements Collideable {
+public class TileUnit extends GameUnit implements Collideable<BulletUnit> {
     private TileType tileType;
     private ObjectProperty<TileState> tileState = new SimpleObjectProperty<>(TileState.STATE_1111);
 
@@ -43,13 +43,47 @@ public class TileUnit extends GameUnit implements Collideable {
     }
 
     @Override
-    public ImmutablePair<CollideResult, CollideResult> collide(GameUnit gameUnit) {
+    public ImmutablePair<CollideResult, CollideResult> activeCollide(BulletUnit other) {
         return null;
+    }
+
+    @Override
+    public CollideResult passiveCollide(BulletUnit other) {
+        if (other.getType() == BulletUnit.Type.POWERFUL) {
+            this.setCurrentState(State.DEAD);
+            return CollideResult.STATE_CHANGE;
+        }
+        if (getTileType() == TileType.STEEL) {
+            return CollideResult.NOTHING;
+        }
+        if (getTileType() == TileType.BRICK) { // TODO implement partial destroy
+            this.setCurrentState(State.DEAD);
+            return CollideResult.STATE_CHANGE;
+        }
+        return CollideResult.NOTHING;
     }
 
     @Override
     public boolean isActive() {
         return false;
+    }
+
+    @Override
+    public boolean isTakingPartInCollisionProcess() {
+        switch (getTileType()) {
+            case WATER:
+            case FOREST:
+            case ICE:
+                return false;
+            case BRICK:
+            case STEEL:
+            default:
+                return true;
+        }
+    }
+
+    public TileType getTileType() {
+        return tileType;
     }
 
     public boolean canBeDestroyed(BulletUnit.Type type) {
@@ -68,10 +102,6 @@ public class TileUnit extends GameUnit implements Collideable {
             }
         }
         return false;
-    }
-
-    public TileType getTileType() {
-        return tileType;
     }
 
     public enum TileType {

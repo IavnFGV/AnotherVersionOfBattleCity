@@ -24,12 +24,14 @@ public abstract class MoveableUnit extends GameUnit implements CanMove {
     protected BooleanProperty engineOn = new SimpleBooleanProperty(false);
     protected ObjectProperty<Direction> direction = new SimpleObjectProperty<>(Direction.UP);
     protected ActionCommandGenerator actionCommandGenerator;
+    protected HasGameUnits playground;
     private long velocity;
 
     public MoveableUnit(Bounds bounds, List<State> stateFlow, Map<State, Long> timeInState, HasGameUnits playground, long
             velocity) {
         super(bounds, stateFlow, timeInState);
         this.velocity = velocity;
+        this.playground = playground;
         this.movingModifier = createMovingModifier(playground);
     }
 

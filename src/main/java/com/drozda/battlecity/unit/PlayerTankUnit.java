@@ -1,6 +1,7 @@
 package com.drozda.battlecity.unit;
 
 import com.drozda.battlecity.StaticServices;
+import com.drozda.battlecity.interfaces.Collideable;
 import com.drozda.battlecity.interfaces.HasGameUnits;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
@@ -78,8 +79,43 @@ public class PlayerTankUnit extends TankUnit<PlayerTankUnit.PlayerTankType> {
     }
 
     @Override
-    public ImmutablePair<CollideResult, CollideResult> collide(GameUnit gameUnit) {
-        return null;
+    public ImmutablePair<CollideResult, CollideResult> activeCollide(Collideable other) {
+        CollideResult selfCollideResult = CollideResult.NOTHING;
+        if (other instanceof BonusUnit) {
+            BonusUnit bonusUnit = (BonusUnit) other;
+            selfCollideResult = CollideResult.INNER_STATE_CHANGE;
+        }
+        if (other instanceof BulletUnit) {
+            BulletUnit bulletUnit = (BulletUnit) other;
+            if (bulletUnit.getParent() instanceof PlayerTankUnit) {
+                friendlyfireGift.takeToPocket(this);
+                selfCollideResult = CollideResult.INNER_STATE_CHANGE;
+            }
+            if (bulletUnit.getParent() instanceof EnemyTankUnit) {
+                setCurrentState(State.EXPLODING);
+                selfCollideResult = CollideResult.STATE_CHANGE;
+            }
+        }
+        if (selfCollideResult != CollideResult.NOTHING) {
+            return new ImmutablePair<>(selfCollideResult, other.passiveCollide(this));
+        }
+        return NOTHING_PAIR;
+    }
+
+    @Override
+    public CollideResult passiveCollide(Collideable other) {
+        if (other instanceof BulletUnit) {
+            BulletUnit bulletUnit = (BulletUnit) other;
+            if (bulletUnit.getParent() instanceof PlayerTankUnit) {
+                friendlyfireGift.takeToPocket(this);
+                return CollideResult.INNER_STATE_CHANGE;
+            }
+            if (bulletUnit.getParent() instanceof EnemyTankUnit) {
+                setCurrentState(State.EXPLODING);
+                return CollideResult.STATE_CHANGE;
+            }
+        }
+        return CollideResult.NOTHING;
     }
 
     @Override

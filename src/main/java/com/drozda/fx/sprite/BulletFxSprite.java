@@ -24,6 +24,7 @@ public class BulletFxSprite extends MovingFxSprite<BulletUnit> {
         imageView.setViewport(bulletViewports[0]);
         SpriteAnimation spriteAnimation = new BlankSpriteAnimation(imageView, AnimationType.ANIMATION_ACTIVE);
         bindImageViewToGameUnit(imageView, 0, 0);
+        imageView.setRotate(directionToRotation(gameUnit.getDirection()));
         animationSet.add(spriteAnimation);
         super.initSprite();
     }

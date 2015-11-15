@@ -1,8 +1,10 @@
 package com.drozda.battlecity.unit;
 
 import com.drozda.battlecity.StaticServices;
+import com.drozda.battlecity.interfaces.Collideable;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import java.util.HashMap;
 
@@ -11,7 +13,7 @@ import static java.util.Arrays.asList;
 /**
  * Created by GFH on 26.09.2015.
  */
-public class BonusUnit extends GameUnit {
+public class BonusUnit extends GameUnit implements Collideable<PlayerTankUnit> {
     private final BonusType bonusType;
     public boolean processed;
 
@@ -46,6 +48,32 @@ public class BonusUnit extends GameUnit {
         this.processed = processed;
     }
 
+    public boolean isOneTime() {
+        return getBonusType().isOneTime;
+    }
+
+    public BonusType getBonusType() {
+        return bonusType;
+    }
+
+    @Override
+    public String toString() {
+        return "BonusUnit{" +
+                "bonusType=" + bonusType +
+                "}";
+    }
+
+    @Override
+    public ImmutablePair<CollideResult, CollideResult> activeCollide(PlayerTankUnit other) {
+        return null;
+    }
+
+    @Override
+    public CollideResult passiveCollide(PlayerTankUnit other) {
+        this.takeToPocket(other);
+        return CollideResult.STATE_CHANGE;
+    }
+
     public void takeToPocket(PlayerTankUnit tankUnit) {
         if (!getBonusType().isOneTime) {
             BonusUnit bonusUnit = tankUnit.getBonusList().stream()
@@ -68,23 +96,13 @@ public class BonusUnit extends GameUnit {
         });
     }
 
-    public BonusType getBonusType() {
-        return bonusType;
-    }
-
     public boolean isAux() {
         return getBonusType().isAux;
     }
 
-    public boolean isOneTime() {
-        return getBonusType().isOneTime;
-    }
-
     @Override
-    public String toString() {
-        return "BonusUnit{" +
-                "bonusType=" + bonusType +
-                "}";
+    public boolean isActive() {
+        return false;
     }
 
     public enum BonusType {

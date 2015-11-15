@@ -11,5 +11,8 @@ public interface HasGameUnits {
 
     boolean isInWorldBounds(double newX, double newY, CanMove moveUnit);
 
+    double getBulletWidth();
+
+    double getBulletHeight();
 
 }

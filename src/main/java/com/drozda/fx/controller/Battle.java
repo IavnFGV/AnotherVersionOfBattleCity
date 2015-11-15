@@ -11,6 +11,7 @@ import com.drozda.fx.sprite.YabcSprite;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
@@ -19,6 +20,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by GFH on 21.09.2015.
@@ -57,6 +60,7 @@ public class Battle {
     private Pane stageNumberFirstDigit;
     @FXML
     private Pane centerPane;
+    private Map<GameUnit, Node> nodeMap = new HashMap<>();
 
     public int getFirstPlayersLifes() {
         return firstPlayersLifes.get();
@@ -217,6 +221,7 @@ public class Battle {
             }
             Node node = YabcSprite.getFullSprite(gameUnit);
             centerPane.getChildren().add(node);
+            nodeMap.put(gameUnit, node);
             if ((gameUnit instanceof TileUnit) && (((TileUnit) gameUnit).getTileType() == TileUnit.TileType.FOREST)) {
                 node.toFront();
             } else {
@@ -226,12 +231,27 @@ public class Battle {
         centerPane.getChildren().stream()
                 .filter(node -> (node instanceof BonusFxSprite))
                 .forEach(node1 -> Platform.runLater(() -> node1.toFront()));
-
-
         battleGround.battleTypeProperty().addListener((observable, oldValue, newValue) -> setSingleOrDouble
                 (newValue == YabcBattleGround.BattleType.SINGLE_PLAYER ? 1 : 2));
         setSingleOrDouble
                 (battleGround.getBattleType() == YabcBattleGround.BattleType.SINGLE_PLAYER ? 1 : 2);
+        battleGround.unitListProperty().addListener((ListChangeListener<GameUnit>) c -> {
+                    while (c.next()) {
+                        if (c.wasRemoved()) {
+                            for (GameUnit remitem : c.getRemoved()) {
+                                Node node = nodeMap.get(remitem);
+                                Platform.runLater(() -> centerPane.getChildren().remove(node));
+                                nodeMap.remove(remitem);
+                            }
+                        } else if (c.wasAdded())
+                            for (GameUnit additem : c.getAddedSubList()) {
+                                Node node = YabcSprite.getFullSprite(additem);
+                                nodeMap.put(additem, node);
+                                Platform.runLater(() -> centerPane.getChildren().add(node));
+                            }
+                    }
+                }
+        );
     }
 
 }

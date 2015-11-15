@@ -37,6 +37,8 @@ public class YabcBattleGround implements BattleGround<TileUnit> {
     private int bonusWidthCells = 2;
     private int eagleBaseHeightCells = 2;
     private int eagleBaseWidthCells = 2;
+    private double bulletHeightCells = 1 / 2.;
+    private double bulletWidthCells = 1 / 2.;
     private int worldSizeCells = worldWiddthCells * worldHeightCells;
     private ListProperty<GameUnit> unitList = new SimpleListProperty<>(FXCollections.observableArrayList());
     private ObjectProperty<BattleType> battleType = new SimpleObjectProperty<>(BattleType.SINGLE_PLAYER);
@@ -189,6 +191,16 @@ public class YabcBattleGround implements BattleGround<TileUnit> {
                 newX > worldHeightCells * getCellHeight() - moveUnit.getBounds().getHeight() ||
                 newY < 0 ||
                 newY > worldWiddthCells * getCellWidth() - moveUnit.getBounds().getWidth());
+    }
+
+    @Override
+    public double getBulletWidth() {
+        return bulletWidthCells * getCellWidth();
+    }
+
+    @Override
+    public double getBulletHeight() {
+        return bulletHeightCells * getCellHeight();
     }
 
     public void setUnitList(ObservableList<GameUnit> unitList) {
