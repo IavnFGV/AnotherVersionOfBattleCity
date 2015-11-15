@@ -129,6 +129,7 @@ public class SpriteTest extends Application {
                     init = true;
                 }
                 yabcBattleGround.heartBeat(now);
+                yabcBattleGround.collisionCycle();
             }
         };
         mainLoop.start();

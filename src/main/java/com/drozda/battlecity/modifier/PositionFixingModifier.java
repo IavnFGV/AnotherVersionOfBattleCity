@@ -77,7 +77,9 @@ public class PositionFixingModifier<T extends CanPause & CanMove> extends UnitMo
         Predicate<GameUnit> onlyTank = gameUnit -> (gameUnit instanceof TankUnit);
         Predicate<GameUnit> notMe = gameUnit -> (gameUnit != activeUnit);
         Predicate<GameUnit> onlyTankAndNotMe = onlyTank.and(notMe);
-        List<GameUnit> tanks = world.getUnitList().stream().filter(onlyTankAndNotMe).collect(Collectors.toList());
+        Predicate<GameUnit> notDead = gameUnit1 -> gameUnit1.getCurrentState() != GameUnit.State.DEAD;
+        List<GameUnit> tanks = world.getUnitList().stream().filter(notDead).filter(onlyTankAndNotMe).collect(Collectors
+                .toList());
         if (tanks.size() == 0) {// no more tanks
             activeUnit.setBounds(
                     new BoundingBox(

@@ -6,12 +6,14 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 /**
  * Created by GFH on 30.09.2015.
  */
-public interface Collideable<T extends Collideable> {
+public interface Collideable<T> {
 
     ImmutablePair<CollideResult, CollideResult> NOTHING_PAIR = new ImmutablePair<>(CollideResult
             .NOTHING, CollideResult.NOTHING);
 
-    ImmutablePair<CollideResult, CollideResult> activeCollide(T other);
+    default ImmutablePair<CollideResult, CollideResult> activeCollide(T other) {
+        return null;
+    }
 
     CollideResult passiveCollide(T other);
 

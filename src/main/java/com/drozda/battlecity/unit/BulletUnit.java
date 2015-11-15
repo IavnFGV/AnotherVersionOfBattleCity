@@ -4,6 +4,7 @@ import com.drozda.battlecity.interfaces.Collideable;
 import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.BulletMovingModifier;
 import com.drozda.battlecity.modifier.MovingModifier;
+import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -12,7 +13,7 @@ import static java.util.Arrays.asList;
 /**
  * Created by GFH on 27.09.2015.
  */
-public class BulletUnit extends MoveableUnit implements Collideable<Collideable> {
+public class BulletUnit extends MoveableUnit implements Collideable<GameUnit> {
 
     private TankUnit parent;
 
@@ -26,6 +27,11 @@ public class BulletUnit extends MoveableUnit implements Collideable<Collideable>
         this.type = type;
         this.setEngineOn(true);
         this.setDirection(parent.getDirection());
+        this.currentStateProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == State.DEAD) {
+                Platform.runLater(() -> this.playground.getUnitList().remove(this));
+            }
+        });
     }
 
     @Override
@@ -58,12 +64,21 @@ public class BulletUnit extends MoveableUnit implements Collideable<Collideable>
     }
 
     @Override
-    public ImmutablePair<CollideResult, CollideResult> activeCollide(Collideable other) {
+    public ImmutablePair<CollideResult, CollideResult> activeCollide(GameUnit other) {
         CollideResult selfCollideResult = CollideResult.NOTHING;
+
         colliding_block:
         // only for experiment  always want to try  labels!!))
         // TODO make this in hash or something
         {
+            if (this.parent == other) {
+                selfCollideResult = CollideResult.NOTHING;
+                break colliding_block;
+            }
+            if (!this.getBounds().intersects(other.getBounds())) {
+                selfCollideResult = CollideResult.NOTHING;
+                break colliding_block;
+            }
             if (other instanceof BonusUnit) {
                 selfCollideResult = CollideResult.NOTHING;
                 break colliding_block;
@@ -102,13 +117,16 @@ public class BulletUnit extends MoveableUnit implements Collideable<Collideable>
             }
         }
         if (selfCollideResult != CollideResult.NOTHING) {
-            return new ImmutablePair<>(selfCollideResult, other.passiveCollide(this));
+            return new ImmutablePair<>(selfCollideResult, ((Collideable) other).passiveCollide(this));
         }
         return NOTHING_PAIR;
     }
 
     @Override
-    public CollideResult passiveCollide(Collideable other) {
+    public CollideResult passiveCollide(GameUnit other) {
+        if (parent == other) {
+            return CollideResult.NOTHING;
+        }
         if (other instanceof BulletUnit) {
             this.setCurrentState(State.DEAD);
             return CollideResult.STATE_CHANGE;

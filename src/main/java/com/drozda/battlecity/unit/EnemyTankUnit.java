@@ -1,10 +1,8 @@
 package com.drozda.battlecity.unit;
 
 import com.drozda.battlecity.StaticServices;
-import com.drozda.battlecity.interfaces.Collideable;
 import com.drozda.battlecity.interfaces.HasGameUnits;
 import javafx.geometry.Bounds;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import java.util.EnumSet;
 
@@ -32,13 +30,9 @@ public class EnemyTankUnit extends TankUnit<EnemyTankUnit.EnemyTankType> {
         }
     }
 
-    @Override
-    public ImmutablePair<CollideResult, CollideResult> activeCollide(Collideable other) {
-        return null;
-    }
 
     @Override
-    public CollideResult passiveCollide(Collideable other) {
+    public CollideResult passiveCollide(GameUnit other) {
         if (other instanceof BulletUnit) {
             BulletUnit bulletUnit = (BulletUnit) other;
             if (bulletUnit.getParent() instanceof PlayerTankUnit) {

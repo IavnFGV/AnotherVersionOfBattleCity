@@ -18,7 +18,7 @@ import static java.util.Arrays.asList;
 /**
  * Created by GFH on 26.09.2015.
  */
-public class GameUnit extends Observable implements CanChangeState<GameUnit.State>, CanPause {
+public abstract class GameUnit extends Observable implements CanChangeState<GameUnit.State>, CanPause {
     private static final Logger log = LoggerFactory.getLogger(GameUnit.class);
     protected static Map<State, Long> defaultTimeInState = new EnumMap<>(State.class);
     protected static List<State> defaultStateFlow = asList(State.CREATING, State.ACTIVE, State.EXPLODING, State.DEAD);

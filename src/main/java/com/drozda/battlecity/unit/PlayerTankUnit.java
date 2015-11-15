@@ -79,33 +79,49 @@ public class PlayerTankUnit extends TankUnit<PlayerTankUnit.PlayerTankType> {
     }
 
     @Override
-    public ImmutablePair<CollideResult, CollideResult> activeCollide(Collideable other) {
+    public ImmutablePair<CollideResult, CollideResult> activeCollide(GameUnit other) {
         CollideResult selfCollideResult = CollideResult.NOTHING;
-        if (other instanceof BonusUnit) {
-            BonusUnit bonusUnit = (BonusUnit) other;
-            selfCollideResult = CollideResult.INNER_STATE_CHANGE;
+        if (!this.getBounds().intersects(other.getBounds())) {
+            return NOTHING_PAIR;
         }
-        if (other instanceof BulletUnit) {
-            BulletUnit bulletUnit = (BulletUnit) other;
-            if (bulletUnit.getParent() instanceof PlayerTankUnit) {
-                friendlyfireGift.takeToPocket(this);
+        colliding_block:
+        {
+            if (other instanceof BonusUnit) {
+                BonusUnit bonusUnit = (BonusUnit) other;
                 selfCollideResult = CollideResult.INNER_STATE_CHANGE;
+                break colliding_block;
             }
-            if (bulletUnit.getParent() instanceof EnemyTankUnit) {
-                setCurrentState(State.EXPLODING);
-                selfCollideResult = CollideResult.STATE_CHANGE;
+            if (other instanceof BulletUnit) {
+                BulletUnit bulletUnit = (BulletUnit) other;
+                if (bulletUnit.getParent() == this) {
+                    selfCollideResult = CollideResult.NOTHING;
+                    break colliding_block;
+                }
+                if (bulletUnit.getParent() instanceof PlayerTankUnit) {
+                    friendlyfireGift.takeToPocket(this);
+                    selfCollideResult = CollideResult.INNER_STATE_CHANGE;
+                    break colliding_block;
+                }
+                if (bulletUnit.getParent() instanceof EnemyTankUnit) {
+                    setCurrentState(State.EXPLODING);
+                    selfCollideResult = CollideResult.STATE_CHANGE;
+                    break colliding_block;
+                }
             }
         }
         if (selfCollideResult != CollideResult.NOTHING) {
-            return new ImmutablePair<>(selfCollideResult, other.passiveCollide(this));
+            return new ImmutablePair<>(selfCollideResult, ((Collideable) other).passiveCollide(this));
         }
         return NOTHING_PAIR;
     }
 
     @Override
-    public CollideResult passiveCollide(Collideable other) {
+    public CollideResult passiveCollide(GameUnit other) {
         if (other instanceof BulletUnit) {
             BulletUnit bulletUnit = (BulletUnit) other;
+            if (bulletUnit.getParent() == this) {
+                return CollideResult.NOTHING;
+            }
             if (bulletUnit.getParent() instanceof PlayerTankUnit) {
                 friendlyfireGift.takeToPocket(this);
                 return CollideResult.INNER_STATE_CHANGE;

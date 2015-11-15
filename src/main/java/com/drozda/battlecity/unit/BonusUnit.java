@@ -4,7 +4,6 @@ import com.drozda.battlecity.StaticServices;
 import com.drozda.battlecity.interfaces.Collideable;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import java.util.HashMap;
 
@@ -64,11 +63,6 @@ public class BonusUnit extends GameUnit implements Collideable<PlayerTankUnit> {
     }
 
     @Override
-    public ImmutablePair<CollideResult, CollideResult> activeCollide(PlayerTankUnit other) {
-        return null;
-    }
-
-    @Override
     public CollideResult passiveCollide(PlayerTankUnit other) {
         this.takeToPocket(other);
         return CollideResult.STATE_CHANGE;
@@ -103,6 +97,11 @@ public class BonusUnit extends GameUnit implements Collideable<PlayerTankUnit> {
     @Override
     public boolean isActive() {
         return false;
+    }
+
+    @Override
+    public boolean isTakingPartInCollisionProcess() {
+        return !this.isAux();
     }
 
     public enum BonusType {

@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * Created by GFH on 15.11.2015.
  */
-public abstract class TankUnit<E extends Enum> extends MoveableUnit implements Collideable<Collideable>, CanFire {
+public abstract class TankUnit<E extends Enum> extends MoveableUnit implements Collideable<GameUnit>, CanFire {
     private static final Logger log = LoggerFactory.getLogger(TankUnit.class);
     protected final PositionFixingModifier<MoveableUnit> fixingModifier;
     protected IntegerProperty lifes = new SimpleIntegerProperty(1);

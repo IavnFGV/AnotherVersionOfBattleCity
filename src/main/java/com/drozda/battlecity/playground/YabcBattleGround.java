@@ -2,6 +2,7 @@ package com.drozda.battlecity.playground;
 
 import com.drozda.battlecity.interfaces.BattleGround;
 import com.drozda.battlecity.interfaces.CanMove;
+import com.drozda.battlecity.interfaces.Collideable;
 import com.drozda.battlecity.unit.*;
 import com.drozda.fx.sprite.FxSprite;
 import javafx.beans.property.*;
@@ -9,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Point2D;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.drozda.battlecity.interfaces.Collideable.NOTHING_PAIR;
 import static java.util.Arrays.asList;
 
 /**
@@ -180,33 +183,6 @@ public class YabcBattleGround implements BattleGround<TileUnit> {
         return pause.get();
     }
 
-    @Override
-    public ObservableList<GameUnit> getUnitList() {
-        return unitList.get();
-    }
-
-    @Override
-    public boolean isInWorldBounds(double newX, double newY, CanMove moveUnit) {
-        return !(newX < 0 ||
-                newX > worldHeightCells * getCellHeight() - moveUnit.getBounds().getHeight() ||
-                newY < 0 ||
-                newY > worldWiddthCells * getCellWidth() - moveUnit.getBounds().getWidth());
-    }
-
-    @Override
-    public double getBulletWidth() {
-        return bulletWidthCells * getCellWidth();
-    }
-
-    @Override
-    public double getBulletHeight() {
-        return bulletHeightCells * getCellHeight();
-    }
-
-    public void setUnitList(ObservableList<GameUnit> unitList) {
-        this.unitList.set(unitList);
-    }
-
     public ListProperty<GameUnit> unitListProperty() {
         return unitList;
     }
@@ -355,6 +331,72 @@ public class YabcBattleGround implements BattleGround<TileUnit> {
 
     public double getEagleBaseWidth() {
         return eagleBaseWidthCells * getCellWidth();
+    }
+
+    public void collisionCycle() {
+        List<Collideable> collideableList =
+                getUnitList().stream()
+                        .filter(gameUnit -> (gameUnit instanceof Collideable))
+                        .filter(gameUnit -> gameUnit.getCurrentState() != GameUnit.State.DEAD)
+                        .map(gameUnit -> (Collideable) gameUnit)
+                        .filter(Collideable::isTakingPartInCollisionProcess)
+                        .sorted((o1, o2) -> {
+                            if ((!o1.isActive()) && (o2.isActive())) {
+                                return 1;
+                            }
+                            if (o1.isActive() && (!o2.isActive())) {
+                                return -1;
+                            }
+                            return 0;
+                        })
+                        .collect(Collectors.toList());
+        Collideable curElement;
+        Collideable nextElement;
+        int nextElementIndex = 1;
+        while (collideableList.size() > 1) {
+            curElement = collideableList.get(0);
+            if (!curElement.isActive()) {
+                break;
+            }
+            while (nextElementIndex < collideableList.size()) {
+                nextElement = collideableList.get(nextElementIndex++);
+                ImmutablePair<Collideable.CollideResult, Collideable.CollideResult>
+                        collideResult = curElement.activeCollide(nextElement);
+                if (!collideResult.equals(NOTHING_PAIR)) {
+                    collideableList.remove(nextElement);
+                    break;
+                }
+            }
+            collideableList.remove(curElement);
+            nextElementIndex = 1;
+        }
+    }
+
+    @Override
+    public ObservableList<GameUnit> getUnitList() {
+        return unitList.get();
+    }
+
+    @Override
+    public boolean isInWorldBounds(double newX, double newY, CanMove moveUnit) {
+        return !(newX < 0 ||
+                newX > worldHeightCells * getCellHeight() - moveUnit.getBounds().getHeight() ||
+                newY < 0 ||
+                newY > worldWiddthCells * getCellWidth() - moveUnit.getBounds().getWidth());
+    }
+
+    @Override
+    public double getBulletWidth() {
+        return bulletWidthCells * getCellWidth();
+    }
+
+    @Override
+    public double getBulletHeight() {
+        return bulletHeightCells * getCellHeight();
+    }
+
+    public void setUnitList(ObservableList<GameUnit> unitList) {
+        this.unitList.set(unitList);
     }
 
     public enum BattleType {

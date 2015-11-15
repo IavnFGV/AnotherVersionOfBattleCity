@@ -40,11 +40,13 @@ public class TankMovingModifier extends MovingModifier<TankUnit> {
         Predicate<GameUnit> notMe = u -> (u != activeUnit);
         Predicate<GameUnit> notBullet = u -> (!(u instanceof BulletUnit));
         Predicate<GameUnit> notBonus = u -> (!(u instanceof BonusUnit));
+        Predicate<GameUnit> notDead = u -> u.getCurrentState() != GameUnit.State.DEAD;
 
         Point2D newPosition = playground.getUnitList().stream()
                 .filter(notMe)
                 .filter(notBullet)
                 .filter(notBonus)
+                .filter(notDead)
                 .map(u -> {
                             if (!canRide(u) && u.getBounds().intersects(newFixedBounds)) {
 //                        System.out.println("OtherUnit =" + u.getClass() + ";activeUnit = [" + activeUnit
