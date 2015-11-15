@@ -100,14 +100,6 @@ public class YabcBattleGround implements BattleGround<TileUnit> {
         );
     }
 
-    public double getCellWidth() {
-        return 8 * gamePixel.getX();
-    }
-
-    public double getCellHeight() {
-        return 8 * gamePixel.getY();
-    }
-
     @Override
     public boolean addCell(TileUnit gameUnit) {
         try {
@@ -117,6 +109,16 @@ public class YabcBattleGround implements BattleGround<TileUnit> {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public double getCellHeight() {
+        return 8 * gamePixel.getY();
+    }
+
+    @Override
+    public double getCellWidth() {
+        return 8 * gamePixel.getX();
     }
 
     public void heartBeat(long now) {

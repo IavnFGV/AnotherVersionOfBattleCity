@@ -18,7 +18,7 @@ public class GameUnitTest {
     public void testGameUnit() {
         class TestUnit extends GameUnit {
             public TestUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long> timeInState) {
-                super(new BoundingBox(minX, minY, width, height), stateFlow, timeInState, null);
+                super(new BoundingBox(minX, minY, width, height), stateFlow, timeInState);
             }
         }
 
@@ -41,7 +41,8 @@ public class GameUnitTest {
 
     @Test
     public void testChangeableTileUnit() {
-        SpadeZoneTileUnit testUnit = new SpadeZoneTileUnit(0, 0, 0, 0, null);
+        SpadeZoneTileUnit testUnit = new SpadeZoneTileUnit(
+                new BoundingBox(0, 0, 0, 0));
         testUnit.initialize(0l);
 
         testUnit.currentStateProperty().addListener((observable, oldValue, newValue) -> {

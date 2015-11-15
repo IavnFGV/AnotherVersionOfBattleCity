@@ -67,16 +67,16 @@ public class SpriteTest extends Application {
                 .findFirst().get();
 
         TankUnit firstTank = yabcBattleGround.getUnitList().stream()
-                .filter(gameUnit -> (gameUnit instanceof TankUnit))
-                .map(gameUnit1 -> (TankUnit) gameUnit1)
-                .filter(tankUnit -> tankUnit.getTankType() == TankUnit.TankType.TANK_FIRST_PLAYER)
+                .filter(gameUnit -> (gameUnit instanceof PlayerTankUnit))
+                .map(gameUnit1 -> (PlayerTankUnit) gameUnit1)
+                .filter(tankUnit -> tankUnit.getTankType() == PlayerTankUnit.PlayerTankType.TANK_FIRST_PLAYER)
                 .findFirst().get();
 
 
         TankUnit secondTank = yabcBattleGround.getUnitList().stream()
-                .filter(gameUnit -> (gameUnit instanceof TankUnit))
-                .map(gameUnit1 -> (TankUnit) gameUnit1)
-                .filter(tankUnit -> tankUnit.getTankType() == TankUnit.TankType.TANK_SECOND_PLAYER)
+                .filter(gameUnit -> (gameUnit instanceof PlayerTankUnit))
+                .map(gameUnit1 -> (PlayerTankUnit) gameUnit1)
+                .filter(tankUnit -> tankUnit.getTankType() == PlayerTankUnit.PlayerTankType.TANK_SECOND_PLAYER)
                 .findFirst().get();
 
 //        yabcBattleGround.getUnitList().forEach(gameUnit -> gameUnit.setCurrentState(GameUnit.State.ACTIVE));

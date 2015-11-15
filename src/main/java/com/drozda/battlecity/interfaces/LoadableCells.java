@@ -7,4 +7,9 @@ import com.drozda.battlecity.unit.GameUnit;
  */
 public interface LoadableCells<T extends GameUnit> {
     boolean addCell(T gameUnit);
+
+    double getCellHeight();
+
+    double getCellWidth();
+
 }

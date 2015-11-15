@@ -1,7 +1,6 @@
 package com.drozda.battlecity.unit;
 
 import com.drozda.battlecity.interfaces.Collideable;
-import com.drozda.battlecity.interfaces.HasGameUnits;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Bounds;
@@ -19,7 +18,7 @@ public class TileUnit extends GameUnit implements Collideable {
     private TileType tileType;
     private ObjectProperty<TileState> tileState = new SimpleObjectProperty<>(TileState.STATE_1111);
 
-    public TileUnit(Bounds bounds, HasGameUnits playground, TileType tileType) {
+    public TileUnit(Bounds bounds, TileType tileType) {
         super(bounds, asList(GameUnit.State.ACTIVE, GameUnit.State.DEAD), null);
         this.tileType = tileType;
         this.setCurrentState(State.ACTIVE);

@@ -2,6 +2,7 @@ package com.drozda.battlecity.loader;
 
 import com.drozda.battlecity.interfaces.LoadableCells;
 import com.drozda.battlecity.unit.TileUnit;
+import javafx.geometry.BoundingBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,25 +30,35 @@ public class FileLevelLoader implements LevelLoader {
     }
 
     public boolean loadlevel(String level, LoadableCells world) throws Exception {
-        log.debug("FileLevelLoader.loadlevel with parameters " + "level = [" + level + "], world = [" + world + "]");
+        log.info("FileLevelLoader.loadlevel with parameters " + "level = [" + level + "], world = [" + world + "]");
         InputStream is = LevelLoader.class.getResourceAsStream("/com/drozda/battlecity/level/" + level);
-        if (is != null) {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
-            String sCurrentLine;
-            int y = 0;
-            while ((sCurrentLine = bufferedReader.readLine()) != null) {
-                char[] chars = sCurrentLine.toCharArray();
-                int x = 0;
-                for (char c : chars) {
-                    if (c != '.') {
-                        world.addCell(map.get(c));
-                    }
-                    log.info(String.valueOf(c));
-                    x++;
-                }
-                y++;
-            }
+        if (is == null) {
+            log.error("Input stream is null. Something with resource " + "'/com/drozda/battlecity/level/" + level + "'");
+            return false;
         }
+
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
+        String sCurrentLine;
+        double cellHeight = world.getCellHeight();
+        double cellWidth = world.getCellWidth();
+        int y = 0;
+        while ((sCurrentLine = bufferedReader.readLine()) != null) {
+            char[] chars = sCurrentLine.toCharArray();
+            int x = 0;
+            for (char c : chars) {
+                if (c != '.') {
+                    TileUnit tileUnit = new TileUnit(
+                            new BoundingBox(x * cellWidth, y * cellHeight, cellWidth, cellHeight),
+                            map.get(c)
+                    );
+                    world.addCell(tileUnit);
+                }
+                log.info(String.valueOf(c));
+                x++;
+            }
+            y++;
+        }
+
         return true;
     }
 }
