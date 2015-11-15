@@ -1,7 +1,7 @@
 package com.drozda.fx.sprite;
 
 import com.drozda.battlecity.unit.BonusUnit;
-import com.drozda.battlecity.unit.TankUnit;
+import com.drozda.battlecity.unit.PlayerTankUnit;
 import javafx.animation.FadeTransition;
 import javafx.animation.Timeline;
 import javafx.collections.ListChangeListener;
@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * Created by GFH on 11.11.2015.
  */
-public class PlayerTankFxSprite extends TankFxSprite {
+public class PlayerTankFxSprite extends TankFxSprite<PlayerTankUnit> {
     private static final Logger log = LoggerFactory.getLogger(PlayerTankFxSprite.class);
     static Rectangle2D[] helmetViewports = YabcSprite.BONUS_HELMET_ON_TANK.viewports;
     static Map<Integer, Rectangle2D[]> firstPlayerviewportsMap = new HashMap<>();
@@ -40,17 +40,17 @@ public class PlayerTankFxSprite extends TankFxSprite {
 
     private FadeTransition fadeTransition; // for friendlyfire
 
-    public PlayerTankFxSprite(TankUnit gameUnit) {
+    public PlayerTankFxSprite(PlayerTankUnit gameUnit) {
         super(gameUnit);
     }
 
     @Override
     protected void initSprite() {
         viewportsMap = new HashMap<>();
-        if (gameUnit.getTankType() == TankUnit.TankType.TANK_FIRST_PLAYER) {
+        if (gameUnit.getTankType() == PlayerTankUnit.PlayerTankType.TANK_FIRST_PLAYER) {
             viewportsMap = firstPlayerviewportsMap;
         }
-        if (gameUnit.getTankType() == TankUnit.TankType.TANK_SECOND_PLAYER) {
+        if (gameUnit.getTankType() == PlayerTankUnit.PlayerTankType.TANK_SECOND_PLAYER) {
             viewportsMap = secondPlayerviewportsMap;
         }
 
@@ -131,7 +131,7 @@ public class PlayerTankFxSprite extends TankFxSprite {
                 .ifPresent(bonusUnit1 -> showAnimation(AnimationType.ANIMATION_HELMET));
     }
 
-    protected class HelmetAnimation extends SpriteAnimation<TankUnit> {
+    protected class HelmetAnimation extends SpriteAnimation<PlayerTankUnit> {
 
         private int count = 2;
         private int lastIndex;

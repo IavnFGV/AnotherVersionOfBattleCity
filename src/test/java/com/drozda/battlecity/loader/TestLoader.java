@@ -11,7 +11,7 @@ public class TestLoader implements LevelLoader {
     public boolean loadlevel(String level, LoadableCells world) throws Exception {
         int x = 0, y = 0;
         for (TileUnit.TileType tileType : TileUnit.TileType.values()) {
-            world.addCell(x++, y++, tileType);
+            world.addCell(tileType);
         }
         return true;
     }

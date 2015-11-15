@@ -1,9 +1,11 @@
 package com.drozda.battlecity.unit;
 
-import com.drozda.battlecity.interfaces.Destroyable;
+import com.drozda.battlecity.interfaces.Collideable;
 import com.drozda.battlecity.interfaces.HasGameUnits;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Bounds;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import java.util.List;
 import java.util.Map;
@@ -13,19 +15,19 @@ import static java.util.Arrays.asList;
 /**
  * Created by GFH on 27.09.2015.
  */
-public class TileUnit extends GameUnit implements Destroyable {
+public class TileUnit extends GameUnit implements Collideable {
     private TileType tileType;
     private ObjectProperty<TileState> tileState = new SimpleObjectProperty<>(TileState.STATE_1111);
 
-    public TileUnit(double minX, double minY, double width, double height, HasGameUnits playground, TileType tileType) {
-        super(minX, minY, width, height, asList(GameUnit.State.ACTIVE, GameUnit.State.DEAD), null, playground);
+    public TileUnit(Bounds bounds, HasGameUnits playground, TileType tileType) {
+        super(bounds, asList(GameUnit.State.ACTIVE, GameUnit.State.DEAD), null);
         this.tileType = tileType;
         this.setCurrentState(State.ACTIVE);
     }
 
-    public TileUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long>
-            timeInState, HasGameUnits playground) {
-        super(minX, minY, width, height, stateFlow, timeInState, playground);
+    public TileUnit(Bounds bounds, List<State> stateFlow, Map<State, Long>
+            timeInState) {
+        super(bounds, stateFlow, timeInState);
         this.setCurrentState(State.ACTIVE);
     }
 
@@ -42,11 +44,15 @@ public class TileUnit extends GameUnit implements Destroyable {
     }
 
     @Override
-    public void collide(BulletUnit bulletUnit) {
-//todo stub replace
+    public ImmutablePair<CollideResult, CollideResult> collide(GameUnit gameUnit) {
+        return null;
     }
 
     @Override
+    public boolean isActive() {
+        return false;
+    }
+
     public boolean canBeDestroyed(BulletUnit.Type type) {
         if (getTileType() == null) {
             return false;

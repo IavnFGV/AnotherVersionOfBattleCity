@@ -3,7 +3,6 @@ package com.drozda.battlecity.unit;
 
 import com.drozda.battlecity.interfaces.CanChangeState;
 import com.drozda.battlecity.interfaces.CanPause;
-import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.StateFlowModifier;
 import javafx.beans.property.*;
 import javafx.geometry.BoundingBox;
@@ -31,7 +30,7 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
         defaultTimeInState.put(State.DEAD, 0L);
     }
 
-    protected StateFlowModifier<GameUnit> stateFlowModifier = new StateFlowModifier<>(this);
+    protected StateFlowModifier<? extends GameUnit> stateFlowModifier = new StateFlowModifier<>(this);
     protected ObjectProperty<Bounds> bounds = new SimpleObjectProperty<>(new BoundingBox(0, 0, 0, 0));
     protected LongProperty heartBeats = new SimpleLongProperty();
     private Map<State, Long> timeInState = new EnumMap<>(State.class);
@@ -40,9 +39,9 @@ public class GameUnit extends Observable implements CanChangeState<GameUnit.Stat
 
     private List<State> stateFlow = new LinkedList(); //TODO maybe we can use LinkedHashMap??
 
-    public GameUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long>
-            timeInState, HasGameUnits playground) {
-        this.setBounds(new BoundingBox(minX, minY, width, height));
+    public GameUnit(Bounds bounds, List<State> stateFlow, Map<State, Long>
+            timeInState) {
+        this.setBounds(bounds);
         if (stateFlow == null) {
             this.stateFlow.addAll(defaultStateFlow);
         } else {

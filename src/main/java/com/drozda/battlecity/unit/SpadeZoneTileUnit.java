@@ -1,10 +1,10 @@
 package com.drozda.battlecity.unit;
 
 import com.drozda.battlecity.StaticServices;
-import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.StateFlowModifier;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Bounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,20 +20,18 @@ public class SpadeZoneTileUnit extends TileUnit {
     private ObjectProperty<TileType> tileType = new SimpleObjectProperty<>(TileType.STEEL);
 
     {
-        StateFlowModifier stateFlowModifier1 = new ChangeableTileUnitStateFlowModifier(this);
-        stateFlowModifier = stateFlowModifier1;
+        stateFlowModifier = new ChangeableTileUnitStateFlowModifier(this);
     }
 
-    public SpadeZoneTileUnit(double minX, double minY, double width, double height, HasGameUnits playground) {
-        super(minX, minY, width, height, asList(State.CREATING, State.ACTIVE, State.ARMOR, State.BLINK, State.ACTIVE, State.DEAD),
+    public SpadeZoneTileUnit(Bounds bounds) {
+        super(bounds,
+                asList(State.CREATING, State.ACTIVE, State.ARMOR, State.BLINK, State.ACTIVE, State.DEAD),
                 new HashMap<State, Long>() {{
                     put(State.CREATING, 0l);
                     put(State.ARMOR, StaticServices.ONE_SECOND * 16);
                     put(State.BLINK, StaticServices.ONE_SECOND * 4);
-                }},
-                playground);
+                }});
     }
-
 
     @Override
     public TileType getTileType() {

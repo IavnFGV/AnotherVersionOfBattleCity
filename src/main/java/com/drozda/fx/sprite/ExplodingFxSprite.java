@@ -32,7 +32,8 @@ public abstract class ExplodingFxSprite<T extends GameUnit> extends FxSprite<T> 
             if (gameUnit instanceof BulletUnit) {
                 initSmallExplosionAnimation();
             }
-            if ((gameUnit instanceof TankUnit) || (gameUnit instanceof EagleBaseUnit)) {
+            if ((gameUnit instanceof TankUnit)
+                    || (gameUnit instanceof EagleBaseUnit)) {
                 initBigExplosionAnimation();
             }
 

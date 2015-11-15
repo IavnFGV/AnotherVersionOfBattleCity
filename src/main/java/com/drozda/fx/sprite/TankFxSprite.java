@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by GFH on 12.11.2015.
  */
-public class TankFxSprite extends MovingFxSprite<TankUnit> {
+public class TankFxSprite<T extends TankUnit> extends MovingFxSprite<T> {
     private static final Logger log = LoggerFactory.getLogger(TankFxSprite.class);
     static Rectangle2D[] creatingViewports = YabcSprite.CREATING.viewports;
 
-    public TankFxSprite(TankUnit gameUnit) {
+    public TankFxSprite(T gameUnit) {
         super(gameUnit);
     }
 
@@ -41,7 +41,7 @@ public class TankFxSprite extends MovingFxSprite<TankUnit> {
         return super.nextViewport(animationType, index);
     }
 
-    protected class CreatingAnimation extends SpriteAnimation<TankUnit> {
+    protected class CreatingAnimation extends SpriteAnimation<T> {
 
         private int count;
         private int lastIndex;
@@ -62,7 +62,7 @@ public class TankFxSprite extends MovingFxSprite<TankUnit> {
         }
     }
 
-    protected class BasicTankMoveAnimation extends SpriteAnimation<TankUnit> {
+    protected class BasicTankMoveAnimation extends SpriteAnimation<T> {
         private int count = 2;
         private int lastIndex;
 

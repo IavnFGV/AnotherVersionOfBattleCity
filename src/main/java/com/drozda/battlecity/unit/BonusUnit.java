@@ -1,7 +1,8 @@
 package com.drozda.battlecity.unit;
 
 import com.drozda.battlecity.StaticServices;
-import com.drozda.battlecity.interfaces.HasGameUnits;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 
 import java.util.HashMap;
 
@@ -14,28 +15,27 @@ public class BonusUnit extends GameUnit {
     private final BonusType bonusType;
     public boolean processed;
 
-    public BonusUnit(double minX, double minY, double width, double height, HasGameUnits playground, BonusType bonusType) {
-        super(minX, minY, width, height,
-                asList(State.ACTIVE, State.BLINK, State.DEAD, State.IN_POCKET, State.DEAD),
+    public BonusUnit(Bounds bounds, BonusType bonusType) {
+        super(
+                bounds, asList(State.ACTIVE, State.BLINK, State.DEAD, State.IN_POCKET, State.DEAD),
                 new HashMap<State, Long>() {{
                     put(State.ACTIVE, StaticServices.ONE_SECOND * 10);
                     put(State.BLINK, StaticServices.ONE_SECOND / 2);
                     put(State.IN_POCKET, bonusType.timeInPocket);
-                }}, playground);
+                }});
         this.bonusType = bonusType;
     }
 
-    public BonusUnit(HasGameUnits playground, BonusType bonusType) {
-        super(0, 0, 0, 0,
-                asList(State.DEAD, State.IN_POCKET, State.DEAD),
+    public BonusUnit(BonusType bonusType) {
+        super(
+                new BoundingBox(0, 0, 0, 0), asList(State.DEAD, State.IN_POCKET, State.DEAD),
                 new HashMap<State, Long>() {{
                     put(State.IN_POCKET, bonusType.timeInPocket);
-                }}, playground);
+                }});
         this.bonusType = bonusType;
         if (!bonusType.isAux) {
             throw new RuntimeException("Bonustype = " + bonusType + " cannot be created with this constructor");
         }
-
     }
 
     public boolean isProcessed() {
@@ -46,7 +46,7 @@ public class BonusUnit extends GameUnit {
         this.processed = processed;
     }
 
-    public void takeToPocket(TankUnit tankUnit) {
+    public void takeToPocket(PlayerTankUnit tankUnit) {
         if (!getBonusType().isOneTime) {
             BonusUnit bonusUnit = tankUnit.getBonusList().stream()
                     .filter(bonusUnit1 -> bonusUnit1.getBonusType() == getBonusType())

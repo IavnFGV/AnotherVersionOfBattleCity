@@ -1,25 +1,26 @@
 package com.drozda.battlecity.unit;
 
-import com.drozda.battlecity.interfaces.Destroyable;
-import com.drozda.battlecity.interfaces.HasGameUnits;
+import com.drozda.battlecity.interfaces.Collideable;
+import javafx.geometry.Bounds;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import static java.util.Arrays.asList;
 
 /**
  * Created by GFH on 12.11.2015.
  */
-public class EagleBaseUnit extends GameUnit implements Destroyable {
-    public EagleBaseUnit(double minX, double minY, double width, double height, HasGameUnits playground) {
-        super(minX, minY, width, height, asList(State.ACTIVE, State.EXPLODING, State.DEAD), null, playground);
+public class EagleBaseUnit extends GameUnit implements Collideable {
+    public EagleBaseUnit(Bounds bounds) {
+        super(bounds, asList(State.ACTIVE, State.EXPLODING, State.DEAD), null);
     }
 
     @Override
-    public void collide(BulletUnit bulletUnit) {
-
+    public ImmutablePair<CollideResult, CollideResult> collide(GameUnit gameUnit) {
+        return null;
     }
 
     @Override
-    public boolean canBeDestroyed(BulletUnit.Type type) {
-        return true;
+    public boolean isActive() {
+        return false;
     }
 }

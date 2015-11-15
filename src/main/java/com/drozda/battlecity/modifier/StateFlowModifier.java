@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by GFH on 27.09.2015.
  */
-public class StateFlowModifier<T extends CanPause & CanChangeState> extends NumberListenerModifier {
+public class StateFlowModifier<T extends CanPause & CanChangeState> extends NumberListenerModifier<T> {
     private static final Logger log = LoggerFactory.getLogger(StateFlowModifier.class);
 
     private long timeInCurrentState;
@@ -39,16 +39,12 @@ public class StateFlowModifier<T extends CanPause & CanChangeState> extends Numb
 
     private void goToNextState() {
         log.debug("StateFlowModifier.goToNextState");
-        gameUnit().goToNextState();
+        gameUnit.goToNextState();
         timeInCurrentState = 0;
     }
 
     private long getTimeInState() {
-        return gameUnit().getTimeInState(gameUnit().getCurrentState());
-    }
-
-    private T gameUnit() {
-        return (T) gameUnit;
+        return gameUnit.getTimeInState(gameUnit.getCurrentState());
     }
 
 }

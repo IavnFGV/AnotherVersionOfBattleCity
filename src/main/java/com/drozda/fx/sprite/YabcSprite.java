@@ -210,32 +210,32 @@ public enum YabcSprite {
                     return new WaterFxSprite(tileUnit);
             }
         }
-        if (gameUnit instanceof TankUnit) {
-            TankUnit tankUnit = (TankUnit) gameUnit;
+        if (gameUnit instanceof PlayerTankUnit) {
+            PlayerTankUnit playerTankUnit = (PlayerTankUnit) gameUnit;
+            log.debug(playerTankUnit.toString());
+            switch (playerTankUnit.getTankType()) {
+                case TANK_FIRST_PLAYER:
+                case TANK_SECOND_PLAYER:
+                    return new PlayerTankFxSprite(playerTankUnit);
+            }
+        }
+        if (gameUnit instanceof EnemyTankUnit) {
+            EnemyTankUnit tankUnit = (EnemyTankUnit) gameUnit;
             log.debug(tankUnit.toString());
             switch (tankUnit.getTankType()) {
 
-                case TANK_FIRST_PLAYER:
-                    return new PlayerTankFxSprite(tankUnit);
-                case TANK_SECOND_PLAYER:
-                    return new PlayerTankFxSprite(tankUnit);
                 case TANK_SIMPLE_ENEMY:
-                    return new SimpleEnemyTankFxSprite(tankUnit);
                 case TANK_FAST_ENEMY:
-                    return new SimpleEnemyTankFxSprite(tankUnit);
                 case TANK_POWER_ENEMY:
-                    return new SimpleEnemyTankFxSprite(tankUnit);
-                case TANK_ARMOR_ENEMY:
-                    return new ArmorEnemyTankFxSprite(tankUnit);
                 case TANK_SIMPLE_ENEMY_X:
-                    return new SimpleEnemyTankFxSprite(tankUnit);
                 case TANK_FAST_ENEMY_X:
-                    return new SimpleEnemyTankFxSprite(tankUnit);
                 case TANK_POWER_ENEMY_X:
                     return new SimpleEnemyTankFxSprite(tankUnit);
+                case TANK_ARMOR_ENEMY:
                 case TANK_ARMOR_ENEMY_X:
                     return new ArmorEnemyTankFxSprite(tankUnit);
             }
+
         }
         if (gameUnit instanceof BulletUnit) {
             BulletUnit bulletUnit = (BulletUnit) gameUnit;

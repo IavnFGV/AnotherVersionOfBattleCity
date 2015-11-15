@@ -1,6 +1,6 @@
 package com.drozda.fx.sprite;
 
-import com.drozda.battlecity.unit.TankUnit;
+import com.drozda.battlecity.unit.EnemyTankUnit;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
@@ -8,10 +8,10 @@ import javafx.util.Duration;
 /**
  * Created by GFH on 13.11.2015.
  */
-public class SimpleEnemyTankFxSprite extends TankFxSprite {
+public class SimpleEnemyTankFxSprite extends TankFxSprite<EnemyTankUnit> {
     protected Rectangle2D[] viewports;
 
-    public SimpleEnemyTankFxSprite(TankUnit gameUnit) {
+    public SimpleEnemyTankFxSprite(EnemyTankUnit gameUnit) {
         super(gameUnit);
     }
 
@@ -37,10 +37,7 @@ public class SimpleEnemyTankFxSprite extends TankFxSprite {
             case TANK_POWER_ENEMY_X:
                 viewports = YabcSprite.TANK_POWER_ENEMY_X.viewports;
                 break;
-            case TANK_FIRST_PLAYER:
-            case TANK_SECOND_PLAYER:
-            case TANK_ARMOR_ENEMY_X:
-            case TANK_ARMOR_ENEMY:
+            default:
                 throw new RuntimeException("BAD PARAMETER: it is not simple sprite :" + gameUnit.getTankType());
         }
 

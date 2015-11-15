@@ -1,6 +1,6 @@
 package com.drozda.fx.sprite;
 
-import com.drozda.battlecity.unit.TankUnit;
+import com.drozda.battlecity.unit.EnemyTankUnit;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Created by GFH on 13.11.2015.
  */
-public class ArmorEnemyTankFxSprite extends TankFxSprite {
+public class ArmorEnemyTankFxSprite extends TankFxSprite<EnemyTankUnit> {
     private static final Logger log = LoggerFactory.getLogger(ArmorEnemyTankFxSprite.class);
     static Map<Integer, Rectangle2D[]> armorViewportsMap = new HashMap<>();
     static Map<Integer, Rectangle2D[]> armorXViewportsMap = new HashMap<>();
@@ -33,17 +33,16 @@ public class ArmorEnemyTankFxSprite extends TankFxSprite {
 
     protected Map<Integer, Rectangle2D[]> viewportsMap;
 
-
-    public ArmorEnemyTankFxSprite(TankUnit gameUnit) {
+    public ArmorEnemyTankFxSprite(EnemyTankUnit gameUnit) {
         super(gameUnit);
     }
 
     @Override
     protected void initSprite() {
         viewportsMap = new HashMap<>();
-        if (gameUnit.getTankType() == TankUnit.TankType.TANK_ARMOR_ENEMY) {
+        if (gameUnit.getTankType() == EnemyTankUnit.EnemyTankType.TANK_ARMOR_ENEMY) {
             viewportsMap = armorViewportsMap;
-        } else if (gameUnit.getTankType() == TankUnit.TankType.TANK_ARMOR_ENEMY_X) {
+        } else if (gameUnit.getTankType() == EnemyTankUnit.EnemyTankType.TANK_ARMOR_ENEMY_X) {
             viewportsMap = armorXViewportsMap;
         } else {
             throw new RuntimeException("BAD PARAMETER: it is armorEnemy sprite :" + gameUnit.getTankType());

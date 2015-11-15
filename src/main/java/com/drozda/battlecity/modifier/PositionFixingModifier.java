@@ -100,10 +100,4 @@ public class PositionFixingModifier<T extends CanPause & CanMove> extends UnitMo
                             activeUnit.getBounds().getHeight()));
         }
     }
-
-    private T getUnit() {
-        return (T) gameUnit;
-    }
-
-
 }

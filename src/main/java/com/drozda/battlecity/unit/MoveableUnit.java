@@ -8,6 +8,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Bounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,16 +20,15 @@ import java.util.Map;
  */
 public abstract class MoveableUnit extends GameUnit implements CanMove {
     private static final Logger log = LoggerFactory.getLogger(MoveableUnit.class);
-    public static long fastSpeed = 8l;
-    public static long normalSpeed = 6l;
     protected final MovingModifier<? extends MoveableUnit> movingModifier;
     protected BooleanProperty engineOn = new SimpleBooleanProperty(false);
     protected ObjectProperty<Direction> direction = new SimpleObjectProperty<>(Direction.UP);
     protected ActionCommandGenerator actionCommandGenerator;
     private long velocity;
 
-    public MoveableUnit(double minX, double minY, double width, double height, List<State> stateFlow, Map<State, Long> timeInState, HasGameUnits playground, long velocity) {
-        super(minX, minY, width, height, stateFlow, timeInState, playground);
+    public MoveableUnit(Bounds bounds, List<State> stateFlow, Map<State, Long> timeInState, HasGameUnits playground, long
+            velocity) {
+        super(bounds, stateFlow, timeInState);
         this.velocity = velocity;
         this.movingModifier = createMovingModifier(playground);
     }

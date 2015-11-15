@@ -7,6 +7,7 @@ import com.drozda.fx.sprite.FxSprite;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.BoundingBox;
 import javafx.geometry.Point2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ import static java.util.Arrays.asList;
 /**
  * Created by GFH on 27.09.2015.
  */
-public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
+public class YabcBattleGround implements BattleGround<TileUnit> {
     private static final Logger log = LoggerFactory.getLogger(YabcBattleGround.class);
     private static final EnumSet<PlaygroundState> notPauseStates = EnumSet.of(PlaygroundState.ACTIVE);
     private static final EnumSet<PlaygroundState> pauseStates = EnumSet.complementOf(notPauseStates);
@@ -107,6 +108,17 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
         return 8 * gamePixel.getY();
     }
 
+    @Override
+    public boolean addCell(TileUnit gameUnit) {
+        try {
+            unitList.add(gameUnit);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return false;
+        }
+        return true;
+    }
+
     public void heartBeat(long now) {
         unitList.forEach(gameUnit -> gameUnit.heartBeat(now));
     }
@@ -185,13 +197,6 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
         return unitList;
     }
 
-    @Override
-    public boolean addCell(int x, int y, TileUnit.TileType tileType) {
-        TileUnit tileUnit = new TileUnit(x * getCellWidth(), y * getCellHeight(), getCellWidth(), getCellHeight(), this, tileType);
-        unitList.add(tileUnit);
-        return true;
-    }
-
     public ObjectProperty<BattleType> battleTypeProperty() {
         return battleType;
     }
@@ -205,6 +210,11 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
         if (getBattleType() == BattleType.DOUBLE_PLAYER) {
             createSecondPlayer();
         }
+    }
+
+    @Override
+    public boolean setVitalPoints(List<Point2D> enemiesPespawn, Point2D firstPlayerRespawn, Point2D secondPlayerRespawn, Point2D eagleBaseRespawn) {
+        return false;
     }
 
     private void activateSpadeZone() {
@@ -221,8 +231,12 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
 
     private void createSpadeZone() {
         for (Point2D p : spadeZone) {
-            SpadeZoneTileUnit spadeZoneTileUnit = new SpadeZoneTileUnit(p.getX(), p.getY(), getCellWidth(),
-                    getCellHeight(), this);
+            SpadeZoneTileUnit spadeZoneTileUnit =
+                    new SpadeZoneTileUnit(
+                            new BoundingBox(p.getX(),
+                                    p.getY(),
+                                    getCellWidth(),
+                                    getCellHeight()));
             unitList.add(spadeZoneTileUnit);
         }
     }
@@ -244,8 +258,12 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     }
 
     private void createEagleBase() {
-        EagleBaseUnit eagleBaseUnit = new EagleBaseUnit(eagleBaseRespawn.getX(), eagleBaseRespawn.getY(),
-                getEagleBaseWidth(), getEagleBaseHeight(), this);
+        EagleBaseUnit eagleBaseUnit =
+                new EagleBaseUnit(
+                        new BoundingBox(eagleBaseRespawn.getX(),
+                                eagleBaseRespawn.getY(),
+                                getEagleBaseWidth(),
+                                getEagleBaseHeight()));
         unitList.add(eagleBaseUnit);
     }
 
@@ -254,24 +272,35 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
     }
 
     private void createSecondPlayer() {
-        secondPlayer = new TankUnit(secondPlayerRespawn.getX(), secondPlayerRespawn.getY(), getTankWidth(),
-                getTankHeight(), this, TankUnit.TankType.TANK_SECOND_PLAYER, 3);
+        secondPlayer = new PlayerTankUnit(
+                new BoundingBox(secondPlayerRespawn.getX(),
+                        secondPlayerRespawn.getY(),
+                        getTankWidth(),
+                        getTankHeight()),
+                this,
+                PlayerTankUnit.PlayerTankType.TANK_SECOND_PLAYER);
         unitList.add(secondPlayer);
     }
 
     private void createFirstPlayer() {
-        firstPlayer = new TankUnit(firstPlayerRespawn.getX(), firstPlayerRespawn.getY(), getTankWidth(),
-                getTankHeight(), this, TankUnit.TankType.TANK_FIRST_PLAYER, 3);
+        firstPlayer = new PlayerTankUnit(
+                new BoundingBox(firstPlayerRespawn.getX(),
+                        firstPlayerRespawn.getY(),
+                        getTankWidth(),
+                        getTankHeight()),
+                this, PlayerTankUnit.PlayerTankType.TANK_FIRST_PLAYER);
         unitList.add(firstPlayer);
     }
 
     public void testCreateAllEnemies() {
-        List<TankUnit.TankType> typelist = asList(TankUnit.TankType.values());
+        List<EnemyTankUnit.EnemyTankType> typelist = asList(EnemyTankUnit.EnemyTankType.values());
         double x = 98;
         double y = 98;
-        for (TankUnit.TankType tankType : typelist) {
+        for (EnemyTankUnit.EnemyTankType tankType : typelist) {
             unitList.add(
-                    new TankUnit(x, y, getTankWidth(), getTankHeight(), this, tankType, 4)
+                    new EnemyTankUnit(
+                            new BoundingBox(x, y, getTankWidth(), getTankHeight()),
+                            this, tankType)
             );
             x += 32;
         }
@@ -294,7 +323,9 @@ public class YabcBattleGround implements BattleGround<TileUnit.TileType> {
             if (bonusType == BonusUnit.BonusType.START_GAME_HELMET) continue;
             if (bonusType == BonusUnit.BonusType.FRIENDLYFIRE_GIFT) continue;
             unitList.add(
-                    new BonusUnit(x, y, getBonusWidth(), getBonusHeight(), this, bonusType)
+                    new BonusUnit(
+                            new BoundingBox(x, y, getBonusWidth(), getBonusHeight()),
+                            bonusType)
             );
             x += 32;
         }

@@ -3,6 +3,7 @@ package com.drozda.battlecity.unit;
 import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.BulletMovingModifier;
 import com.drozda.battlecity.modifier.MovingModifier;
+import javafx.geometry.Bounds;
 
 import static java.util.Arrays.asList;
 
@@ -15,9 +16,9 @@ public class BulletUnit extends MoveableUnit {
 
     private Type type;
 
-    public BulletUnit(double minX, double minY, double width, double height, HasGameUnits playground, long velocity,
+    public BulletUnit(Bounds bounds, HasGameUnits playground, long velocity,
                       GameUnit parent, Type type) {
-        super(minX, minY, width, height, asList(GameUnit.State.ACTIVE, State.EXPLODING, GameUnit.State.DEAD), null,
+        super(bounds, asList(GameUnit.State.ACTIVE, State.EXPLODING, GameUnit.State.DEAD), null,
                 playground, velocity);
         this.parent = parent;
         this.type = type;

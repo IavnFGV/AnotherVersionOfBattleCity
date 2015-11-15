@@ -12,6 +12,9 @@ public class StaticServices {
     public static Locale DEFAULT_LOCALE = Locale.getDefault();
     //    public static ResourceBundle MESSAGES = ResourceBundle.getBundle("messages/messages", DEFAULT_LOCALE);
     public static Long ONE_SECOND = 1000_000_000l;
+    public static long FAST_SPEED = 8l;
+    public static long NORMAL_SPEED = 6l;
+
     private static YabcBattleGround yabcPlayground;
 
     public static HasGameUnits getYabcPlayground() {

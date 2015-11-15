@@ -40,7 +40,7 @@ public class FileLevelLoader implements LevelLoader {
                 int x = 0;
                 for (char c : chars) {
                     if (c != '.') {
-                        world.addCell(x, y, map.get(c));
+                        world.addCell(map.get(c));
                     }
                     log.info(String.valueOf(c));
                     x++;
