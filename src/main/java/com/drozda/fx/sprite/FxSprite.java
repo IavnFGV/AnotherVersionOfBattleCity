@@ -4,6 +4,7 @@ import com.drozda.battlecity.unit.GameUnit;
 import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Transition;
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
@@ -146,8 +147,10 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
                     .filter(tSpriteAnimation -> tSpriteAnimation.getAnimationType() == aType)
                     .filter(tSpriteAnimation -> !tSpriteAnimation.isInBackground())
                     .forEach(tSpriteAnimation -> {
-                        tSpriteAnimation.imageView.setVisible(true);
-                        tSpriteAnimation.play();
+                        Platform.runLater(() -> {
+                            tSpriteAnimation.imageView.setVisible(true);
+                            tSpriteAnimation.play();
+                        });
                     });
         }
     }

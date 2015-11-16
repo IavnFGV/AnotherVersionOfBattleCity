@@ -30,35 +30,16 @@ public class EnemyTankUnit extends TankUnit<EnemyTankUnit.EnemyTankType> {
         }
     }
 
-
-    @Override
-    public CollideResult passiveCollide(GameUnit other) {
-        if (other instanceof BulletUnit) {
-            BulletUnit bulletUnit = (BulletUnit) other;
-            if (bulletUnit.getParent() instanceof PlayerTankUnit) {
-                return decLifes(bulletUnit.getType());
-            }
+    public int getLifesAfterBullet(BulletUnit.Type type) {
+        int newLifes = getLifes();
+        switch (type) {
+            case POWERFUL:
+                newLifes--;
+            case SIMPLE:
+                newLifes--;
+                break;
         }
-        return CollideResult.NOTHING;
-    }
-
-    private CollideResult decLifes(BulletUnit.Type bulletType) {
-        int curLifes = getLifes();
-        if (bulletType == BulletUnit.Type.SIMPLE) {
-            setLifes(curLifes - 1);
-        } else {
-            setLifes(curLifes - 1);
-        }
-        if (getLifes() > 0) {
-            return CollideResult.INNER_STATE_CHANGE;
-        } else {
-            return CollideResult.STATE_CHANGE;
-        }
-    }
-
-    @Override
-    public boolean isActive() {
-        return false;
+        return newLifes;
     }
 
     public enum EnemyTankType {

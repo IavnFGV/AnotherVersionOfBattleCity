@@ -18,6 +18,16 @@
         <level value="ERROR"/>
     </logger>
 
+
+    <logger name="com.drozda.battlecity.manager">
+        <level value="DEBUG"/>
+    </logger>
+
+    <logger name="com.drozda.battlecity.collision">
+        <level value="DEBUG"/>
+    </logger>
+
+
     <root>
         <priority value="WARN"/>
         <appender-ref ref="console"/>

@@ -72,6 +72,11 @@ public class SpriteTest extends Application {
                 .filter(tankUnit -> tankUnit.getTankType() == PlayerTankUnit.PlayerTankType.TANK_FIRST_PLAYER)
                 .findFirst().get();
 
+        TankUnit enemyTank = yabcBattleGround.getUnitList().stream()
+                .filter(gameUnit -> (gameUnit instanceof EnemyTankUnit))
+                .map(gameUnit1 -> (EnemyTankUnit) gameUnit1)
+                .filter(tankUnit -> tankUnit.getTankType() == EnemyTankUnit.EnemyTankType.TANK_SIMPLE_ENEMY)
+                .findFirst().get();
 
         TankUnit secondTank = yabcBattleGround.getUnitList().stream()
                 .filter(gameUnit -> (gameUnit instanceof PlayerTankUnit))
@@ -129,15 +134,16 @@ public class SpriteTest extends Application {
                     init = true;
                 }
                 yabcBattleGround.heartBeat(now);
-                yabcBattleGround.collisionCycle();
+//                yabcBattleGround.collisionCycle();
             }
         };
-        mainLoop.start();
+        // mainLoop.start();
 
 //        firstTank.getBonusList().add(new BonusUnit(0, 0, 0, 0, yabcBattleGround, BonusUnit.BonusType.HELMET));
 //        firstTank.getBonusList().add(new BonusUnit(0, 0, 0, 0, yabcBattleGround, BonusUnit.BonusType
 //                .START_GAME_HELMET));
         propertiesEditorController.initPropertyShit(firstTank);
+//        propertiesEditorController.initPropertyShit(enemyTank);
 //        propertiesEditorController.initPropertyShit(bonusStar);
 //        propertiesEditorController.initPropertyShit(brickUnit);
 //        propertiesEditorController.initPropertyShit(spadeZoneTileUnit);

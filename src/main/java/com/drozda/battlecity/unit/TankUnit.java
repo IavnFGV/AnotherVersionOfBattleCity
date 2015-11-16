@@ -1,7 +1,6 @@
 package com.drozda.battlecity.unit;
 
 import com.drozda.battlecity.interfaces.CanFire;
-import com.drozda.battlecity.interfaces.Collideable;
 import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.MovingModifier;
 import com.drozda.battlecity.modifier.PositionFixingModifier;
@@ -21,11 +20,12 @@ import java.util.Map;
 /**
  * Created by GFH on 15.11.2015.
  */
-public abstract class TankUnit<E extends Enum> extends MoveableUnit implements Collideable<GameUnit>, CanFire {
+public abstract class TankUnit<E extends Enum> extends MoveableUnit implements CanFire {
     private static final Logger log = LoggerFactory.getLogger(TankUnit.class);
     protected final PositionFixingModifier<MoveableUnit> fixingModifier;
     protected IntegerProperty lifes = new SimpleIntegerProperty(1);
     private E tankType;
+    private IntegerProperty activeBullets = new SimpleIntegerProperty(0);
 
     public TankUnit(Bounds bounds, List<State> stateFlow, Map<State, Long> timeInState, HasGameUnits playground, E
             tankType, long velocity) {
@@ -33,6 +33,10 @@ public abstract class TankUnit<E extends Enum> extends MoveableUnit implements C
         this.tankType = tankType;
         fixingModifier = new PositionFixingModifier<>(this, playground);
         this.directionProperty().addListener(fixingModifier);
+    }
+
+    public IntegerProperty activeBulletsProperty() {
+        return activeBullets;
     }
 
     @Override
@@ -60,11 +64,20 @@ public abstract class TankUnit<E extends Enum> extends MoveableUnit implements C
     @Override
     public ProcessActionCommandResult processActionCommand(ActionCommand actionCommand) {
         ProcessActionCommandResult superResult = super.processActionCommand(actionCommand);
-        if (actionCommand.fire) {
+        if ((getActiveBullets() == 0) &&
+                (actionCommand.fire)) {
             fire();
             return ProcessActionCommandResult.SUCCESS;
         }
         return superResult;
+    }
+
+    public int getActiveBullets() {
+        return activeBullets.get();
+    }
+
+    public void setActiveBullets(int activeBullets) {
+        this.activeBullets.set(activeBullets);
     }
 
     @Override

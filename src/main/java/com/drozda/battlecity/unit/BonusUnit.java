@@ -1,7 +1,6 @@
 package com.drozda.battlecity.unit;
 
 import com.drozda.battlecity.StaticServices;
-import com.drozda.battlecity.interfaces.Collideable;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 
@@ -12,7 +11,7 @@ import static java.util.Arrays.asList;
 /**
  * Created by GFH on 26.09.2015.
  */
-public class BonusUnit extends GameUnit implements Collideable<PlayerTankUnit> {
+public class BonusUnit extends GameUnit {
     private final BonusType bonusType;
     public boolean processed;
 
@@ -55,19 +54,6 @@ public class BonusUnit extends GameUnit implements Collideable<PlayerTankUnit> {
         return bonusType;
     }
 
-    @Override
-    public String toString() {
-        return "BonusUnit{" +
-                "bonusType=" + bonusType +
-                "}";
-    }
-
-    @Override
-    public CollideResult passiveCollide(PlayerTankUnit other) {
-        this.takeToPocket(other);
-        return CollideResult.STATE_CHANGE;
-    }
-
     public void takeToPocket(PlayerTankUnit tankUnit) {
         if (!getBonusType().isOneTime) {
             BonusUnit bonusUnit = tankUnit.getBonusList().stream()
@@ -95,13 +81,15 @@ public class BonusUnit extends GameUnit implements Collideable<PlayerTankUnit> {
     }
 
     @Override
-    public boolean isActive() {
-        return false;
+    public boolean isTakingPartInCollisionProcess() {
+        return super.isTakingPartInCollisionProcess() && (!isAux());
     }
 
     @Override
-    public boolean isTakingPartInCollisionProcess() {
-        return !this.isAux();
+    public String toString() {
+        return "BonusUnit{" +
+                "bonusType=" + bonusType +
+                "}";
     }
 
     public enum BonusType {

@@ -3,6 +3,7 @@ package com.drozda.battlecity.unit;
 
 import com.drozda.battlecity.interfaces.CanChangeState;
 import com.drozda.battlecity.interfaces.CanPause;
+import com.drozda.battlecity.interfaces.Collideable;
 import com.drozda.battlecity.modifier.StateFlowModifier;
 import javafx.beans.property.*;
 import javafx.geometry.BoundingBox;
@@ -18,15 +19,16 @@ import static java.util.Arrays.asList;
 /**
  * Created by GFH on 26.09.2015.
  */
-public abstract class GameUnit extends Observable implements CanChangeState<GameUnit.State>, CanPause {
+public abstract class GameUnit extends Observable implements CanChangeState<GameUnit.State>, CanPause, Collideable {
     private static final Logger log = LoggerFactory.getLogger(GameUnit.class);
     protected static Map<State, Long> defaultTimeInState = new EnumMap<>(State.class);
     protected static List<State> defaultStateFlow = asList(State.CREATING, State.ACTIVE, State.EXPLODING, State.DEAD);
+    protected static EnumSet<State> statesForCollisionProcess = EnumSet.of(State.ACTIVE, State.ARMOR, State.BLINK);
 
     static {
         defaultTimeInState.put(State.CREATING, 2 * ONE_SECOND);
         defaultTimeInState.put(State.ACTIVE, 0L);
-        defaultTimeInState.put(State.EXPLODING, ONE_SECOND / 6);
+        defaultTimeInState.put(State.EXPLODING, ONE_SECOND);
         defaultTimeInState.put(State.DEAD, 0L);
     }
 
@@ -36,7 +38,8 @@ public abstract class GameUnit extends Observable implements CanChangeState<Game
     private Map<State, Long> timeInState = new EnumMap<>(State.class);
     private ObjectProperty<State> currentState = new SimpleObjectProperty<>();
     private BooleanProperty pause = new SimpleBooleanProperty();
-
+    private ObjectProperty<CollisionProcessState> collisionProcessState = new SimpleObjectProperty<>
+            (CollisionProcessState.READY);
     private List<State> stateFlow = new LinkedList(); //TODO maybe we can use LinkedHashMap??
 
     public GameUnit(Bounds bounds, List<State> stateFlow, Map<State, Long>
@@ -58,6 +61,52 @@ public abstract class GameUnit extends Observable implements CanChangeState<Game
         currentState.setValue(this.stateFlow.get(0));
     }
 
+    @Override
+    public boolean isTakingPartInCollisionProcess() {
+        return statesForCollisionProcess.contains(getCurrentState());
+    }
+
+    @Override
+    public CollisionProcessState getCollisionProcessState() {
+        return collisionProcessState.get();
+    }
+
+    @Override
+    public void setCollisionProcessState(CollisionProcessState collisionProcessState) {
+        this.collisionProcessState.set(collisionProcessState);
+    }
+
+    @Override
+    public State getCurrentState() {
+        return currentState.get();
+    }
+
+    @Override
+    public void setCurrentState(State currentState) {
+        this.currentState.set(currentState);
+    }
+
+    @Override
+    public Long getTimeInState(State state) {
+        return timeInState.get(state);
+    }
+
+    @Override
+    public void goToNextState() {
+        if (getCurrentState() == State.DEAD) return;
+        int curIndex = stateFlow.indexOf(getCurrentState());
+        int nextIndex = (curIndex == stateFlow.size() - 1) ? 0 : curIndex + 1;
+//        if (curIndex < stateFlow.size() - 1) {
+        setCurrentState(stateFlow.get(nextIndex));
+        setChanged();
+//        }
+    }
+    //  protected Map<State,Long> timeInStateMap = new LinkedHashMap<>();
+
+    public ObjectProperty<CollisionProcessState> collisionProcessStateProperty() {
+        return collisionProcessState;
+    }
+
     public void heartBeat(long currentTime) {
         this.heartBeats.set(currentTime);
     }
@@ -69,7 +118,6 @@ public abstract class GameUnit extends Observable implements CanChangeState<Game
     public void setBounds(Bounds bounds) {
         this.bounds.set(bounds);
     }
-    //  protected Map<State,Long> timeInStateMap = new LinkedHashMap<>();
 
     public ObjectProperty<Bounds> boundsProperty() {
         return bounds;
@@ -127,34 +175,6 @@ public abstract class GameUnit extends Observable implements CanChangeState<Game
         BLINK,
         //special for bonusTile
         IN_POCKET
-    }
-
-    @Override
-    public State getCurrentState() {
-        return currentState.get();
-    }
-
-
-    @Override
-    public void setCurrentState(State currentState) {
-        this.currentState.set(currentState);
-    }
-
-
-    @Override
-    public Long getTimeInState(State state) {
-        return timeInState.get(state);
-    }
-
-    @Override
-    public void goToNextState() {
-        if (getCurrentState() == State.DEAD) return;
-        int curIndex = stateFlow.indexOf(getCurrentState());
-        int nextIndex = (curIndex == stateFlow.size() - 1) ? 0 : curIndex + 1;
-//        if (curIndex < stateFlow.size() - 1) {
-        setCurrentState(stateFlow.get(nextIndex));
-        setChanged();
-//        }
     }
 
 

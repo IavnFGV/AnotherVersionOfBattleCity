@@ -214,20 +214,22 @@ public class Battle {
     }
 
     public void loadPlayground(YabcBattleGround battleGround) {
+        Pane grassPane = new Pane();
         for (GameUnit gameUnit : battleGround.getUnitList()) {
             if ((gameUnit instanceof BonusUnit) &&
                     (((BonusUnit) gameUnit).isAux())) {
                 continue;
             }
             Node node = YabcSprite.getFullSprite(gameUnit);
-            centerPane.getChildren().add(node);
             nodeMap.put(gameUnit, node);
             if ((gameUnit instanceof TileUnit) && (((TileUnit) gameUnit).getTileType() == TileUnit.TileType.FOREST)) {
-                node.toFront();
+                grassPane.getChildren().add(node);
             } else {
-                node.toBack();
+                centerPane.getChildren().add(node);
             }
         }
+        centerPane.getChildren().add(grassPane);
+        grassPane.toFront();
         centerPane.getChildren().stream()
                 .filter(node -> (node instanceof BonusFxSprite))
                 .forEach(node1 -> Platform.runLater(() -> node1.toFront()));
@@ -240,14 +242,19 @@ public class Battle {
                         if (c.wasRemoved()) {
                             for (GameUnit remitem : c.getRemoved()) {
                                 Node node = nodeMap.get(remitem);
-                                Platform.runLater(() -> centerPane.getChildren().remove(node));
+                                Platform.runLater(() ->
+                                                centerPane.getChildren().remove(node)
+                                );
                                 nodeMap.remove(remitem);
                             }
                         } else if (c.wasAdded())
                             for (GameUnit additem : c.getAddedSubList()) {
                                 Node node = YabcSprite.getFullSprite(additem);
                                 nodeMap.put(additem, node);
-                                Platform.runLater(() -> centerPane.getChildren().add(node));
+                                Platform.runLater(() -> {
+                                    centerPane.getChildren().add(node);
+                                    grassPane.toFront();
+                                });
                             }
                     }
                 }

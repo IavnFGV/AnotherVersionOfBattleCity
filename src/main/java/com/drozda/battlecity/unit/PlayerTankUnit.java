@@ -1,7 +1,6 @@
 package com.drozda.battlecity.unit;
 
 import com.drozda.battlecity.StaticServices;
-import com.drozda.battlecity.interfaces.Collideable;
 import com.drozda.battlecity.interfaces.HasGameUnits;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
@@ -11,7 +10,6 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 
 /**
  * Created by GFH on 15.11.2015.
@@ -78,66 +76,6 @@ public class PlayerTankUnit extends TankUnit<PlayerTankUnit.PlayerTankType> {
         return bonusList;
     }
 
-    @Override
-    public ImmutablePair<CollideResult, CollideResult> activeCollide(GameUnit other) {
-        CollideResult selfCollideResult = CollideResult.NOTHING;
-        if (!this.getBounds().intersects(other.getBounds())) {
-            return NOTHING_PAIR;
-        }
-        colliding_block:
-        {
-            if (other instanceof BonusUnit) {
-                BonusUnit bonusUnit = (BonusUnit) other;
-                selfCollideResult = CollideResult.INNER_STATE_CHANGE;
-                break colliding_block;
-            }
-            if (other instanceof BulletUnit) {
-                BulletUnit bulletUnit = (BulletUnit) other;
-                if (bulletUnit.getParent() == this) {
-                    selfCollideResult = CollideResult.NOTHING;
-                    break colliding_block;
-                }
-                if (bulletUnit.getParent() instanceof PlayerTankUnit) {
-                    friendlyfireGift.takeToPocket(this);
-                    selfCollideResult = CollideResult.INNER_STATE_CHANGE;
-                    break colliding_block;
-                }
-                if (bulletUnit.getParent() instanceof EnemyTankUnit) {
-                    setCurrentState(State.EXPLODING);
-                    selfCollideResult = CollideResult.STATE_CHANGE;
-                    break colliding_block;
-                }
-            }
-        }
-        if (selfCollideResult != CollideResult.NOTHING) {
-            return new ImmutablePair<>(selfCollideResult, ((Collideable) other).passiveCollide(this));
-        }
-        return NOTHING_PAIR;
-    }
-
-    @Override
-    public CollideResult passiveCollide(GameUnit other) {
-        if (other instanceof BulletUnit) {
-            BulletUnit bulletUnit = (BulletUnit) other;
-            if (bulletUnit.getParent() == this) {
-                return CollideResult.NOTHING;
-            }
-            if (bulletUnit.getParent() instanceof PlayerTankUnit) {
-                friendlyfireGift.takeToPocket(this);
-                return CollideResult.INNER_STATE_CHANGE;
-            }
-            if (bulletUnit.getParent() instanceof EnemyTankUnit) {
-                setCurrentState(State.EXPLODING);
-                return CollideResult.STATE_CHANGE;
-            }
-        }
-        return CollideResult.NOTHING;
-    }
-
-    @Override
-    public boolean isActive() {
-        return true;
-    }
 
     public enum PlayerTankType {
         TANK_FIRST_PLAYER,

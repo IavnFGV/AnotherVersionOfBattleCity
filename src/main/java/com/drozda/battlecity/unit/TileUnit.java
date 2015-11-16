@@ -1,11 +1,10 @@
 package com.drozda.battlecity.unit;
 
-import com.drozda.battlecity.interfaces.Collideable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Bounds;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +13,8 @@ import static java.util.Arrays.asList;
 /**
  * Created by GFH on 27.09.2015.
  */
-public class TileUnit extends GameUnit implements Collideable<BulletUnit> {
+public class TileUnit extends GameUnit {
+    protected static EnumSet<TileType> typesForCollisionProcess = EnumSet.of(TileType.BRICK, TileType.STEEL);
     private TileType tileType;
     private ObjectProperty<TileState> tileState = new SimpleObjectProperty<>(TileState.STATE_1111);
 
@@ -43,65 +43,14 @@ public class TileUnit extends GameUnit implements Collideable<BulletUnit> {
     }
 
     @Override
-    public ImmutablePair<CollideResult, CollideResult> activeCollide(BulletUnit other) {
-        return null;
-    }
-
-    @Override
-    public CollideResult passiveCollide(BulletUnit other) {
-        if (other.getType() == BulletUnit.Type.POWERFUL) {
-            this.setCurrentState(State.DEAD);
-            return CollideResult.STATE_CHANGE;
-        }
-        if (getTileType() == TileType.STEEL) {
-            return CollideResult.NOTHING;
-        }
-        if (getTileType() == TileType.BRICK) { // TODO implement partial destroy
-            this.setCurrentState(State.DEAD);
-            return CollideResult.STATE_CHANGE;
-        }
-        return CollideResult.NOTHING;
-    }
-
-    @Override
-    public boolean isActive() {
-        return false;
-    }
-
-    @Override
     public boolean isTakingPartInCollisionProcess() {
-        switch (getTileType()) {
-            case WATER:
-            case FOREST:
-            case ICE:
-                return false;
-            case BRICK:
-            case STEEL:
-            default:
-                return true;
-        }
+        return (super.isTakingPartInCollisionProcess() &&
+                (typesForCollisionProcess.contains(getTileType())));
+
     }
 
     public TileType getTileType() {
         return tileType;
-    }
-
-    public boolean canBeDestroyed(BulletUnit.Type type) {
-        if (getTileType() == null) {
-            return false;
-        }
-        if (type == BulletUnit.Type.SIMPLE) {
-            if (getTileType() == TileType.BRICK) {
-                return true;
-            }
-        }
-        if (type == BulletUnit.Type.POWERFUL) {
-            if ((getTileType() == TileType.STEEL) ||
-                    (getTileType() == TileType.BRICK)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public enum TileType {

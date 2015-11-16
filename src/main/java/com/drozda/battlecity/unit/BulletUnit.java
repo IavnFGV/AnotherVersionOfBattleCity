@@ -1,19 +1,17 @@
 package com.drozda.battlecity.unit;
 
-import com.drozda.battlecity.interfaces.Collideable;
 import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.BulletMovingModifier;
 import com.drozda.battlecity.modifier.MovingModifier;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import static java.util.Arrays.asList;
 
 /**
  * Created by GFH on 27.09.2015.
  */
-public class BulletUnit extends MoveableUnit implements Collideable<GameUnit> {
+public class BulletUnit extends MoveableUnit {
 
     private TankUnit parent;
 
@@ -27,11 +25,19 @@ public class BulletUnit extends MoveableUnit implements Collideable<GameUnit> {
         this.type = type;
         this.setEngineOn(true);
         this.setDirection(parent.getDirection());
+        parent.setActiveBullets(parent.getActiveBullets() + 1);
         this.currentStateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == State.DEAD) {
+                parent.setActiveBullets(parent.getActiveBullets() - 1);
                 Platform.runLater(() -> this.playground.getUnitList().remove(this));
             }
         });
+    }
+
+    @Override
+    public void handlePartialCollisionState() {
+        setCurrentState(State.EXPLODING);
+        setCollisionProcessState(CollisionProcessState.COMPLETED);
     }
 
     @Override
@@ -63,100 +69,6 @@ public class BulletUnit extends MoveableUnit implements Collideable<GameUnit> {
         return isInWorldBounds ? IsMoveAllowedResult.ALLOW : IsMoveAllowedResult.DESTROY;
     }
 
-    @Override
-    public ImmutablePair<CollideResult, CollideResult> activeCollide(GameUnit other) {
-        CollideResult selfCollideResult = CollideResult.NOTHING;
-
-        colliding_block:
-        // only for experiment  always want to try  labels!!))
-        // TODO make this in hash or something
-        {
-            if (this.parent == other) {
-                selfCollideResult = CollideResult.NOTHING;
-                break colliding_block;
-            }
-            if (!this.getBounds().intersects(other.getBounds())) {
-                selfCollideResult = CollideResult.NOTHING;
-                break colliding_block;
-            }
-            if (other instanceof BonusUnit) {
-                selfCollideResult = CollideResult.NOTHING;
-                break colliding_block;
-            }
-            if (other instanceof BulletUnit) {
-                this.setCurrentState(State.DEAD);
-                selfCollideResult = CollideResult.STATE_CHANGE;
-                break colliding_block;
-            }
-            if (other instanceof PlayerTankUnit) {
-                if (this.parent instanceof PlayerTankUnit) {
-                    this.setCurrentState(State.DEAD);
-                    selfCollideResult = CollideResult.STATE_CHANGE;
-                    break colliding_block;
-                }
-                if (this.parent instanceof EnemyTankUnit) {
-                    this.setCurrentState(State.EXPLODING);
-                    selfCollideResult = CollideResult.STATE_CHANGE;
-                    break colliding_block;
-                }
-            }
-            if (other instanceof EnemyTankUnit) {
-                if (this.parent instanceof EnemyTankUnit) {
-                    selfCollideResult = CollideResult.NOTHING;
-                    break colliding_block;
-                }
-                if (this.parent instanceof PlayerTankUnit) {
-                    this.setCurrentState(State.EXPLODING);
-                    break colliding_block;
-                }
-            }
-            if (other instanceof TileUnit) {
-                this.setCurrentState(State.EXPLODING);
-                selfCollideResult = CollideResult.STATE_CHANGE;
-                break colliding_block;
-            }
-        }
-        if (selfCollideResult != CollideResult.NOTHING) {
-            return new ImmutablePair<>(selfCollideResult, ((Collideable) other).passiveCollide(this));
-        }
-        return NOTHING_PAIR;
-    }
-
-    @Override
-    public CollideResult passiveCollide(GameUnit other) {
-        if (parent == other) {
-            return CollideResult.NOTHING;
-        }
-        if (other instanceof BulletUnit) {
-            this.setCurrentState(State.DEAD);
-            return CollideResult.STATE_CHANGE;
-        }
-        if (other instanceof PlayerTankUnit) {
-            if (this.parent instanceof PlayerTankUnit) {
-                this.setCurrentState(State.DEAD);
-                return CollideResult.STATE_CHANGE;
-            }
-            if (this.parent instanceof EnemyTankUnit) {
-                this.setCurrentState(State.EXPLODING);
-                return CollideResult.STATE_CHANGE;
-            }
-        }
-        if (other instanceof EnemyTankUnit) {
-            if (this.parent instanceof EnemyTankUnit) {
-                return CollideResult.NOTHING;
-            }
-            if (this.parent instanceof PlayerTankUnit) {
-                this.setCurrentState(State.EXPLODING);
-                return CollideResult.STATE_CHANGE;
-            }
-        }
-        return CollideResult.NOTHING;
-    }
-
-    @Override
-    public boolean isActive() {
-        return true;
-    }
 
     public enum Type {
         SIMPLE,
