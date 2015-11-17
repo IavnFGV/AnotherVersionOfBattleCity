@@ -1,5 +1,6 @@
 package com.drozda.battlecity.playground;
 
+import com.drozda.battlecity.StaticServices;
 import com.drozda.battlecity.interfaces.BattleGround;
 import com.drozda.battlecity.interfaces.CanMove;
 import com.drozda.battlecity.interfaces.CollisionManager;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -48,13 +50,16 @@ public class YabcBattleGround implements BattleGround<TileUnit> {
     private ReadOnlyBooleanWrapper pause = new ReadOnlyBooleanWrapper(true);
     private Point2D firstPlayerRespawn;
     private Point2D secondPlayerRespawn;
-    private Point2D eagleBaseRespawn;
+    private List<Point2D> eagleBaseRespawns;
     private List<Point2D> spadeZone;
     private List<TileUnit> wereInSpadeZone = new LinkedList<>();
     private List<GameUnit> wereNotInPauseState;
     private TankUnit firstPlayer;
     private TankUnit secondPlayer;
     private CollisionManager collisionManager;
+
+    private Queue<BulletUnit> bulletsQueue = new LinkedList<>();
+    private List<BulletUnit> activeBullets = new LinkedList<>();
 
     {
         state.addListener((observable, oldValue, newValue) ->
@@ -92,7 +97,7 @@ public class YabcBattleGround implements BattleGround<TileUnit> {
         setBattleType(battleType);
         firstPlayerRespawn = new Point2D(8 * getCellWidth(), 24 * getCellHeight());
         secondPlayerRespawn = new Point2D(16 * getCellWidth(), 24 * getCellHeight());
-        eagleBaseRespawn = new Point2D(12 * getCellWidth(), 24 * getCellHeight());
+        eagleBaseRespawns = asList(new Point2D(12 * getCellWidth(), 24 * getCellHeight()));
         spadeZone = asList(
                 new Point2D(11 * getCellWidth(), 25 * getCellHeight()),
                 new Point2D(11 * getCellWidth(), 24 * getCellHeight()),
@@ -103,7 +108,25 @@ public class YabcBattleGround implements BattleGround<TileUnit> {
                 new Point2D(14 * getCellWidth(), 24 * getCellHeight()),
                 new Point2D(14 * getCellWidth(), 25 * getCellHeight())
         );
+        for (int i = 0; i < StaticServices.BULLET_CASH_SIZE; i++) {
+            addBulletToQueue();
+        }
         collisionManager = new BaseCollisionManager(this);
+    }
+
+    private void addBulletToQueue() {
+        BulletUnit bulletUnit = new BulletUnit(
+                new BoundingBox(0, 0, this.getBulletWidth(), this.getBulletHeight()),
+                this
+        );
+        bulletUnit.currentStateProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == GameUnit.State.DEAD) {
+                activeBullets.remove(bulletUnit);
+                bulletsQueue.add(bulletUnit);
+            }
+        });
+        bulletsQueue.add(bulletUnit);
+        unitList.add(bulletUnit);
     }
 
     @Override
@@ -204,6 +227,23 @@ public class YabcBattleGround implements BattleGround<TileUnit> {
     }
 
     @Override
+    public List<BulletUnit> getActiveBullets() {
+        return activeBullets;
+    }
+
+    @Override
+    public void fire(TankUnit tankUnit) {
+        BulletUnit bulletUnit = bulletsQueue.poll();
+        if (bulletUnit == null) {
+            addBulletToQueue();
+            bulletUnit = bulletsQueue.remove();
+        }
+        bulletUnit.setParentFromPlayground(tankUnit);
+        activeBullets.add(bulletUnit);
+        bulletUnit.setCurrentState(GameUnit.State.ACTIVE);
+    }
+
+    @Override
     public boolean setVitalPoints(List<Point2D> enemiesPespawn, Point2D firstPlayerRespawn, Point2D secondPlayerRespawn, Point2D eagleBaseRespawn) {
         return false;
     }
@@ -249,13 +289,15 @@ public class YabcBattleGround implements BattleGround<TileUnit> {
     }
 
     private void createEagleBase() {
-        EagleBaseUnit eagleBaseUnit =
-                new EagleBaseUnit(
-                        new BoundingBox(eagleBaseRespawn.getX(),
-                                eagleBaseRespawn.getY(),
-                                getEagleBaseWidth(),
-                                getEagleBaseHeight()));
-        unitList.add(eagleBaseUnit);
+        for (Point2D basePoint : eagleBaseRespawns) {
+            EagleBaseUnit eagleBaseUnit =
+                    new EagleBaseUnit(
+                            new BoundingBox(basePoint.getX(),
+                                    basePoint.getY(),
+                                    getEagleBaseWidth(),
+                                    getEagleBaseHeight()));
+            unitList.add(eagleBaseUnit);
+        }
     }
 
     private double getEagleBaseHeight() {

@@ -64,7 +64,11 @@ public class ArmorEnemyTankFxSprite extends TankFxSprite<EnemyTankUnit> {
     @Override
     protected Rectangle2D nextViewport(AnimationType animationType, int index) {
         if (animationType == AnimationType.ANIMATION_ACTIVE) {
-            return viewportsMap.get(gameUnit.getLifes())[index];
+            if (gameUnit.getLifes() > 0) {
+                return viewportsMap.get(gameUnit.getLifes())[index];
+            } else {
+                return viewportsMap.get(1)[index];
+            }
         }
         return super.nextViewport(animationType, index);
     }

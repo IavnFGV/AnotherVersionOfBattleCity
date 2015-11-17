@@ -1,5 +1,6 @@
 package com.drozda.battlecity.manager;
 
+import com.drozda.battlecity.StaticServices;
 import com.drozda.battlecity.collision.command.check.CheckIntersectionCommand;
 import com.drozda.battlecity.collision.command.check.CheckNotItselfCommand;
 import com.drozda.battlecity.collision.command.check.CheckTypesCommand;
@@ -22,10 +23,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -55,19 +53,26 @@ public class BaseCollisionManager implements CollisionManager {
         this.playground = playground;
     }
 
-    private Chain createBulletWithEnemyTankChain() {
+    private Chain createBulletWithPlayerTankChain() {
         Chain chain = createBaseCollisionChain();
-        chain.addCommand(new CheckTypesCommand(BulletUnit.class, EnemyTankUnit.class));
+        chain.addCommand(new CheckTypesCommand(BulletUnit.class, PlayerTankUnit.class));
         chain.addCommand(new CheckBulletTankIsParent());
-        chain.addCommand(new CheckBulletEnemyTankEnemyParent());
-        chain.addCommand(new FinishBulletVsEnemyTank());
-        return chain;
+        chain.addCommand(new F);
     }
 
     private Chain createBaseCollisionChain() {
         Chain chain = new ChainBase();
         chain.addCommand(new CheckNotItselfCommand());
         chain.addCommand(new CheckIntersectionCommand());
+        return chain;
+    }
+
+    private Chain createBulletWithEnemyTankChain() {
+        Chain chain = createBaseCollisionChain();
+        chain.addCommand(new CheckTypesCommand(BulletUnit.class, EnemyTankUnit.class));
+        chain.addCommand(new CheckBulletTankIsParent());
+        chain.addCommand(new CheckBulletEnemyTankEnemyParent());
+        chain.addCommand(new FinishBulletVsEnemyTank());
         return chain;
     }
 
@@ -80,9 +85,9 @@ public class BaseCollisionManager implements CollisionManager {
         return chain;
     }
 
-    @Override
-    public void collisionCycle() {
-        List<GameUnit> wantToCollideList = extractWantToCollideList();
+    //@Override
+    public void collisionCycle1() {
+        List<GameUnit> wantToCollideList = extractWantToCollideList(0);
         wantToCollideList.stream().forEach(gameUnit -> gameUnit.startCollisionProcessing());
 
         List<BulletUnit> bulletUnits = wantToCollideList.stream()
@@ -123,10 +128,41 @@ public class BaseCollisionManager implements CollisionManager {
         wantToCollideList.forEach(gameUnit -> gameUnit.finishCollisionProcessing());
     }
 
-    private List<GameUnit> extractWantToCollideList() {
-        return playground.getUnitList().stream()
-                .filter(isTakingPartInCollisionProcess)
-                .collect(Collectors.toList());
+    private List<GameUnit> extractWantToCollideList(int algorithm) {
+
+        if (algorithm == 0) {
+            return playground.getUnitList().stream()
+                    .filter(isTakingPartInCollisionProcess)
+                    .collect(Collectors.toList());
+        }
+        if (algorithm == 1) {
+            Comparator<GameUnit> gameUnitComparator = new Comparator<GameUnit>() {
+                @Override
+                public int compare(GameUnit o1, GameUnit o2) {
+                    return Integer.compare(getOrder(o1), getOrder(o2));
+                }
+
+                private int getOrder(GameUnit gameUnit) {
+                    if (gameUnit instanceof BulletUnit) {
+                        return 0;
+                    }
+                    if (gameUnit instanceof PlayerTankUnit) {
+                        return 1;
+                    }
+                    if (gameUnit instanceof BonusUnit) {
+                        return 2;
+                    }
+                    return 3;
+
+                }
+            };
+
+            return playground.getUnitList().stream()
+                    .filter(isTakingPartInCollisionProcess)
+                    .sorted(gameUnitComparator)
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 
     private Collideable.CollisionProcessState processUnitAndList(GameUnit gameUnit, List<GameUnit> gameUnits) {
@@ -145,6 +181,7 @@ public class BaseCollisionManager implements CollisionManager {
                     log.debug(collisionContext.getSummary());
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
+                    collisionContext.setSummary("EXCEPTION:" + e.getMessage());
                 }
                 if (collisionContext.getRightCollisionProcessState() == Collideable.CollisionProcessState.COMPLETED) {
                     gameUnits.remove(curElement);
@@ -163,6 +200,57 @@ public class BaseCollisionManager implements CollisionManager {
             }
         }
         return collisionContext.getLeftCollisionProcessState();
+    }
+
+    @Override
+    public void collisionCycle() {
+
+        List<GameUnit> wantToCollide = extractWantToCollideList(StaticServices.EXTRACT_COLLIDING_LIST);
+
+        wantToCollide.forEach(GameUnit::startCollisionProcessing);
+
+        List<GameUnit> collidingList = new LinkedList<>();
+
+        collidingList.addAll(wantToCollide);
+
+        int curIndex = 0;
+        int nextIndex = 1;
+
+        GameUnit left;
+        GameUnit right;
+        CollisionContext collisionContext = new CollisionContext();
+        while (collidingList.size() > 1) {
+            left = collidingList.remove(curIndex);
+            if (!left.isActive()) break;
+            nextIndex = 1;
+            while (nextIndex < collidingList.size()) {
+                right = collidingList.get(nextIndex);
+                collisionContext.invalidateContext();
+                collisionContext.setLeftUnit(left);
+                collisionContext.setRightUnit(right);
+                ImmutablePair immutablePair = new ImmutablePair(left.getClass(), right.getClass());
+                Chain chain = collisionChains.get(immutablePair);
+                if (chain == null) {
+                    nextIndex++;
+                    continue;
+                }
+                try {
+                    chain.execute(collisionContext);
+                    log.debug(collisionContext.getSummary());
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    collisionContext.setSummary("EXCEPTION:" + e.getMessage());
+                }
+                if (collisionContext.getRightCollisionProcessState() == Collideable.CollisionProcessState.COMPLETED) {
+                    collidingList.remove(nextIndex);
+                }
+                if (collisionContext.getLeftCollisionProcessState() == Collideable.CollisionProcessState.COMPLETED) {
+                    break;
+                }
+                nextIndex++;
+            }
+        }
+        wantToCollide.forEach(GameUnit::finishCollisionProcessing);
     }
 
     static class CollisionContext extends ContextBase {
@@ -196,6 +284,10 @@ public class BaseCollisionManager implements CollisionManager {
 
         protected String getSummary() {
             return (String) get(ContextEntries.SUMMARY);
+        }
+
+        protected void setSummary(String summary) {
+            put(ContextEntries.SUMMARY, summary);
         }
     }
 

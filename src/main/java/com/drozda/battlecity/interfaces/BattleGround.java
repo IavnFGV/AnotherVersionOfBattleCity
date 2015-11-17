@@ -1,6 +1,8 @@
 package com.drozda.battlecity.interfaces;
 
+import com.drozda.battlecity.unit.BulletUnit;
 import com.drozda.battlecity.unit.GameUnit;
+import com.drozda.battlecity.unit.TankUnit;
 import javafx.geometry.Point2D;
 
 import java.util.List;
@@ -10,6 +12,10 @@ import java.util.List;
  */
 public interface BattleGround<T extends GameUnit> extends HasGameUnits, LoadableCells<T> {
     void createActiveUnits();
+
+    List<BulletUnit> getActiveBullets();
+
+    void fire(TankUnit tankUnit);
 
     boolean setVitalPoints(List<Point2D> enemiesPespawn,
                            Point2D firstPlayerRespawn,

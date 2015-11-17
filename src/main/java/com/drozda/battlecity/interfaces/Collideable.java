@@ -17,7 +17,7 @@ public interface Collideable {
      * bonuses, tiles, enemies tanks are submissive))
      */
     default boolean isActive() {
-        return true;
+        return false;
     }
 
     /**

@@ -1,10 +1,16 @@
 package com.drozda.battlecity.unit;
 
+import com.drozda.battlecity.StaticServices;
+import com.drozda.battlecity.interfaces.BattleGround;
 import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.BulletMovingModifier;
 import com.drozda.battlecity.modifier.MovingModifier;
-import javafx.application.Platform;
+import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 
@@ -13,25 +19,46 @@ import static java.util.Arrays.asList;
  */
 public class BulletUnit extends MoveableUnit {
 
-    private TankUnit parent;
+    private static Map<State, Long> timeInState = new HashMap<>();
 
+    static {
+        timeInState.put(State.EXPLODING, StaticServices.BULLET_EXPLODING_TIME);
+    }
+
+    private TankUnit parent;
     private Type type;
 
-    public BulletUnit(Bounds bounds, HasGameUnits playground, long velocity,
+    public BulletUnit(Bounds bounds, BattleGround playground, long velocity,
                       TankUnit parent, Type type) {
-        super(bounds, asList(GameUnit.State.ACTIVE, State.EXPLODING, GameUnit.State.DEAD), null,
+        super(bounds, asList(GameUnit.State.ACTIVE, State.EXPLODING, GameUnit.State.DEAD), timeInState,
                 playground, velocity);
         this.parent = parent;
         this.type = type;
         this.setEngineOn(true);
         this.setDirection(parent.getDirection());
         parent.setActiveBullets(parent.getActiveBullets() + 1);
+
         this.currentStateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == State.DEAD) {
                 parent.setActiveBullets(parent.getActiveBullets() - 1);
-                Platform.runLater(() -> this.playground.getUnitList().remove(this));
             }
         });
+    }
+
+    public BulletUnit(Bounds bounds, BattleGround playground) {
+        super(bounds, asList(GameUnit.State.DEAD, GameUnit.State.ACTIVE, State.EXPLODING, GameUnit.State.DEAD), timeInState,
+                playground, 0l);
+        this.setEngineOn(true);
+        this.currentStateProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == State.DEAD) {
+                parent.setActiveBullets(parent.getActiveBullets() - 1);
+            }
+        });
+    }
+
+    @Override
+    public boolean isActive() {
+        return true;
     }
 
     @Override
@@ -51,6 +78,21 @@ public class BulletUnit extends MoveableUnit {
 
     public void setParent(TankUnit parent) {
         this.parent = parent;
+    }
+
+    public void setParentFromPlayground(TankUnit parent) {
+        Point2D startPosition = parent.getBulletStartPosition();
+        double bulletWidth = playground.getBulletWidth();
+        double bulletHeight = playground.getBulletHeight();
+
+        Bounds newBounds = new BoundingBox(startPosition.getX(), startPosition.getY(), bulletWidth, bulletHeight);
+        setBounds(newBounds);
+        this.parent = parent;
+        this.type = parent.getBulletType();
+        setVelocity(parent.getBulletSpeed());
+        this.setEngineOn(true);
+        this.setDirection(parent.getDirection());
+        parent.setActiveBullets(parent.getActiveBullets() + 1);
     }
 
     public Type getType() {

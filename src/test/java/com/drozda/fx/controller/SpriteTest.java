@@ -9,6 +9,7 @@ import com.drozda.battlecity.loader.TestLoader;
 import com.drozda.battlecity.playground.PlaygroundState;
 import com.drozda.battlecity.playground.YabcBattleGround;
 import com.drozda.battlecity.unit.*;
+import com.sun.javafx.perf.PerformanceTracker;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -30,6 +31,7 @@ public class SpriteTest extends Application {
     AppState appState = AppState.Battle;
     LevelLoader levelLoader = new TestLoader();
 
+    PerformanceTracker tracker;
     ActionCommandGenerator actionCommandGenerator = new KeyboardActionCommandGenerator(KeyCode.W, KeyCode.S, KeyCode.A,
             KeyCode.D, KeyCode.SPACE);
 
@@ -111,7 +113,7 @@ public class SpriteTest extends Application {
                         //.filter(bonusUnit -> bonusUnit.getBonusType() == BonusUnit.BonusType.STAR)
                 .findFirst().get();
 
-
+        tracker = PerformanceTracker.getSceneTracker(scene);
         //   BonusUnit bonusUnit = new BonusUnit(yabcBattleGround, BonusUnit.BonusType.FRIENDLYFIRE_GIFT);
         //    bonusUnit.setCurrentState(GameUnit.State.IN_POCKET);
 //        firstTank.getBonusList().add(bonusUnit);
@@ -134,10 +136,11 @@ public class SpriteTest extends Application {
                     init = true;
                 }
                 yabcBattleGround.heartBeat(now);
-//                yabcBattleGround.collisionCycle();
+                propertiesStage.setTitle("Average FPS = " + tracker.getAverageFPS());
+                yabcBattleGround.collisionCycle();
             }
         };
-        // mainLoop.start();
+        mainLoop.start();
 
 //        firstTank.getBonusList().add(new BonusUnit(0, 0, 0, 0, yabcBattleGround, BonusUnit.BonusType.HELMET));
 //        firstTank.getBonusList().add(new BonusUnit(0, 0, 0, 0, yabcBattleGround, BonusUnit.BonusType

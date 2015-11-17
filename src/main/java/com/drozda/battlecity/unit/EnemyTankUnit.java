@@ -1,7 +1,7 @@
 package com.drozda.battlecity.unit;
 
 import com.drozda.battlecity.StaticServices;
-import com.drozda.battlecity.interfaces.HasGameUnits;
+import com.drozda.battlecity.interfaces.BattleGround;
 import javafx.geometry.Bounds;
 
 import java.util.EnumSet;
@@ -14,9 +14,11 @@ public class EnemyTankUnit extends TankUnit<EnemyTankUnit.EnemyTankType> {
             .TANK_FAST_ENEMY_X);
     private static EnumSet<EnemyTankType> armorTanks = EnumSet.of(EnemyTankType.TANK_ARMOR_ENEMY, EnemyTankType
             .TANK_ARMOR_ENEMY_X);
+    private static EnumSet<EnemyTankType> tanksWithSpeedBullets = EnumSet.of(EnemyTankType.TANK_POWER_ENEMY,
+            EnemyTankType.TANK_POWER_ENEMY_X);
 
     public EnemyTankUnit(Bounds bounds,
-                         HasGameUnits playground, EnemyTankType tankType) {
+                         BattleGround playground, EnemyTankType tankType) {
         super(bounds, null, null, playground, tankType, 0l);
         if (fastTanks.contains(tankType)) {
             setVelocity(StaticServices.FAST_SPEED);
@@ -40,6 +42,19 @@ public class EnemyTankUnit extends TankUnit<EnemyTankUnit.EnemyTankType> {
                 break;
         }
         return newLifes;
+    }
+
+    @Override
+    public long getBulletSpeed() {
+        if (tanksWithSpeedBullets.contains(getTankType())) {
+            return StaticServices.FAST_BULLET_SPEED;
+        }
+        return StaticServices.NORMAL_BULLET_SPEED;
+    }
+
+    @Override
+    public BulletUnit.Type getBulletType() {
+        return BulletUnit.Type.SIMPLE;
     }
 
     public enum EnemyTankType {

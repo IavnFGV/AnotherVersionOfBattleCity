@@ -1,8 +1,5 @@
 package com.drozda.battlecity;
 
-import com.drozda.battlecity.interfaces.HasGameUnits;
-import com.drozda.battlecity.playground.YabcBattleGround;
-
 import java.util.Locale;
 
 /**
@@ -14,15 +11,11 @@ public class StaticServices {
     public static Long ONE_SECOND = 1000_000_000l;
     public static long FAST_SPEED = 8l;
     public static long NORMAL_SPEED = 6l;
+    public static long BULLET_CASH_SIZE = 6l;
+    public static long NORMAL_BULLET_SPEED = 10l;
+    public static long FAST_BULLET_SPEED = 14l;
+    public static Long BULLET_EXPLODING_TIME = ONE_SECOND / 24;
+    public static Long TANK_EXPLODING_TIME = ONE_SECOND / 16;
 
-    private static YabcBattleGround yabcPlayground;
-
-    public static HasGameUnits getYabcPlayground() {
-        return yabcPlayground;
-    }
-
-    public static void initPlayground() { //TODO STUB/ REPLACE
-        //     yabcPlayground=
-        //  yabcPlayground = new YabcBattleGround();
-    }
+    public static int EXTRACT_COLLIDING_LIST = 1;
 }

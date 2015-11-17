@@ -28,19 +28,19 @@ public abstract class GameUnit extends Observable implements CanChangeState<Game
     static {
         defaultTimeInState.put(State.CREATING, 2 * ONE_SECOND);
         defaultTimeInState.put(State.ACTIVE, 0L);
-        defaultTimeInState.put(State.EXPLODING, ONE_SECOND);
+        defaultTimeInState.put(State.EXPLODING, ONE_SECOND / 3);
         defaultTimeInState.put(State.DEAD, 0L);
     }
 
     protected StateFlowModifier<? extends GameUnit> stateFlowModifier = new StateFlowModifier<>(this);
     protected ObjectProperty<Bounds> bounds = new SimpleObjectProperty<>(new BoundingBox(0, 0, 0, 0));
     protected LongProperty heartBeats = new SimpleLongProperty();
-    private Map<State, Long> timeInState = new EnumMap<>(State.class);
+    protected Map<State, Long> timeInState = new EnumMap<>(State.class);
+    protected List<State> stateFlow = new LinkedList(); //TODO maybe we can use LinkedHashMap??
     private ObjectProperty<State> currentState = new SimpleObjectProperty<>();
     private BooleanProperty pause = new SimpleBooleanProperty();
     private ObjectProperty<CollisionProcessState> collisionProcessState = new SimpleObjectProperty<>
             (CollisionProcessState.READY);
-    private List<State> stateFlow = new LinkedList(); //TODO maybe we can use LinkedHashMap??
 
     public GameUnit(Bounds bounds, List<State> stateFlow, Map<State, Long>
             timeInState) {
@@ -103,6 +103,10 @@ public abstract class GameUnit extends Observable implements CanChangeState<Game
     }
     //  protected Map<State,Long> timeInStateMap = new LinkedHashMap<>();
 
+    public ObjectProperty<State> currentStateProperty() {
+        return currentState;
+    }
+
     public ObjectProperty<CollisionProcessState> collisionProcessStateProperty() {
         return collisionProcessState;
     }
@@ -121,10 +125,6 @@ public abstract class GameUnit extends Observable implements CanChangeState<Game
 
     public ObjectProperty<Bounds> boundsProperty() {
         return bounds;
-    }
-
-    public ObjectProperty<State> currentStateProperty() {
-        return currentState;
     }
 
     public void initialize(long startTime) {

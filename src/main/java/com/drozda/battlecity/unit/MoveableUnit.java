@@ -1,6 +1,7 @@
 package com.drozda.battlecity.unit;
 
 import com.drozda.battlecity.interfaces.ActionCommandGenerator;
+import com.drozda.battlecity.interfaces.BattleGround;
 import com.drozda.battlecity.interfaces.CanMove;
 import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.MovingModifier;
@@ -24,10 +25,10 @@ public abstract class MoveableUnit extends GameUnit implements CanMove {
     protected BooleanProperty engineOn = new SimpleBooleanProperty(false);
     protected ObjectProperty<Direction> direction = new SimpleObjectProperty<>(Direction.UP);
     protected ActionCommandGenerator actionCommandGenerator;
-    protected HasGameUnits playground;
+    protected BattleGround playground;
     private long velocity;
 
-    public MoveableUnit(Bounds bounds, List<State> stateFlow, Map<State, Long> timeInState, HasGameUnits playground, long
+    public MoveableUnit(Bounds bounds, List<State> stateFlow, Map<State, Long> timeInState, BattleGround playground, long
             velocity) {
         super(bounds, stateFlow, timeInState);
         this.velocity = velocity;

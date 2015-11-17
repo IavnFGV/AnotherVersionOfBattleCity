@@ -20,11 +20,11 @@
 
 
     <logger name="com.drozda.battlecity.manager">
-        <level value="DEBUG"/>
+        <level value="ERROR"/>
     </logger>
 
     <logger name="com.drozda.battlecity.collision">
-        <level value="DEBUG"/>
+        <level value="ERROR"/>
     </logger>
 
 

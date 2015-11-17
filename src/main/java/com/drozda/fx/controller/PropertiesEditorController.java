@@ -1,5 +1,6 @@
 package com.drozda.fx.controller;
 
+import com.sun.javafx.perf.PerformanceTracker;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -20,6 +21,9 @@ import java.util.ResourceBundle;
  * Created by GFH on 06.09.2015.
  */
 public class PropertiesEditorController implements Initializable {
+
+    private PerformanceTracker tracker;
+
 
     @FXML
     private BorderPane borderPane;
@@ -48,6 +52,7 @@ public class PropertiesEditorController implements Initializable {
 
 
     public void initPropertyShit(Object emitter) {
+
 
         Service<?> service = new Service<ObservableList<PropertySheet.Item>>() {
 

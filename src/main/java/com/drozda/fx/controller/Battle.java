@@ -3,16 +3,12 @@ package com.drozda.fx.controller;
 import com.drozda.appflow.AppModel;
 import com.drozda.battlecity.manager.PlaygroundManager;
 import com.drozda.battlecity.playground.YabcBattleGround;
-import com.drozda.battlecity.unit.BonusUnit;
-import com.drozda.battlecity.unit.GameUnit;
-import com.drozda.battlecity.unit.TileUnit;
-import com.drozda.fx.sprite.BonusFxSprite;
+import com.drozda.battlecity.unit.*;
 import com.drozda.fx.sprite.YabcSprite;
-import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
+import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -22,6 +18,8 @@ import javafx.scene.layout.TilePane;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Created by GFH on 21.09.2015.
@@ -214,51 +212,65 @@ public class Battle {
     }
 
     public void loadPlayground(YabcBattleGround battleGround) {
+
+        centerPane.getChildren().clear();
+        this.curYabcPlayground = battleGround;
+
+        Pane waterPane = new Pane();
+        Pane tankPane = new Pane();
+        Pane bulletPane = new Pane();
+        Pane tilePane = new Pane();
         Pane grassPane = new Pane();
-        for (GameUnit gameUnit : battleGround.getUnitList()) {
-            if ((gameUnit instanceof BonusUnit) &&
-                    (((BonusUnit) gameUnit).isAux())) {
-                continue;
+        Pane bonusPane = new Pane();
+
+        Map<Object, Pane> paneMap = new HashMap<>();
+
+        paneMap.put(TileUnit.TileType.FOREST, grassPane);
+        paneMap.put(TileUnit.TileType.WATER, waterPane);
+        paneMap.put(TankUnit.class, tankPane);
+        paneMap.put(BulletUnit.class, bulletPane);
+        paneMap.put(BonusUnit.class, bonusPane);
+        class GameUnitProcessor {
+            Predicate<GameUnit> skipGameUnit = gameUnit1 ->
+                    !((gameUnit1 instanceof BonusUnit)
+                            && (((BonusUnit) gameUnit1).isAux()));
+            Consumer<GameUnit> processGameUnit = gameUnit1 -> {
+                Object key = extractKeyObject(gameUnit1);
+                Node node = getSprite(gameUnit1);
+                node.setCache(true);
+                node.setCacheHint(CacheHint.ROTATE);
+                getPane(key).getChildren().add(node);
+            };
+
+            Pane getPane(Object o) {
+                return paneMap.getOrDefault(o, tilePane);
             }
-            Node node = YabcSprite.getFullSprite(gameUnit);
-            nodeMap.put(gameUnit, node);
-            if ((gameUnit instanceof TileUnit) && (((TileUnit) gameUnit).getTileType() == TileUnit.TileType.FOREST)) {
-                grassPane.getChildren().add(node);
-            } else {
-                centerPane.getChildren().add(node);
+
+            Node getSprite(GameUnit gameUnit) {
+                return YabcSprite.getFullSprite(gameUnit);
+            }
+
+            Object extractKeyObject(GameUnit gameUnit) {
+                if (gameUnit instanceof TileUnit) {
+                    return ((TileUnit) gameUnit).getTileType();
+                }
+                return gameUnit.getClass();
+            }
+
+            void processUnitList() {
+                battleGround.getUnitList().stream()
+                        .filter(skipGameUnit)
+                        .forEach(processGameUnit);
             }
         }
-        centerPane.getChildren().add(grassPane);
-        grassPane.toFront();
-        centerPane.getChildren().stream()
-                .filter(node -> (node instanceof BonusFxSprite))
-                .forEach(node1 -> Platform.runLater(() -> node1.toFront()));
-        battleGround.battleTypeProperty().addListener((observable, oldValue, newValue) -> setSingleOrDouble
-                (newValue == YabcBattleGround.BattleType.SINGLE_PLAYER ? 1 : 2));
+
+        new GameUnitProcessor().processUnitList();
+
+        centerPane.getChildren().addAll(waterPane, tankPane, tilePane, bulletPane, bonusPane, grassPane);
+
         setSingleOrDouble
                 (battleGround.getBattleType() == YabcBattleGround.BattleType.SINGLE_PLAYER ? 1 : 2);
-        battleGround.unitListProperty().addListener((ListChangeListener<GameUnit>) c -> {
-                    while (c.next()) {
-                        if (c.wasRemoved()) {
-                            for (GameUnit remitem : c.getRemoved()) {
-                                Node node = nodeMap.get(remitem);
-                                Platform.runLater(() ->
-                                                centerPane.getChildren().remove(node)
-                                );
-                                nodeMap.remove(remitem);
-                            }
-                        } else if (c.wasAdded())
-                            for (GameUnit additem : c.getAddedSubList()) {
-                                Node node = YabcSprite.getFullSprite(additem);
-                                nodeMap.put(additem, node);
-                                Platform.runLater(() -> {
-                                    centerPane.getChildren().add(node);
-                                    grassPane.toFront();
-                                });
-                            }
-                    }
-                }
-        );
+
     }
 
 }

@@ -1,7 +1,7 @@
 package com.drozda.battlecity.unit;
 
 import com.drozda.battlecity.StaticServices;
-import com.drozda.battlecity.interfaces.HasGameUnits;
+import com.drozda.battlecity.interfaces.BattleGround;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
@@ -22,7 +22,7 @@ public class PlayerTankUnit extends TankUnit<PlayerTankUnit.PlayerTankType> {
     protected BonusUnit startGameHelmet = new BonusUnit(BonusUnit.BonusType.START_GAME_HELMET);
     protected BonusUnit friendlyfireGift = new BonusUnit(BonusUnit.BonusType.FRIENDLYFIRE_GIFT);
 
-    public PlayerTankUnit(Bounds bounds, HasGameUnits playground, PlayerTankType tankType) {
+    public PlayerTankUnit(Bounds bounds, BattleGround playground, PlayerTankType tankType) {
         super(bounds, null, null, playground, tankType, 0l);
         playground.getUnitList().addAll(startGameHelmet, friendlyfireGift);
         currentStateProperty().addListener((observable, oldValue, newValue) -> {
@@ -34,6 +34,11 @@ public class PlayerTankUnit extends TankUnit<PlayerTankUnit.PlayerTankType> {
         );
         setVelocity(StaticServices.NORMAL_SPEED);
 
+    }
+
+    @Override
+    public boolean isActive() {
+        return true;
     }
 
     public BonusUnit getStartGameHelmet() {
@@ -52,14 +57,6 @@ public class PlayerTankUnit extends TankUnit<PlayerTankUnit.PlayerTankType> {
         this.friendlyfireGift = friendlyfireGift;
     }
 
-    public int getStars() {
-        return stars.get();
-    }
-
-    public void setStars(int stars) {
-        this.stars.set(stars);
-    }
-
     public IntegerProperty starsProperty() {
         return stars;
     }
@@ -74,6 +71,30 @@ public class PlayerTankUnit extends TankUnit<PlayerTankUnit.PlayerTankType> {
 
     public ListProperty<BonusUnit> bonusListProperty() {
         return bonusList;
+    }
+
+    @Override
+    public long getBulletSpeed() {
+        if (getStars() > 1) {
+            return StaticServices.FAST_BULLET_SPEED;
+        }
+        return StaticServices.NORMAL_BULLET_SPEED;
+    }
+
+    public int getStars() {
+        return stars.get();
+    }
+
+    public void setStars(int stars) {
+        this.stars.set(stars);
+    }
+
+    @Override
+    public BulletUnit.Type getBulletType() {
+        if (getStars() > 2) {
+            return BulletUnit.Type.POWERFUL;
+        }
+        return BulletUnit.Type.SIMPLE;
     }
 
 

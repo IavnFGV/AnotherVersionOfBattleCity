@@ -1,14 +1,14 @@
 package com.drozda.battlecity.unit;
 
+import com.drozda.battlecity.StaticServices;
+import com.drozda.battlecity.interfaces.BattleGround;
 import com.drozda.battlecity.interfaces.CanFire;
 import com.drozda.battlecity.interfaces.HasGameUnits;
 import com.drozda.battlecity.modifier.MovingModifier;
 import com.drozda.battlecity.modifier.PositionFixingModifier;
 import com.drozda.battlecity.modifier.TankMovingModifier;
-import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import org.slf4j.Logger;
@@ -27,13 +27,18 @@ public abstract class TankUnit<E extends Enum> extends MoveableUnit implements C
     private E tankType;
     private IntegerProperty activeBullets = new SimpleIntegerProperty(0);
 
-    public TankUnit(Bounds bounds, List<State> stateFlow, Map<State, Long> timeInState, HasGameUnits playground, E
+    public TankUnit(Bounds bounds, List<State> stateFlow, Map<State, Long> timeInState, BattleGround playground, E
             tankType, long velocity) {
         super(bounds, stateFlow, timeInState, playground, velocity);
+        this.timeInState.putIfAbsent(State.EXPLODING, StaticServices.TANK_EXPLODING_TIME);
         this.tankType = tankType;
         fixingModifier = new PositionFixingModifier<>(this, playground);
         this.directionProperty().addListener(fixingModifier);
     }
+
+    public abstract long getBulletSpeed();
+
+    public abstract BulletUnit.Type getBulletType();
 
     public IntegerProperty activeBulletsProperty() {
         return activeBullets;
@@ -83,18 +88,7 @@ public abstract class TankUnit<E extends Enum> extends MoveableUnit implements C
     @Override
     public boolean fire() { // todo for testing
         if (!isBulletAvailable()) return false;
-        Point2D startPosition = getBulletStartPosition();
-        double bulletWidth = playground.getBulletWidth();
-        double bulletHeight = playground.getBulletHeight();
-        BulletUnit bulletUnit = new BulletUnit(
-                new BoundingBox(startPosition.getX(), startPosition.getY(), bulletWidth, bulletHeight),
-                playground,
-                10l, //todo replace with mind!!
-                this,
-                BulletUnit.Type.SIMPLE);
-        bulletUnit.initialize(heartBeats.get());
-        bulletUnit.setEngineOn(true);
-        Platform.runLater(() -> playground.getUnitList().add(bulletUnit));
+        playground.fire(this);
         return true;
     }
 
@@ -102,7 +96,7 @@ public abstract class TankUnit<E extends Enum> extends MoveableUnit implements C
         return !isPause();
     }
 
-    protected Point2D getBulletStartPosition() {
+    public Point2D getBulletStartPosition() {
         Point2D result = new Point2D(getBounds().getMinX(), getBounds().getMinY());
         switch (getDirection()) {
             case UP:

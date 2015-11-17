@@ -15,6 +15,8 @@ public class StateFlowModifier<T extends CanPause & CanChangeState> extends Numb
 
     public StateFlowModifier(T gameUnit) {
         super(gameUnit, null);
+        gameUnit.currentStateProperty().addListener(
+                (observable, oldValue, newValue) -> resetTimeInCurrentState());
     }
 
     public void resetTimeInCurrentState() {
@@ -40,7 +42,6 @@ public class StateFlowModifier<T extends CanPause & CanChangeState> extends Numb
     private void goToNextState() {
         log.debug("StateFlowModifier.goToNextState");
         gameUnit.goToNextState();
-        timeInCurrentState = 0;
     }
 
     private long getTimeInState() {
