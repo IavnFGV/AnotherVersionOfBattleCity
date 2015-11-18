@@ -237,7 +237,7 @@ public class Battle {
             Consumer<GameUnit> processGameUnit = gameUnit1 -> {
                 Object key = extractKeyObject(gameUnit1);
                 Node node = getSprite(gameUnit1);
-                node.setCache(true);
+//                node.setCache(true);
                 node.setCacheHint(CacheHint.ROTATE);
                 getPane(key).getChildren().add(node);
             };

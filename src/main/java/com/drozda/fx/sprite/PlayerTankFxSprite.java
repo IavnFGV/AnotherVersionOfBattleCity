@@ -60,7 +60,7 @@ public class PlayerTankFxSprite extends TankFxSprite<PlayerTankUnit> {
         bindImageViewToGameUnit(basicImageView, 0, 0);
         basicImageView.setViewport(nextViewport(basicTankMoveAnimation.getAnimationType(), 0));
 
-        fadeTransition = new FadeTransition(Duration.millis(300), basicImageView);
+        fadeTransition = new FadeTransition(Duration.millis(100), basicImageView);
         fadeTransition.setFromValue(1.0);
         fadeTransition.setToValue(0.);
         fadeTransition.setCycleCount(Timeline.INDEFINITE);
@@ -87,7 +87,8 @@ public class PlayerTankFxSprite extends TankFxSprite<PlayerTankUnit> {
                                     hideAnimation(AnimationType.ANIMATION_HELMET);
                                 }
                                 if (remitem.getBonusType() == BonusUnit.BonusType.FRIENDLYFIRE_GIFT) {
-                                    fadeTransition.pause();
+                                    fadeTransition.setToValue(0);
+                                    fadeTransition.stop();
                                 }
                             }
                         } else if (c.wasAdded())

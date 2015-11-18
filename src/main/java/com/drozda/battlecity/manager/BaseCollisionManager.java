@@ -10,6 +10,10 @@ import com.drozda.battlecity.collision.command.check.bullet.tank.CheckBulletTank
 import com.drozda.battlecity.collision.command.check.bullet.tank.enemytank.CheckBulletEnemyTankEnemyParent;
 import com.drozda.battlecity.collision.command.finish.bullet.bullet.FinishBulletVsBulletCommand;
 import com.drozda.battlecity.collision.command.finish.bullet.enemytank.FinishBulletVsEnemyTank;
+import com.drozda.battlecity.collision.command.finish.bullet.playertank.FinishEnemyBulletVsPlayerTank;
+import com.drozda.battlecity.collision.command.finish.bullet.playertank.FinishPlayerBulletVsPlayerTank;
+import com.drozda.battlecity.collision.command.finish.bullet.tile.FinishBulletVsTileBrick;
+import com.drozda.battlecity.collision.command.finish.bullet.tile.FinishBulletVsTileSteel;
 import com.drozda.battlecity.collision.context.ContextEntries;
 import com.drozda.battlecity.interfaces.Collideable;
 import com.drozda.battlecity.interfaces.CollisionManager;
@@ -42,9 +46,10 @@ public class BaseCollisionManager implements CollisionManager {
 
     {
         collisionChains.put(new ImmutablePair<>(BulletUnit.class, BulletUnit.class), createBulletVsBulletChain());
-        collisionChains.put(new ImmutablePair<>(BulletUnit.class, PlayerTankUnit.class), new ChainBase());
-        collisionChains.put(new ImmutablePair<>(BulletUnit.class, EnemyTankUnit.class), createBulletWithEnemyTankChain());
-        collisionChains.put(new ImmutablePair<>(BulletUnit.class, TileUnit.class), new ChainBase());
+        collisionChains.put(new ImmutablePair<>(BulletUnit.class, PlayerTankUnit.class),
+                createBulletVsPlayerTankChain());
+        collisionChains.put(new ImmutablePair<>(BulletUnit.class, EnemyTankUnit.class), createBulletVsEnemyTankChain());
+        collisionChains.put(new ImmutablePair<>(BulletUnit.class, TileUnit.class), createBulletVsTileUnit());
         collisionChains.put(new ImmutablePair<>(BulletUnit.class, EagleBaseUnit.class), new ChainBase());
         collisionChains.put(new ImmutablePair<>(PlayerTankUnit.class, BonusUnit.class), new ChainBase());
     }
@@ -53,11 +58,14 @@ public class BaseCollisionManager implements CollisionManager {
         this.playground = playground;
     }
 
-    private Chain createBulletWithPlayerTankChain() {
+    private Chain createBulletVsTileUnit() {
         Chain chain = createBaseCollisionChain();
-        chain.addCommand(new CheckTypesCommand(BulletUnit.class, PlayerTankUnit.class));
-        chain.addCommand(new CheckBulletTankIsParent());
-        chain.addCommand(new F);
+        // must be careful!
+        //no checking for tiletype  - so execution would not stop here
+        chain.addCommand(new CheckTypesCommand(BulletUnit.class, TileUnit.class));
+        chain.addCommand(new FinishBulletVsTileBrick());
+        chain.addCommand(new FinishBulletVsTileSteel());
+        return chain;
     }
 
     private Chain createBaseCollisionChain() {
@@ -67,7 +75,16 @@ public class BaseCollisionManager implements CollisionManager {
         return chain;
     }
 
-    private Chain createBulletWithEnemyTankChain() {
+    private Chain createBulletVsPlayerTankChain() {
+        Chain chain = createBaseCollisionChain();
+        chain.addCommand(new CheckTypesCommand(BulletUnit.class, PlayerTankUnit.class));
+        chain.addCommand(new CheckBulletTankIsParent());
+        chain.addCommand(new FinishPlayerBulletVsPlayerTank());
+        chain.addCommand(new FinishEnemyBulletVsPlayerTank());
+        return chain;
+    }
+
+    private Chain createBulletVsEnemyTankChain() {
         Chain chain = createBaseCollisionChain();
         chain.addCommand(new CheckTypesCommand(BulletUnit.class, EnemyTankUnit.class));
         chain.addCommand(new CheckBulletTankIsParent());
@@ -225,15 +242,16 @@ public class BaseCollisionManager implements CollisionManager {
             nextIndex = 1;
             while (nextIndex < collidingList.size()) {
                 right = collidingList.get(nextIndex);
-                collisionContext.invalidateContext();
-                collisionContext.setLeftUnit(left);
-                collisionContext.setRightUnit(right);
                 ImmutablePair immutablePair = new ImmutablePair(left.getClass(), right.getClass());
                 Chain chain = collisionChains.get(immutablePair);
                 if (chain == null) {
                     nextIndex++;
                     continue;
                 }
+                collisionContext.invalidateContext();
+                collisionContext.setLeftUnit(left);
+                collisionContext.setRightUnit(right);
+
                 try {
                     chain.execute(collisionContext);
                     log.debug(collisionContext.getSummary());
@@ -243,6 +261,7 @@ public class BaseCollisionManager implements CollisionManager {
                 }
                 if (collisionContext.getRightCollisionProcessState() == Collideable.CollisionProcessState.COMPLETED) {
                     collidingList.remove(nextIndex);
+                    continue;
                 }
                 if (collisionContext.getLeftCollisionProcessState() == Collideable.CollisionProcessState.COMPLETED) {
                     break;

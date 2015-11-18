@@ -21,8 +21,8 @@ public class FinishBulletVsEnemyTank extends FinishCollisionCommand<BulletUnit, 
                     Collideable.CollisionResult.STATE_CHANGE,
                     Collideable.CollisionResult.LIFE_DECREMENT,
                     bulletUnit -> bulletUnit.setCurrentState(GameUnit.State.EXPLODING),
-                    enemyTankUnit -> enemyTankUnit.setLifes(newLifes),
-                    context);
+                    enemyTankUnit -> enemyTankUnit.setLifes(newLifes)
+            );
             setSummary("Bullet is exploding. EnemyTank lifes decremented", context);
 //            return PROCESSING_COMPLETE;
         } else {
@@ -34,8 +34,8 @@ public class FinishBulletVsEnemyTank extends FinishCollisionCommand<BulletUnit, 
                     enemyTankUnit -> {
                         enemyTankUnit.setLifes(0);
                         enemyTankUnit.setCurrentState(GameUnit.State.EXPLODING);
-                    },
-                    context);
+                    }
+            );
             setSummary("Bullet is exploding. EnemyTank is exploding", context);
         }
         return PROCESSING_COMPLETE;

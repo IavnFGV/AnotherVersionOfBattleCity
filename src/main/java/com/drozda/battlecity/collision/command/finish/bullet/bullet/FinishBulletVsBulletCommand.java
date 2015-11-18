@@ -23,8 +23,8 @@ public class FinishBulletVsBulletCommand extends FinishCollisionCommand<BulletUn
                 Collideable.CollisionResult.STATE_CHANGE,
                 Collideable.CollisionResult.STATE_CHANGE,
                 bulletUnit -> bulletUnit.setCurrentState(GameUnit.State.DEAD),
-                bulletUnit1 -> bulletUnit1.setCurrentState(GameUnit.State.DEAD),
-                context);
+                bulletUnit1 -> bulletUnit1.setCurrentState(GameUnit.State.DEAD)
+        );
         setSummary("Bullets are dead", context);
         return PROCESSING_COMPLETE;
 //                }

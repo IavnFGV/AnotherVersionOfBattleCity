@@ -122,9 +122,9 @@ public abstract class MoveableUnit extends GameUnit implements CanMove {
 //  private Bounds newBounds;
     public enum Direction {
         UP,
-        LEFT,
+        RIGHT,
         DOWN,
-        RIGHT
+        LEFT
     }
 
     public enum ProcessActionCommandResult {

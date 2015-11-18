@@ -12,7 +12,7 @@ public class CheckIntersectionCommand extends CollisionCommand<GameUnit, GameUni
     public boolean execute(Context context) throws Exception {
         GameUnit left = getLeftUnit(context);
         GameUnit right = getRightUnit(context);
-        if (left.getBounds().intersects(right.getBounds())) {
+        if (right.intersects(left)) { // vital right with left!!! NOT Left with right
             return CONTINUE_PROCESSING;
         }
         setSummary("No Intersection between objects", context);

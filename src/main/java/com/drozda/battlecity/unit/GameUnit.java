@@ -8,6 +8,7 @@ import com.drozda.battlecity.modifier.StateFlowModifier;
 import javafx.beans.property.*;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
+import javafx.scene.shape.Shape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ public abstract class GameUnit extends Observable implements CanChangeState<Game
     protected static Map<State, Long> defaultTimeInState = new EnumMap<>(State.class);
     protected static List<State> defaultStateFlow = asList(State.CREATING, State.ACTIVE, State.EXPLODING, State.DEAD);
     protected static EnumSet<State> statesForCollisionProcess = EnumSet.of(State.ACTIVE, State.ARMOR, State.BLINK);
+    protected Shape shape;
 
     static {
         defaultTimeInState.put(State.CREATING, 2 * ONE_SECOND);
@@ -32,15 +34,20 @@ public abstract class GameUnit extends Observable implements CanChangeState<Game
         defaultTimeInState.put(State.DEAD, 0L);
     }
 
+    private ObjectProperty<State> currentState = new SimpleObjectProperty<>();
     protected StateFlowModifier<? extends GameUnit> stateFlowModifier = new StateFlowModifier<>(this);
     protected ObjectProperty<Bounds> bounds = new SimpleObjectProperty<>(new BoundingBox(0, 0, 0, 0));
     protected LongProperty heartBeats = new SimpleLongProperty();
     protected Map<State, Long> timeInState = new EnumMap<>(State.class);
     protected List<State> stateFlow = new LinkedList(); //TODO maybe we can use LinkedHashMap??
-    private ObjectProperty<State> currentState = new SimpleObjectProperty<>();
     private BooleanProperty pause = new SimpleBooleanProperty();
     private ObjectProperty<CollisionProcessState> collisionProcessState = new SimpleObjectProperty<>
             (CollisionProcessState.READY);
+
+    public boolean intersects(GameUnit unit) {
+        return getBounds().intersects(unit.getBounds());
+    }
+
 
     public GameUnit(Bounds bounds, List<State> stateFlow, Map<State, Long>
             timeInState) {
@@ -59,6 +66,7 @@ public abstract class GameUnit extends Observable implements CanChangeState<Game
             this.timeInState.putIfAbsent(state, defaultTimeInState.get(state));
         }
         currentState.setValue(this.stateFlow.get(0));
+//        shape = Area.
     }
 
     @Override
@@ -91,6 +99,14 @@ public abstract class GameUnit extends Observable implements CanChangeState<Game
         return timeInState.get(state);
     }
 
+
+    //  protected Map<State,Long> timeInStateMap = new LinkedHashMap<>();
+
+    @Override
+    public Long getTimeInState(State state) {
+        return timeInState.get(state);
+    }
+
     @Override
     public void goToNextState() {
         if (getCurrentState() == State.DEAD) return;
@@ -101,7 +117,6 @@ public abstract class GameUnit extends Observable implements CanChangeState<Game
         setChanged();
 //        }
     }
-    //  protected Map<State,Long> timeInStateMap = new LinkedHashMap<>();
 
     public ObjectProperty<State> currentStateProperty() {
         return currentState;
@@ -111,12 +126,12 @@ public abstract class GameUnit extends Observable implements CanChangeState<Game
         return collisionProcessState;
     }
 
-    public void heartBeat(long currentTime) {
-        this.heartBeats.set(currentTime);
-    }
-
     public Bounds getBounds() {
         return bounds.get();
+    }
+
+    public void heartBeat(long currentTime) {
+        this.heartBeats.set(currentTime);
     }
 
     public void setBounds(Bounds bounds) {

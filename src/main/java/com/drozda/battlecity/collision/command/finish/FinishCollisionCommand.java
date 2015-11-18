@@ -13,16 +13,18 @@ import java.util.function.Consumer;
 public abstract class FinishCollisionCommand<L extends GameUnit, R extends GameUnit> extends CollisionCommand<L, R> {
     protected L left;
     protected R right;
+    protected Context context;
 
     @Override
     public boolean execute(Context context) throws Exception {
-        initUnits(context);
+        initFields(context);
         return false;
     }
 
-    protected void initUnits(Context context) {
+    protected void initFields(Context context) {
         this.left = getLeftUnit(context);
         this.right = getRightUnit(context);
+        this.context = context;
     }
 
     protected void finalTransition(Collideable.CollisionProcessState leftCPS,
@@ -30,14 +32,13 @@ public abstract class FinishCollisionCommand<L extends GameUnit, R extends GameU
                                    Collideable.CollisionResult leftCR,
                                    Collideable.CollisionResult rightCR,
                                    Consumer<L> leftConsumer,
-                                   Consumer<R> rightConsumer,
-                                   Context context) {
-        setLeftCollisionProcessState(leftCPS, context);
-        setRightCollisionProcessState(rightCPS, context);
-        setLeftCollisionResult(leftCR, context);
-        setRightCollisionResult(rightCR, context);
-        leftConsumer.accept(left);
-        rightConsumer.accept(right);
+                                   Consumer<R> rightConsumer) {
+        setLeftCollisionProcessState(leftCPS, this.context);
+        setRightCollisionProcessState(rightCPS, this.context);
+        setLeftCollisionResult(leftCR, this.context);
+        setRightCollisionResult(rightCR, this.context);
+        leftConsumer.accept(this.left);
+        rightConsumer.accept(this.right);
     }
 
     @Override

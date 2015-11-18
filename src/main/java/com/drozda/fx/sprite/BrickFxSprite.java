@@ -21,6 +21,9 @@ public class BrickFxSprite<T extends TileUnit> extends FxSprite<T> {
                 .count() < 1) {
             ImageView imageView = new ImageView(baseImage);
             gameUnit.tileStateProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue == TileUnit.TileState.STATE_EMPTY) {
+                    return;
+                }
                 imageView.setViewport(viewPorts[(tileStateToViewportIndex(newValue))]);
             });
             imageView.setViewport(viewPorts[tileStateToViewportIndex(gameUnit.getTileState())]);
@@ -63,7 +66,8 @@ public class BrickFxSprite<T extends TileUnit> extends FxSprite<T> {
                 return 4;
             case STATE_1111:
                 return 0;
+            default:
+                return 0;
         }
-        return 0;
     }
 }

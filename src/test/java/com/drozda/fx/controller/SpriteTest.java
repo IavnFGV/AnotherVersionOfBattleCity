@@ -39,6 +39,27 @@ public class SpriteTest extends Application {
         launch(args);
     }
 
+    public static void readyForTest() {
+        propertiesStage = new Stage();
+        propertiesStage.setScene(new Scene(createPropertiesEditorWorld()));
+        propertiesStage.setTitle("Properties Editor");
+        propertiesStage.show();
+    }
+
+    private static Parent createPropertiesEditorWorld() {
+        FXMLLoader loader = new FXMLLoader();
+        Parent root = null;
+        try {
+            root = loader.load(AppModel.class.getResourceAsStream("/com/drozda/fx/fxml/PropertiesEditorController" +
+                    ".fxml"));
+            propertiesEditorController = loader.getController();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return root;
+    }
+
     public void prepareScene() {
 
     }
@@ -113,11 +134,11 @@ public class SpriteTest extends Application {
                         //.filter(bonusUnit -> bonusUnit.getBonusType() == BonusUnit.BonusType.STAR)
                 .findFirst().get();
 
-        tracker = PerformanceTracker.getSceneTracker(scene);
+//        tracker = PerformanceTracker.getSceneTracker(scene);
         //   BonusUnit bonusUnit = new BonusUnit(yabcBattleGround, BonusUnit.BonusType.FRIENDLYFIRE_GIFT);
         //    bonusUnit.setCurrentState(GameUnit.State.IN_POCKET);
 //        firstTank.getBonusList().add(bonusUnit);
-        readyForTest();
+//        readyForTest();
         spadeZoneTileUnit.setCurrentState(GameUnit.State.ARMOR);
         spadeZoneTileUnit.setPause(false);
         firstTank.setActionCommandGenerator(actionCommandGenerator);
@@ -136,7 +157,7 @@ public class SpriteTest extends Application {
                     init = true;
                 }
                 yabcBattleGround.heartBeat(now);
-                propertiesStage.setTitle("Average FPS = " + tracker.getAverageFPS());
+//                propertiesStage.setTitle("Average FPS = " + tracker.getAverageFPS());
                 yabcBattleGround.collisionCycle();
             }
         };
@@ -145,7 +166,7 @@ public class SpriteTest extends Application {
 //        firstTank.getBonusList().add(new BonusUnit(0, 0, 0, 0, yabcBattleGround, BonusUnit.BonusType.HELMET));
 //        firstTank.getBonusList().add(new BonusUnit(0, 0, 0, 0, yabcBattleGround, BonusUnit.BonusType
 //                .START_GAME_HELMET));
-        propertiesEditorController.initPropertyShit(firstTank);
+//        propertiesEditorController.initPropertyShit(firstTank);
 //        propertiesEditorController.initPropertyShit(enemyTank);
 //        propertiesEditorController.initPropertyShit(bonusStar);
 //        propertiesEditorController.initPropertyShit(brickUnit);
@@ -161,27 +182,6 @@ public class SpriteTest extends Application {
         //      Platform.runLater(() -> waterUnit.setPause(true));
 //        Platform.runLater(() -> waterUnit.setCurrentState(GameUnit.State.DEAD));
 
-    }
-
-    public static void readyForTest() {
-        propertiesStage = new Stage();
-        propertiesStage.setScene(new Scene(createPropertiesEditorWorld()));
-        propertiesStage.setTitle("Properties Editor");
-        propertiesStage.show();
-    }
-
-    private static Parent createPropertiesEditorWorld() {
-        FXMLLoader loader = new FXMLLoader();
-        Parent root = null;
-        try {
-            root = loader.load(AppModel.class.getResourceAsStream("/com/drozda/fx/fxml/PropertiesEditorController" +
-                    ".fxml"));
-            propertiesEditorController = loader.getController();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return root;
     }
 
 

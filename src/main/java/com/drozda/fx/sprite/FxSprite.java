@@ -146,12 +146,12 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
             animationSet.stream()
                     .filter(tSpriteAnimation -> tSpriteAnimation.getAnimationType() == aType)
                     .filter(tSpriteAnimation -> !tSpriteAnimation.isInBackground())
-                    .forEach(tSpriteAnimation -> {
-                        Platform.runLater(() -> {
-                            tSpriteAnimation.imageView.setVisible(true);
-                            tSpriteAnimation.play();
-                        });
-                    });
+                    .forEach(tSpriteAnimation ->
+                                    Platform.runLater(() -> {
+                                        tSpriteAnimation.imageView.setVisible(true);
+                                        tSpriteAnimation.play();
+                                    })
+                    );
         }
     }
 
@@ -160,10 +160,12 @@ public abstract class FxSprite<T extends GameUnit> extends Group {
             animationSet.stream()
                     .filter(tSpriteAnimation -> tSpriteAnimation.getAnimationType() == aType)
                     .filter(tSpriteAnimation -> !tSpriteAnimation.isInBackground())
-                    .forEach(tSpriteAnimation -> {
-                        tSpriteAnimation.imageView.setVisible(false);
-                        tSpriteAnimation.pause();
-                    });
+                    .forEach(tSpriteAnimation ->
+                                    Platform.runLater(() -> {
+                                        tSpriteAnimation.imageView.setVisible(false);
+                                        tSpriteAnimation.pause();
+                                    })
+                    );
         }
     }
 

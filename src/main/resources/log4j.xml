@@ -28,6 +28,11 @@
     </logger>
 
 
+    <logger name="com.drozda.battlecity.collision.command.finish.bullet.tile">
+        <level value="DEBUG"/>
+    </logger>
+
+
     <root>
         <priority value="WARN"/>
         <appender-ref ref="console"/>

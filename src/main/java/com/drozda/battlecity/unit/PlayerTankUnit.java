@@ -30,6 +30,9 @@ public class PlayerTankUnit extends TankUnit<PlayerTankUnit.PlayerTankType> {
                             (newValue == State.ACTIVE)) {
                         Platform.runLater(() -> startGameHelmet.takeToPocket(this));
                     }
+                    if (newValue == State.DEAD) {
+                        setStars(0);
+                    }
                 }
         );
         setVelocity(StaticServices.NORMAL_SPEED);
