@@ -226,8 +226,16 @@ public class BaseCollisionManager implements CollisionManager {
 
         wantToCollide.forEach(GameUnit::startCollisionProcessing);
 
-        List<GameUnit> collidingList = new LinkedList<>();
+        Map<GameUnit, String> testMap = new HashMap<>();
 
+        for (GameUnit unit : wantToCollide) {
+            if (unit instanceof TileUnit) {
+                testMap.put(unit, "Mistake");
+            }
+        }
+
+        List<GameUnit> collidingList = new LinkedList<>();
+        boolean testOut = wantToCollide.stream().anyMatch(gameUnit -> gameUnit instanceof BulletUnit);
         collidingList.addAll(wantToCollide);
 
         int curIndex = 0;
@@ -259,6 +267,9 @@ public class BaseCollisionManager implements CollisionManager {
                     log.error(e.getMessage(), e);
                     collisionContext.setSummary("EXCEPTION:" + e.getMessage());
                 }
+                if (right instanceof TileUnit) {
+                    testMap.put(right, collisionContext.getSummary());
+                }
                 if (collisionContext.getRightCollisionProcessState() == Collideable.CollisionProcessState.COMPLETED) {
                     collidingList.remove(nextIndex);
                     continue;
@@ -267,6 +278,11 @@ public class BaseCollisionManager implements CollisionManager {
                     break;
                 }
                 nextIndex++;
+            }
+        }
+        if (testOut) {
+            for (GameUnit unit : testMap.keySet()) {
+                log.info(unit + "  =  " + testMap.get(unit));
             }
         }
         wantToCollide.forEach(GameUnit::finishCollisionProcessing);

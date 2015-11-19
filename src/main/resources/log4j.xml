@@ -27,9 +27,12 @@
         <level value="ERROR"/>
     </logger>
 
+    <logger name="com.drozda.battlecity.unit.TileUnit">
+        <level value="DEBUG"/>
+    </logger>
 
     <logger name="com.drozda.battlecity.collision.command.finish.bullet.tile">
-        <level value="DEBUG"/>
+        <level value="ERROR"/>
     </logger>
 
 

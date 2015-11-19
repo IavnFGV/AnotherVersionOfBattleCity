@@ -4,6 +4,7 @@ import com.drozda.battlecity.unit.BonusUnit;
 import com.drozda.battlecity.unit.PlayerTankUnit;
 import javafx.animation.FadeTransition;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
@@ -87,8 +88,10 @@ public class PlayerTankFxSprite extends TankFxSprite<PlayerTankUnit> {
                                     hideAnimation(AnimationType.ANIMATION_HELMET);
                                 }
                                 if (remitem.getBonusType() == BonusUnit.BonusType.FRIENDLYFIRE_GIFT) {
-                                    fadeTransition.setToValue(0);
-                                    fadeTransition.stop();
+                                    Platform.runLater(() -> {
+                                        fadeTransition.jumpTo(Duration.ZERO);
+                                        fadeTransition.stop();
+                                    });
                                 }
                             }
                         } else if (c.wasAdded())
@@ -98,7 +101,7 @@ public class PlayerTankFxSprite extends TankFxSprite<PlayerTankUnit> {
                                     showAnimation(AnimationType.ANIMATION_HELMET);
                                 }
                                 if (additem.getBonusType() == BonusUnit.BonusType.FRIENDLYFIRE_GIFT) {
-                                    fadeTransition.play();
+                                    Platform.runLater(() -> fadeTransition.play());
                                 }
                             }
                     }

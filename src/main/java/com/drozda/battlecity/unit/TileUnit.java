@@ -4,23 +4,21 @@ package com.drozda.battlecity.unit;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static java.util.Arrays.asList;
-import static javafx.scene.shape.Shape.union;
 
 /**
  * Created by GFH on 27.09.2015.
  */
 public class TileUnit extends GameUnit {
+    private static final Logger log = LoggerFactory.getLogger(TileUnit.class);
     protected static EnumSet<TileType> typesForCollisionProcess = EnumSet.of(TileType.BRICK, TileType.STEEL);
     private static Map<TileState, Consumer<Void>> rebuiltMap = new HashMap();
 
@@ -30,10 +28,8 @@ public class TileUnit extends GameUnit {
 
     private TileType tileType;
     private ObjectProperty<TileState> tileState = new SimpleObjectProperty<>(TileState.STATE_1111);
-    private Shape complexBounds;
-    private Rectangle[] tileParts;
-
-
+    private List<Bounds> complexBounds;
+    private Bounds[] tileParts;
     public TileUnit(Bounds bounds, TileType tileType) {
         super(bounds, asList(GameUnit.State.ACTIVE, GameUnit.State.DEAD), null);
         this.tileType = tileType;
@@ -44,21 +40,19 @@ public class TileUnit extends GameUnit {
     }
 
     private void createComplexBoundHandler() {
-        tileParts = new Rectangle[]{
-                new Rectangle(getBounds().getMinX(),
+        tileParts = new Bounds[]{
+                new BoundingBox(getBounds().getMinX(),
                         getBounds().getMinY(), 8, 8),
-                new Rectangle(getBounds().getMinX() + 8,
+                new BoundingBox(getBounds().getMinX() + 8,
                         getBounds().getMinY(), 8, 8),
-                new Rectangle(getBounds().getMinX(),
+                new BoundingBox(getBounds().getMinX() + 8,
                         getBounds().getMinY() + 8, 8, 8),
-                new Rectangle(getBounds().getMinX() + 8,
+                new BoundingBox(getBounds().getMinX(),
                         getBounds().getMinY() + 8, 8, 8)};
         tileStateProperty().addListener((observable, oldValue, newValue) -> {
             rebuildBounds(newValue);
         });
-        complexBounds = union(
-                union(tileParts[0], tileParts[1]), union(tileParts[2], tileParts[3]));
-
+        rebuildBounds(getTileState());
     }
 
     public ObjectProperty<TileState> tileStateProperty() {
@@ -67,6 +61,14 @@ public class TileUnit extends GameUnit {
 
     private void rebuildBounds(TileState tileState) {
         tileState.boundsRebuilder.accept(this);
+    }
+
+    public TileState getTileState() {
+        return tileState.get();
+    }
+
+    public void setTileState(TileState tileState) {
+        this.tileState.set(tileState);
     }
 
     public TileUnit(Bounds bounds, List<State> stateFlow, Map<State, Long>
@@ -93,24 +95,28 @@ public class TileUnit extends GameUnit {
         return tileType;
     }
 
-    public TileState getTileState() {
-        return tileState.get();
-    }
-
-    public void setTileState(TileState tileState) {
-        this.tileState.set(tileState);
-    }
-
     @Override
     public boolean intersects(GameUnit gameUnit) {
         if (getTileType() != TileType.BRICK) {
             return super.intersects(gameUnit);
         }
         Bounds b = gameUnit.getBounds();
-        return (complexBounds.contains(b.getMinX(), b.getMinY()) ||
-                complexBounds.contains(b.getMaxX(), b.getMaxY()) ||
-                complexBounds.contains(b.getMinX() + b.getWidth(), b.getMinY()) ||
-                complexBounds.contains(b.getMinX(), b.getMinY() + b.getHeight()));
+
+        for (Bounds bounds : complexBounds) {
+
+            if (bounds.intersects(b)) {
+                if (getTileState() == TileState.STATE_1001) {
+                    log.info(this + "");
+                    log.debug(bounds + " {true} " + b);
+                }
+                return true;
+            }
+            if (getTileState() == TileState.STATE_1001) {
+                log.info(this + "");
+                log.debug(bounds + " {false} " + b);
+            }
+        }
+        return false;
 
     }
 
@@ -119,6 +125,16 @@ public class TileUnit extends GameUnit {
         return (super.isTakingPartInCollisionProcess() &&
                 (typesForCollisionProcess.contains(getTileType())));
 
+    }
+
+    @Override
+    public String toString() {
+        return "TileUnit{" +
+                "tileType=" + tileType +
+                ", tileState=" + tileState +
+                ", complexBounds=" + complexBounds +
+                ", tileParts=" + Arrays.toString(tileParts) +
+                "} " + super.toString();
     }
 
     public enum TileType {
@@ -130,29 +146,29 @@ public class TileUnit extends GameUnit {
         STATE_EMPTY,
         STATE_0001,
         STATE_0010,
-        STATE_0011(tileUnit -> tileUnit.complexBounds =
-                union(tileUnit.tileParts[2], tileUnit.tileParts[3]),
+        STATE_0011(tileUnit -> tileUnit.complexBounds = asList(
+                tileUnit.tileParts[2], tileUnit.tileParts[3]),
                 null, STATE_0010, null, STATE_0001),
         STATE_0100,
         STATE_0101,
         STATE_0110(tileUnit -> tileUnit.complexBounds =
-                union(tileUnit.tileParts[1], tileUnit.tileParts[2]),
+                asList(tileUnit.tileParts[1], tileUnit.tileParts[2]),
                 STATE_0100, null, STATE_0010, null),
         STATE_0111,
         STATE_1000,
         STATE_1001(tileUnit -> tileUnit.complexBounds =
-                union(tileUnit.tileParts[0], tileUnit.tileParts[3]),
+                asList(tileUnit.tileParts[0], tileUnit.tileParts[3]),
                 STATE_1000, null, STATE_0001, null),
         STATE_1010,
         STATE_1011,
         STATE_1100(tileUnit -> tileUnit.complexBounds =
-                union(tileUnit.tileParts[0], tileUnit.tileParts[1]),
+                asList(tileUnit.tileParts[0], tileUnit.tileParts[1]),
                 null, STATE_0100, null, STATE_1000),
         STATE_1101,
         STATE_1110,
-        STATE_1111(tileUnit -> tileUnit.complexBounds = union(
-                union(tileUnit.tileParts[0], tileUnit.tileParts[1]),
-                union(tileUnit.tileParts[2], tileUnit.tileParts[3])),
+        STATE_1111(tileUnit -> tileUnit.complexBounds = asList(
+                tileUnit.tileParts[0], tileUnit.tileParts[1],
+                tileUnit.tileParts[2], tileUnit.tileParts[3]),
                 STATE_1100, STATE_0110, STATE_0011, STATE_1001);
 
         protected Map<MoveableUnit.Direction, TileState> transitionMap = new HashMap<>();
