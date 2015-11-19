@@ -10,8 +10,9 @@ import java.util.List;
  */
 public interface BasicStatePropertyModifiable /*extends ObjectPropertyModifiable<BasicState>*/ {
     //    @Override
-    ReadOnlyObjectProperty<BasicState> getObjectProperty(BasicState objectPropertyType);
+    ReadOnlyObjectProperty<BasicState> getBasicStateProperty();
 
     //    @Override
-    <I extends GameUnitObjectPropertyModifier> List<GameUnitObjectPropertyModifier> getObjectPropertyModifiers(BasicState objectPropertyType, Class<I> interfaceType);
+    <I extends GameUnitObjectPropertyModifier> List<GameUnitObjectPropertyModifier> getBasicStatePropertyModifiers
+    (Class<I> interfaceType);
 }

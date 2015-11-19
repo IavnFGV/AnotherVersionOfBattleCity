@@ -10,8 +10,8 @@ import java.util.List;
  */
 public interface PauseStatePropertyModifiable/* extends ObjectPropertyModifiable<PauseState>*/ {
     //    @Override
-    ReadOnlyObjectProperty<PauseState> getObjectProperty(PauseState objectPropertyType);
+    ReadOnlyObjectProperty<PauseState> getPauseStateProperty();
 
     //    @Override
-    <I extends GameUnitObjectPropertyModifier> List<GameUnitObjectPropertyModifier> getObjectPropertyModifiers(PauseState objectPropertyType, Class<I> interfaceType);
+    <I extends GameUnitObjectPropertyModifier> List<GameUnitObjectPropertyModifier> getPausePropertyModifiers(Class<I> interfaceType);
 }

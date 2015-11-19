@@ -10,9 +10,9 @@ import java.util.List;
  */
 public interface ObjectPropertyModifiable<T> {
 
-    ReadOnlyObjectProperty<T> getObjectProperty(T objectPropertyType);
+    ReadOnlyObjectProperty<T> getObjectProperty();
 
     <I extends GameUnitObjectPropertyModifier> List<GameUnitObjectPropertyModifier>
-    getObjectPropertyModifiers(T objectPropertyType, Class<I> interfaceType);
+    getObjectPropertyModifiers(Class<I> interfaceType);
 
 }
