@@ -1,35 +1,58 @@
 package com.drozda.battlecity.unitx;
 
 
+import com.drozda.battlecity.eventx.BasicStateChangeEvent;
+import com.drozda.battlecity.eventx.PauseStateChangeEvent;
+import com.drozda.battlecity.interfaces.BattleGround;
 import com.drozda.battlecity.interfacesx.BasicStatePropertyModifiable;
-import com.drozda.battlecity.interfacesx.GameUnitObjectPropertyModifier;
+import com.drozda.battlecity.interfacesx.EventHandler;
 import com.drozda.battlecity.interfacesx.PauseStatePropertyModifiable;
-import com.drozda.battlecity.modifierx.basicstate.onevent.BasicStateModifierByEvent;
+import com.drozda.battlecity.modifierx.basicstate.byevent.BasicStateModifierByEvent;
 import com.drozda.battlecity.modifierx.manager.SimpleObjectPropertyModifierManager;
+import com.drozda.battlecity.modifierx.pausestate.byevent.PauseStateModifierByEvent;
+import com.drozda.battlecity.modifierx.pausestate.byproperty.PauseStateModifierByProperty;
 import com.drozda.battlecity.unitx.enumeration.BasicState;
 import com.drozda.battlecity.unitx.enumeration.PauseState;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 
+import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.List;
 
 /**
  * Created by GFH on 26.09.2015.
  */
-public abstract class GameUnitX implements BasicStatePropertyModifiable, PauseStatePropertyModifiable {
+public abstract class GameUnitX implements BasicStatePropertyModifiable, PauseStatePropertyModifiable,
+        EventHandler {
 
-
-    protected BasicStateModifierByEvent basicStateModifierByEvent = new BasicStateModifierByEvent();
+    protected final BattleGround playground;
     protected BasicStatePropertyModifierManager basicStatePropertyModifierManager = new
-            BasicStatePropertyModifierManager(BasicState.class);
-    protected PauseStatePropertyModifierManager pauseStatePropertyModifierManager = new
-            PauseStatePropertyModifierManager(PauseState.class);
+            BasicStatePropertyModifierManager();
+    protected PauseStatePropertyModifierManager pauseStatePropertyModifierManager;
 
-    public GameUnitX() {
-        pauseStatePropertyModifierManager.getObjectPropertyWrapper().setValue(PauseState.PAUSE);
-        basicStatePropertyModifierManager.getObjectPropertyWrapper().setValue(BasicState.SLEEP);
-        basicStatePropertyModifierManager.addObjectPropertyModifier(basicStateModifierByEvent);
+    public GameUnitX(BattleGround playground) {
+        this.playground = playground;
+        pauseStatePropertyModifierManager = new PauseStatePropertyModifierManager();
+    }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public void handle(EventObject event) {
+        List<EventHandler> eventHandlers = getEventHandlers(event);
+        if (!eventHandlers.isEmpty())
+            synchronized (this) {
+                eventHandlers.forEach(eventHandler -> eventHandler.handle(event));
+            }
+    }
+
+    /**
+     * Need to be overrode in children for properly handling Events
+     */
+    protected List<EventHandler> getEventHandlers(EventObject eventObject) {
+        List<EventHandler> eventHandlers = new ArrayList<>();
+        eventHandlers.addAll(basicStatePropertyModifierManager.getObjectPropertyModifiersByEventObject(eventObject));
+        eventHandlers.addAll(pauseStatePropertyModifierManager.getObjectPropertyModifiersByEventObject(eventObject));
+        return eventHandlers;
     }
 
     @Override
@@ -37,40 +60,35 @@ public abstract class GameUnitX implements BasicStatePropertyModifiable, PauseSt
         return basicStatePropertyModifierManager.getObjectProperty();
     }
 
-    @Override
-    public <I extends GameUnitObjectPropertyModifier> List<GameUnitObjectPropertyModifier> getBasicStatePropertyModifiers(Class<I> interfaceType) {
-        return basicStatePropertyModifierManager.getObjectPropertyModifiers(interfaceType);
-    }
 
     @Override
     public ReadOnlyObjectProperty<PauseState> getPauseStateProperty() {
         return pauseStatePropertyModifierManager.getObjectProperty();
     }
 
-    @Override
-    public <I extends GameUnitObjectPropertyModifier> List<GameUnitObjectPropertyModifier> getPausePropertyModifiers(Class<I> interfaceType) {
-        return pauseStatePropertyModifierManager.getObjectPropertyModifiers(interfaceType);
-    }
-
     class BasicStatePropertyModifierManager extends SimpleObjectPropertyModifierManager<BasicState> {
-        public BasicStatePropertyModifierManager(Class<BasicState> type) {
-            super(type);
-        }
+        protected BasicStateModifierByEvent basicStateModifierByEvent =
+                new BasicStateModifierByEvent(getObjectPropertyWrapper(), BasicStateChangeEvent.class);
 
-        @Override
-        protected ReadOnlyObjectWrapper<BasicState> getObjectPropertyWrapper() {
-            return super.getObjectPropertyWrapper();
+        public BasicStatePropertyModifierManager() {
+            super();
+            addObjectPropertyModifier(basicStateModifierByEvent);
+            readOnlyObjectWrapper.setValue(BasicState.SLEEP);
         }
     }
 
     class PauseStatePropertyModifierManager extends SimpleObjectPropertyModifierManager<PauseState> {
-        public PauseStatePropertyModifierManager(Class<PauseState> type) {
-            super(type);
-        }
 
-        @Override
-        protected ReadOnlyObjectWrapper<PauseState> getObjectPropertyWrapper() {
-            return super.getObjectPropertyWrapper();
+        protected PauseStateModifierByEvent pauseStateModifierByEvent =
+                new PauseStateModifierByEvent(getObjectPropertyWrapper(), PauseStateChangeEvent.class);
+        protected PauseStateModifierByProperty pauseStateModifierByProperty;
+
+        public PauseStatePropertyModifierManager() {
+            super();
+            this.pauseStateModifierByProperty = new PauseStateModifierByProperty(playground.stateProperty());
+            addObjectPropertyModifier(pauseStateModifierByEvent);
+            addObjectPropertyModifier(pauseStateModifierByProperty);
+            readOnlyObjectWrapper.setValue(PauseState.PAUSE);
         }
     }
 }

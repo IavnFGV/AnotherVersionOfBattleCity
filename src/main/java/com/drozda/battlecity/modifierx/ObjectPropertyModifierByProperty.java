@@ -1,0 +1,24 @@
+package com.drozda.battlecity.modifierx;
+
+import com.drozda.battlecity.interfacesx.GameUnitObjectPropertyModifierByProperty;
+import javafx.beans.property.ObjectProperty;
+
+/**
+ * Created by GFH on 20.11.2015.
+ */
+public abstract class ObjectPropertyModifierByProperty<T, S>
+        extends ObjectPropertyModifier<S>
+        implements GameUnitObjectPropertyModifierByProperty<T, S> {
+
+    protected ObjectProperty<T> propertyToListen;
+
+    public ObjectPropertyModifierByProperty(ObjectProperty<T> propertyToListen) {
+        setPropertyToListen(propertyToListen);
+    }
+
+    @Override
+    public <P extends ObjectProperty<T>> void setPropertyToListen(P propertyToListen) {
+        this.propertyToListen = propertyToListen;
+        propertyToListen.addListener(this);
+    }
+}
