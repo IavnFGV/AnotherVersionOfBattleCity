@@ -16,8 +16,8 @@ public class SimpleObjectPropertyModifierManager<T> implements ObjectPropertyMod
     private static final Logger log = LoggerFactory.getLogger(SimpleObjectPropertyModifierManager.class);
     protected ReadOnlyObjectWrapper<T> readOnlyObjectWrapper = new ReadOnlyObjectWrapper<>();
 
-    protected Map<Class<? extends EventObject>, List<GameUnitObjectPropertyModifierByEvent>> modifierByEventMap = new HashMap<>();
-    protected List<GameUnitObjectPropertyModifierByProperty> modifierByPropertyList =
+    protected Map<Class<? extends EventObject>, List<ObjectPropertyModifierByEvent>> modifierByEventMap = new HashMap<>();
+    protected List<ObjectPropertyModifierByProperty> modifierByPropertyList =
             new ArrayList<>();
 
     public SimpleObjectPropertyModifierManager() {
@@ -33,9 +33,9 @@ public class SimpleObjectPropertyModifierManager<T> implements ObjectPropertyMod
 
     @SuppressWarnings("unchecked")
     @Override
-    public <I extends GameUnitObjectPropertyModifier> boolean addObjectPropertyModifier(I propertyModifier) {
+    public <I extends ObjectPropertyModifier> boolean addObjectPropertyModifier(I propertyModifier) {
         log.debug("SimpleObjectPropertyModifierManager.addObjectPropertyModifier with parameters " + "propertyModifier = [" + propertyModifier + "]");
-        if (propertyModifier instanceof GameUnitObjectPropertyModifierByProperty) {
+        if (propertyModifier instanceof ObjectPropertyModifierByProperty) {
             if (modifierByPropertyList.contains(propertyModifier)) {
                 log.info("SimpleObjectPropertyModifierManager.addObjectPropertyModifier PropertyModifierByProperty is" +
                         " already in list");
@@ -43,13 +43,13 @@ public class SimpleObjectPropertyModifierManager<T> implements ObjectPropertyMod
             }
             log.debug("SimpleObjectPropertyModifierManager.addObjectPropertyModifier Adding PropertyModifierByProperty to list");
             return modifierByPropertyList.add(
-                    (GameUnitObjectPropertyModifierByProperty)
+                    (ObjectPropertyModifierByProperty)
                             propertyModifier);
         }
-        if (propertyModifier instanceof GameUnitObjectPropertyModifierByEvent) {
-            GameUnitObjectPropertyModifierByEvent modifierByEvent =
-                    (GameUnitObjectPropertyModifierByEvent) propertyModifier;
-            List<GameUnitObjectPropertyModifierByEvent> list;
+        if (propertyModifier instanceof ObjectPropertyModifierByEvent) {
+            ObjectPropertyModifierByEvent modifierByEvent =
+                    (ObjectPropertyModifierByEvent) propertyModifier;
+            List<ObjectPropertyModifierByEvent> list;
             if (!modifierByEventMap.containsKey(modifierByEvent.getEventObjectType())) {
                 log.debug("SimpleObjectPropertyModifierManager.addObjectPropertyModifier. Creating new list of " +
                         "PropertyModifierByEvent");
@@ -70,19 +70,19 @@ public class SimpleObjectPropertyModifierManager<T> implements ObjectPropertyMod
     }
 
     @Override
-    public List<GameUnitObjectPropertyModifierByProperty> getObjectPropertyModifiersByProperty() {
+    public List<ObjectPropertyModifierByProperty> getObjectPropertyModifiersByProperty() {
         return modifierByPropertyList;
     }
 
     @Override
-    public <E extends EventObject> List<GameUnitObjectPropertyModifierByEvent> getObjectPropertyModifiersByEventClass(Class<E> eventObjectType) {
+    public <E extends EventObject> List<ObjectPropertyModifierByEvent> getObjectPropertyModifiersByEventClass(Class<E> eventObjectType) {
         return modifierByEventMap.get(eventObjectType);
     }
 
     @Override
-    public <E extends EventObject> List<GameUnitObjectPropertyModifierByEvent> getObjectPropertyModifiersByEventObject(E eventObjectType) {
+    public <E extends EventObject> List<ObjectPropertyModifierByEvent> getObjectPropertyModifiersByEventObject(E eventObjectType) {
         log.debug("SimpleObjectPropertyModifierManager.getObjectPropertyModifiersByEventObject with parameters " + "eventObjectType = [" + eventObjectType + "]");
-        List<GameUnitObjectPropertyModifierByEvent> list = new ArrayList<>();
+        List<ObjectPropertyModifierByEvent> list = new ArrayList<>();
         for (Class<? extends EventObject> aClass : modifierByEventMap.keySet()) {
             if (eventObjectType.getClass().isInstance(aClass)) {
                 log.info(eventObjectType.getClass() + " is equals to " + aClass);

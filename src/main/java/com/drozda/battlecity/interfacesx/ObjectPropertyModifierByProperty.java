@@ -7,8 +7,8 @@ import javafx.beans.value.ObservableValue;
 /**
  * Created by GFH on 20.11.2015.
  */
-public interface GameUnitObjectPropertyModifierByProperty<T, S>
-        extends GameUnitObjectPropertyModifier<S>, ChangeListener<T> {
+public interface ObjectPropertyModifierByProperty<T, S>
+        extends ObjectPropertyModifier<S>, ChangeListener<T> {
     @Override
     void changed(ObservableValue<? extends T> observable, T oldValue, T newValue);
 

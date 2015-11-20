@@ -1,6 +1,5 @@
 package com.drozda.battlecity.modifierx;
 
-import com.drozda.battlecity.interfacesx.GameUnitObjectPropertyModifierByProperty;
 import javafx.beans.property.ObjectProperty;
 
 /**
@@ -8,7 +7,7 @@ import javafx.beans.property.ObjectProperty;
  */
 public abstract class ObjectPropertyModifierByProperty<T, S>
         extends ObjectPropertyModifier<S>
-        implements GameUnitObjectPropertyModifierByProperty<T, S> {
+        implements com.drozda.battlecity.interfacesx.ObjectPropertyModifierByProperty<T, S> {
 
     protected ObjectProperty<T> propertyToListen;
 

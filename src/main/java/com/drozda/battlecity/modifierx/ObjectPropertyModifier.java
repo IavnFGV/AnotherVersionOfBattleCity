@@ -1,6 +1,5 @@
 package com.drozda.battlecity.modifierx;
 
-import com.drozda.battlecity.interfacesx.GameUnitObjectPropertyModifier;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +7,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by GFH on 20.11.2015.
  */
-public abstract class ObjectPropertyModifier<S> implements GameUnitObjectPropertyModifier<S> {
+public abstract class ObjectPropertyModifier<S> implements com.drozda.battlecity.interfacesx.ObjectPropertyModifier<S> {
     private static Logger log = LoggerFactory.getLogger(ObjectPropertyModifier.class);
     protected ReadOnlyObjectWrapper<S> propertyToChange;
 
