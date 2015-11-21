@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by GFH on 20.11.2015.
  */
-public abstract class ObjectPropertyModifier<S> implements com.drozda.battlecity.interfacesx.ObjectPropertyModifier<S> {
+public abstract class ObjectPropertyModifier<S> implements com.drozda.battlecity.interfacesx.modifier.object.ObjectPropertyModifier<S> {
     private static Logger log = LoggerFactory.getLogger(ObjectPropertyModifier.class);
     protected ReadOnlyObjectWrapper<S> propertyToChange;
 

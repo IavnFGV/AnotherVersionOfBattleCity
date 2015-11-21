@@ -9,7 +9,7 @@ import java.util.EventObject;
 /**
  * Created by GFH on 20.11.2015.
  */
-public abstract class ObjectPropertyModifierByEvent<S, E extends EventObject> extends ObjectPropertyModifier<S> implements com.drozda.battlecity.interfacesx.ObjectPropertyModifierByEvent<S, E> {
+public abstract class ObjectPropertyModifierByEvent<S, E extends EventObject> extends ObjectPropertyModifier<S> implements com.drozda.battlecity.interfacesx.modifier.object.ObjectPropertyModifierByEvent<S, E> {
     private static Logger log = LoggerFactory.getLogger(ObjectPropertyModifierByEvent.class);
     protected final Class<E> eventObjectType;
 

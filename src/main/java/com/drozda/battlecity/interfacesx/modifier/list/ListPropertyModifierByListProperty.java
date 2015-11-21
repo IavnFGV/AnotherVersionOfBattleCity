@@ -1,4 +1,4 @@
-package com.drozda.battlecity.interfacesx;
+package com.drozda.battlecity.interfacesx.modifier.list;
 
 import javafx.beans.property.ListProperty;
 import javafx.collections.ListChangeListener;

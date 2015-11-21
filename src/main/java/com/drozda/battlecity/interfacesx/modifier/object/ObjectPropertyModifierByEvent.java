@@ -1,4 +1,6 @@
-package com.drozda.battlecity.interfacesx;
+package com.drozda.battlecity.interfacesx.modifier.object;
+
+import com.drozda.battlecity.interfacesx.EventHandler;
 
 import java.util.EventObject;
 

@@ -1,4 +1,4 @@
-package com.drozda.battlecity.interfacesx;
+package com.drozda.battlecity.interfacesx.modifier.object;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;

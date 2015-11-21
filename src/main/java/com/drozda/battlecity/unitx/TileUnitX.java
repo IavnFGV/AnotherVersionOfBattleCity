@@ -14,7 +14,19 @@ public class TileUnitX extends GameUnitX {
         this.tileType = tileType;
     }
 
+    @Override
+    public Class getEventObjectType() {
+        throw new RuntimeException("getEventObjectType does not make sense for application");
+    }
+
     public TileType getTileType() {
         return tileType;
+    }
+
+    @Override
+    public String toString() {
+        return "TileUnitX{" +
+                "tileType=" + tileType +
+                "} " + super.toString();
     }
 }

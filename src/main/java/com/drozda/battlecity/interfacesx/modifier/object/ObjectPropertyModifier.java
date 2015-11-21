@@ -1,6 +1,7 @@
-package com.drozda.battlecity.interfacesx;
+package com.drozda.battlecity.interfacesx.modifier.object;
 
 
+import com.drozda.battlecity.interfacesx.modifier.PropertyModifier;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
 /**

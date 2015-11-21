@@ -7,7 +7,7 @@ import javafx.beans.property.ObjectProperty;
  */
 public abstract class ObjectPropertyModifierByProperty<T, S>
         extends ObjectPropertyModifier<S>
-        implements com.drozda.battlecity.interfacesx.ObjectPropertyModifierByProperty<T, S> {
+        implements com.drozda.battlecity.interfacesx.modifier.object.ObjectPropertyModifierByProperty<T, S> {
 
     protected ObjectProperty<T> propertyToListen;
 

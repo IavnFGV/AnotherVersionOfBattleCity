@@ -91,6 +91,10 @@ public class YabcBattleGround implements BattleGround<TileUnit> {
 
     }
 
+    public YabcBattleGround() {
+        setState(PlaygroundState.CREATED);
+    }
+
     public YabcBattleGround(int multX, int multY, BattleType battleType) {
         gamePixel = new Point2D(multX, multY);
         setState(PlaygroundState.CREATED);
@@ -185,10 +189,6 @@ public class YabcBattleGround implements BattleGround<TileUnit> {
         this.state.set(state);
     }
 
-    public ObjectProperty<PlaygroundState> stateProperty() {
-        return state;
-    }
-
     public void initialize(long tickTime) {
         setState(PlaygroundState.INITIALIZING);
         unitList.stream().forEach(gameUnit -> {
@@ -224,6 +224,10 @@ public class YabcBattleGround implements BattleGround<TileUnit> {
         if (getBattleType() == BattleType.DOUBLE_PLAYER) {
             createSecondPlayer();
         }
+    }
+
+    public ObjectProperty<PlaygroundState> stateProperty() {
+        return state;
     }
 
     @Override
