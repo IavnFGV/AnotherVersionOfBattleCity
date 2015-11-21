@@ -56,10 +56,17 @@ public abstract class GameUnitX implements BasicStatePropertyModifiable, PauseSt
     }
 
     @Override
+    public String toString() {
+        return "GameUnitX{" +
+                "basicstate=" + getBasicStateProperty().get() +
+                ", pauseState=" + getPauseStateProperty().get() +
+                '}';
+    }
+
+    @Override
     public ReadOnlyObjectProperty<BasicState> getBasicStateProperty() {
         return basicStatePropertyModifierManager.getObjectProperty();
     }
-
 
     @Override
     public ReadOnlyObjectProperty<PauseState> getPauseStateProperty() {

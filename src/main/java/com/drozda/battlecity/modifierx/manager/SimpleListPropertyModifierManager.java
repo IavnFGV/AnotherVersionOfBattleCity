@@ -42,12 +42,12 @@ public class SimpleListPropertyModifierManager<T> implements ListPropertyModifia
     }
 
     @Override
-    public <E extends EventObject> List<ListPropertyModifierByEvent> getListPropertyModifiersByEventObject(E eventObjectType) {
-        log.debug("SimpleListPropertyModifierManager.getListPropertyModifiersByEventObject with parameters " + "eventObjectType = [" + eventObjectType + "]");
+    public <E extends EventObject> List<ListPropertyModifierByEvent> getListPropertyModifiersByEventObject(E eventObject) {
+        log.debug("SimpleListPropertyModifierManager.getListPropertyModifiersByEventObject with parameters " + "eventObject = [" + eventObject + "]");
         List<ListPropertyModifierByEvent> list = new ArrayList<>();
         for (Class<? extends EventObject> aClass : modifierByEventMap.keySet()) {
-            if (eventObjectType.getClass().isInstance(aClass)) {
-                log.info(eventObjectType.getClass() + " is equals to " + aClass);
+            if (aClass.isInstance(eventObject)) {
+                log.info(eventObject.getClass() + " is equals to " + aClass);
                 list.addAll(modifierByEventMap.get(aClass));
             }
         }

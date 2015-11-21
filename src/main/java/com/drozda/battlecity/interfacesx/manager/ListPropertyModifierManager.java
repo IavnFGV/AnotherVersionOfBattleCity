@@ -17,7 +17,7 @@ public interface ListPropertyModifierManager extends PropertyModifierManager {
     getListPropertyModifiersByEventClass(Class<E> eventObjectType);
 
     <E extends EventObject> List<ListPropertyModifierByEvent>
-    getListPropertyModifiersByEventObject(E eventObjectType);
+    getListPropertyModifiersByEventObject(E eventObject);
 
     <I extends ListPropertyModifier> boolean addListPropertyModifier(I propertyModifier);
 

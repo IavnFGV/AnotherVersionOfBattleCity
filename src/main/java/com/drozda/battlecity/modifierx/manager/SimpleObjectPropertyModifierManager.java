@@ -41,12 +41,12 @@ public class SimpleObjectPropertyModifierManager<T> implements ObjectPropertyMod
     }
 
     @Override
-    public <E extends EventObject> List<ObjectPropertyModifierByEvent> getObjectPropertyModifiersByEventObject(E eventObjectType) {
-        log.debug("SimpleObjectPropertyModifierManager.getObjectPropertyModifiersByEventObject with parameters " + "eventObjectType = [" + eventObjectType + "]");
+    public <E extends EventObject> List<ObjectPropertyModifierByEvent> getObjectPropertyModifiersByEventObject(E eventObject) {
+        log.debug("SimpleObjectPropertyModifierManager.getObjectPropertyModifiersByEventObject with parameters " + "eventObject = [" + eventObject + "]");
         List<ObjectPropertyModifierByEvent> list = new ArrayList<>();
         for (Class<? extends EventObject> aClass : modifierByEventMap.keySet()) {
-            if (eventObjectType.getClass().isInstance(aClass)) {
-                log.info(eventObjectType.getClass() + " is equals to " + aClass);
+            if (aClass.isInstance(eventObject)) {
+                log.info(eventObject.getClass() + " is equals to " + aClass);
                 list.addAll(modifierByEventMap.get(aClass));
             }
         }
