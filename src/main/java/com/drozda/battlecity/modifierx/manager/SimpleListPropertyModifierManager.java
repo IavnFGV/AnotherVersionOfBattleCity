@@ -1,5 +1,6 @@
 package com.drozda.battlecity.modifierx.manager;
 
+import com.drozda.battlecity.eventx.IChangeEvent;
 import com.drozda.battlecity.interfacesx.manager.ListPropertyModifierManager;
 import com.drozda.battlecity.interfacesx.modifiable.ListPropertyModifiable;
 import com.drozda.battlecity.interfacesx.modifier.list.ListPropertyModifier;
@@ -9,6 +10,7 @@ import com.drozda.battlecity.interfacesx.modifier.list.ListPropertyModifierByPro
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyListWrapper;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +23,7 @@ public class SimpleListPropertyModifierManager<T> implements ListPropertyModifia
     private static final Logger log = LoggerFactory.getLogger(SimpleListPropertyModifierManager.class);
     protected ReadOnlyListWrapper<T> readOnlyListWrapper = new ReadOnlyListWrapper<>(FXCollections.observableArrayList());
 
-    protected Map<Class<? extends EventObject>, List<ListPropertyModifierByEvent>> modifierByEventMap = new HashMap<>();
+    protected Map<Class<? extends IChangeEvent>, List<ListPropertyModifierByEvent>> modifierByEventMap = new HashMap<>();
     protected List<ListPropertyModifierByProperty> modifiersByProperty = new ArrayList<>();
     protected List<ListPropertyModifierByListProperty> modifiersByListProperty = new ArrayList<>();
 
@@ -29,6 +31,14 @@ public class SimpleListPropertyModifierManager<T> implements ListPropertyModifia
     public SimpleListPropertyModifierManager() {
         super();
         log.debug("SimpleListPropertyModifierManager.SimpleListPropertyModifierManager with parameters " + "");
+    }
+
+    protected ReadOnlyListWrapper<T> readOnlyListWrapperProperty() {
+        return readOnlyListWrapper;
+    }
+
+    public void setReadOnlyListWrapper(ObservableList<T> readOnlyListWrapper) {
+        this.readOnlyListWrapper.set(readOnlyListWrapper);
     }
 
     @Override
@@ -45,7 +55,7 @@ public class SimpleListPropertyModifierManager<T> implements ListPropertyModifia
     public <E extends EventObject> List<ListPropertyModifierByEvent> getListPropertyModifiersByEventObject(E eventObject) {
         log.debug("SimpleListPropertyModifierManager.getListPropertyModifiersByEventObject with parameters " + "eventObject = [" + eventObject + "]");
         List<ListPropertyModifierByEvent> list = new ArrayList<>();
-        for (Class<? extends EventObject> aClass : modifierByEventMap.keySet()) {
+        for (Class<? extends IChangeEvent> aClass : modifierByEventMap.keySet()) {
             if (aClass.isInstance(eventObject)) {
                 log.info(eventObject.getClass() + " is equals to " + aClass);
                 list.addAll(modifierByEventMap.get(aClass));

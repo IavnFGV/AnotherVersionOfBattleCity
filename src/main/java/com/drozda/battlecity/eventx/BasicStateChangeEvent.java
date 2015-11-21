@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by GFH on 20.11.2015.
  */
-public class BasicStateChangeEvent extends ChangeEvent {
+public class BasicStateChangeEvent extends ChangeEvent implements IBasicStateChangeEvent {
     private static final Logger log = LoggerFactory.getLogger(BasicStateChangeEvent.class);
     private final BasicState newBasicState;
 
@@ -17,6 +17,7 @@ public class BasicStateChangeEvent extends ChangeEvent {
         log.debug("BasicStateChangeEvent.BasicStateChangeEvent with parameters " + "source = [" + source + "], newBasicState = [" + newBasicState + "]");
     }
 
+    @Override
     public BasicState getNewBasicState() {
         return newBasicState;
     }

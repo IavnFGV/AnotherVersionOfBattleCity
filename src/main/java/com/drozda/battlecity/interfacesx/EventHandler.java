@@ -1,12 +1,13 @@
 package com.drozda.battlecity.interfacesx;
 
+import com.drozda.battlecity.eventx.IChangeEvent;
+
 import java.util.EventListener;
-import java.util.EventObject;
 
 /**
  * Created by GFH on 19.11.2015.
  */
-public interface EventHandler<E extends EventObject> extends EventListener {
+public interface EventHandler<E extends IChangeEvent> extends EventListener {
     /**
      * Invoked when a specific event of the type for which this handler is
      * registered happens.

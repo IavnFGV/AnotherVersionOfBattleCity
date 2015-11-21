@@ -9,8 +9,8 @@ import javafx.beans.value.ObservableValue;
 /**
  * Created by GFH on 20.11.2015.
  */
-public class PauseStateModifierByProperty extends ObjectPropertyModifierByProperty<PlaygroundState, PauseState> {
-    public PauseStateModifierByProperty(ObjectProperty<PlaygroundState> propertyToListen) {
+public class PauseStateModifierByPlaygroundStateProperty extends ObjectPropertyModifierByProperty<PlaygroundState, PauseState> {
+    public PauseStateModifierByPlaygroundStateProperty(ObjectProperty<PlaygroundState> propertyToListen) {
         super(propertyToListen);
     }
 

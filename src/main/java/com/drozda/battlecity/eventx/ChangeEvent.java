@@ -5,7 +5,7 @@ import java.util.EventObject;
 /**
  * Created by GFH on 20.11.2015.
  */
-public class ChangeEvent extends EventObject {
+public class ChangeEvent extends EventObject implements IChangeEvent {
     public ChangeEvent(Object source) {
         super(source);
     }

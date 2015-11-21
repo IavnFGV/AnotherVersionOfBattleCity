@@ -1,15 +1,15 @@
 package com.drozda.battlecity.modifierx;
 
+import com.drozda.battlecity.eventx.IChangeEvent;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.EventObject;
-
 /**
  * Created by GFH on 20.11.2015.
  */
-public abstract class ObjectPropertyModifierByEvent<S, E extends EventObject> extends ObjectPropertyModifier<S> implements com.drozda.battlecity.interfacesx.modifier.object.ObjectPropertyModifierByEvent<S, E> {
+public abstract class ObjectPropertyModifierByEvent<S, E extends IChangeEvent> extends ObjectPropertyModifier<S> implements com
+        .drozda.battlecity.interfacesx.modifier.object.ObjectPropertyModifierByEvent<S, E> {
     private static Logger log = LoggerFactory.getLogger(ObjectPropertyModifierByEvent.class);
     protected final Class<E> eventObjectType;
 
@@ -21,7 +21,7 @@ public abstract class ObjectPropertyModifierByEvent<S, E extends EventObject> ex
     @Override
     public void handle(E event) {
         if (propertyToChange == null) {
-            throw new RuntimeException("BasicStateModifierByEvent. PropertyToChange can not be null");
+            throw new RuntimeException("ObjectPropertyModifierByEvent. PropertyToChange can not be null");
         }
     }
 

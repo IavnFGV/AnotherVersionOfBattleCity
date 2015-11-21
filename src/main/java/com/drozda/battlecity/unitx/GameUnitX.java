@@ -1,19 +1,27 @@
 package com.drozda.battlecity.unitx;
 
 
-import com.drozda.battlecity.eventx.BasicStateChangeEvent;
-import com.drozda.battlecity.eventx.PauseStateChangeEvent;
+import com.drozda.battlecity.eventx.ChangeEvent;
+import com.drozda.battlecity.eventx.IBasicStateChangeEvent;
+import com.drozda.battlecity.eventx.IBoundsChangeEvent;
+import com.drozda.battlecity.eventx.IPauseStateChangeEvent;
 import com.drozda.battlecity.interfaces.BattleGround;
 import com.drozda.battlecity.interfacesx.BasicStatePropertyModifiable;
+import com.drozda.battlecity.interfacesx.BoundsListModifiable;
 import com.drozda.battlecity.interfacesx.EventHandler;
 import com.drozda.battlecity.interfacesx.PauseStatePropertyModifiable;
-import com.drozda.battlecity.modifierx.basicstate.byevent.BasicStateModifierByEvent;
+import com.drozda.battlecity.modifierx.basicstate.byevent.BasicStateModifierByBasicStateChangeEvent;
+import com.drozda.battlecity.modifierx.bondslist.byevent.BoundsListModifierByChangeBoundsEvent;
+import com.drozda.battlecity.modifierx.manager.SimpleListPropertyModifierManager;
 import com.drozda.battlecity.modifierx.manager.SimpleObjectPropertyModifierManager;
-import com.drozda.battlecity.modifierx.pausestate.byevent.PauseStateModifierByEvent;
-import com.drozda.battlecity.modifierx.pausestate.byproperty.PauseStateModifierByProperty;
+import com.drozda.battlecity.modifierx.pausestate.byevent.PauseStateModifierByPauseStateChangeEvent;
+import com.drozda.battlecity.modifierx.pausestate.byproperty.PauseStateModifierByPlaygroundStateProperty;
 import com.drozda.battlecity.unitx.enumeration.BasicState;
 import com.drozda.battlecity.unitx.enumeration.PauseState;
+import javafx.beans.property.ReadOnlyListProperty;
+import javafx.beans.property.ReadOnlyListWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.geometry.Bounds;
 
 import java.util.ArrayList;
 import java.util.EventObject;
@@ -23,26 +31,34 @@ import java.util.List;
  * Created by GFH on 26.09.2015.
  */
 public abstract class GameUnitX implements BasicStatePropertyModifiable, PauseStatePropertyModifiable,
-        EventHandler {
+        EventHandler<ChangeEvent>, BoundsListModifiable {
 
     protected final BattleGround playground;
     protected BasicStatePropertyModifierManager basicStatePropertyModifierManager = new
             BasicStatePropertyModifierManager();
     protected PauseStatePropertyModifierManager pauseStatePropertyModifierManager;
+    protected BoundsListModifierManager boundsListModifierManager = new BoundsListModifierManager();
 
     public GameUnitX(BattleGround playground) {
         this.playground = playground;
+        // initialization in constructor because
+        //inner class uses playground.stateProperty() from outer class
         pauseStatePropertyModifierManager = new PauseStatePropertyModifierManager();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void handle(EventObject event) {
+    public void handle(ChangeEvent event) {
         List<EventHandler> eventHandlers = getEventHandlers(event);
         if (!eventHandlers.isEmpty())
             synchronized (this) {
                 eventHandlers.forEach(eventHandler -> eventHandler.handle(event));
             }
+    }
+
+    @Override
+    public Class getEventObjectType() {
+        throw new RuntimeException("getEventObjectType does not make sense for application");
     }
 
     /**
@@ -52,6 +68,7 @@ public abstract class GameUnitX implements BasicStatePropertyModifiable, PauseSt
         List<EventHandler> eventHandlers = new ArrayList<>();
         eventHandlers.addAll(basicStatePropertyModifierManager.getObjectPropertyModifiersByEventObject(eventObject));
         eventHandlers.addAll(pauseStatePropertyModifierManager.getObjectPropertyModifiersByEventObject(eventObject));
+        eventHandlers.addAll(boundsListModifierManager.getListPropertyModifiersByEventObject(eventObject));
         return eventHandlers;
     }
 
@@ -60,6 +77,7 @@ public abstract class GameUnitX implements BasicStatePropertyModifiable, PauseSt
         return "GameUnitX{" +
                 "basicstate=" + getBasicStateProperty().get() +
                 ", pauseState=" + getPauseStateProperty().get() +
+                ", boundsListProperty= " + getBoundsListProperty().get() +
                 '}';
     }
 
@@ -73,29 +91,50 @@ public abstract class GameUnitX implements BasicStatePropertyModifiable, PauseSt
         return pauseStatePropertyModifierManager.getObjectProperty();
     }
 
+    @Override
+    public ReadOnlyListProperty<Bounds> getBoundsListProperty() {
+        return boundsListModifierManager.getListProperty();
+    }
+
     class BasicStatePropertyModifierManager extends SimpleObjectPropertyModifierManager<BasicState> {
-        protected BasicStateModifierByEvent basicStateModifierByEvent =
-                new BasicStateModifierByEvent(getObjectPropertyWrapper(), BasicStateChangeEvent.class);
+        protected BasicStateModifierByBasicStateChangeEvent basicStateModifierByBasicStateChangeEvent =
+                new BasicStateModifierByBasicStateChangeEvent(getObjectPropertyWrapper(), IBasicStateChangeEvent.class);
 
         public BasicStatePropertyModifierManager() {
             super();
-            addObjectPropertyModifier(basicStateModifierByEvent);
+            addObjectPropertyModifier(basicStateModifierByBasicStateChangeEvent);
             readOnlyObjectWrapper.setValue(BasicState.SLEEP);
         }
     }
 
     class PauseStatePropertyModifierManager extends SimpleObjectPropertyModifierManager<PauseState> {
 
-        protected PauseStateModifierByEvent pauseStateModifierByEvent =
-                new PauseStateModifierByEvent(getObjectPropertyWrapper(), PauseStateChangeEvent.class);
-        protected PauseStateModifierByProperty pauseStateModifierByProperty;
+        protected PauseStateModifierByPauseStateChangeEvent pauseStateModifierByPauseStateChangeEvent =
+                new PauseStateModifierByPauseStateChangeEvent(getObjectPropertyWrapper(), IPauseStateChangeEvent.class);
+        protected PauseStateModifierByPlaygroundStateProperty pauseStateModifierByPlaygroundStateProperty;
 
         public PauseStatePropertyModifierManager() {
             super();
-            this.pauseStateModifierByProperty = new PauseStateModifierByProperty(playground.stateProperty());
-            addObjectPropertyModifier(pauseStateModifierByEvent);
-            addObjectPropertyModifier(pauseStateModifierByProperty);
+            this.pauseStateModifierByPlaygroundStateProperty = new PauseStateModifierByPlaygroundStateProperty(playground.stateProperty());
+            addObjectPropertyModifier(pauseStateModifierByPauseStateChangeEvent);
+            addObjectPropertyModifier(pauseStateModifierByPlaygroundStateProperty);
             readOnlyObjectWrapper.setValue(PauseState.PAUSE);
         }
     }
+
+    class BoundsListModifierManager extends SimpleListPropertyModifierManager<Bounds> {
+        protected BoundsListModifierByChangeBoundsEvent boundsListModifierByChangeBoundsEvent =
+                new BoundsListModifierByChangeBoundsEvent(readOnlyListWrapper, IBoundsChangeEvent.class);
+
+        public BoundsListModifierManager() {
+            super();
+            addListPropertyModifier(boundsListModifierByChangeBoundsEvent);
+        }
+
+        @Override
+        protected ReadOnlyListWrapper<Bounds> readOnlyListWrapperProperty() {
+            return super.readOnlyListWrapperProperty();
+        }
+    }
+
 }

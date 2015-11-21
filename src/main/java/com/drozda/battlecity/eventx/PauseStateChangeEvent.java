@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by GFH on 20.11.2015.
  */
-public class PauseStateChangeEvent extends ChangeEvent {
+public class PauseStateChangeEvent extends ChangeEvent implements IPauseStateChangeEvent {
     private static final Logger log = LoggerFactory.getLogger(PauseStateChangeEvent.class);
 
     private final PauseState newPauseState;
@@ -18,6 +18,7 @@ public class PauseStateChangeEvent extends ChangeEvent {
         log.debug("PauseStateChangeEvent.PauseStateChangeEvent with parameters " + "source = [" + source + "], newPauseState = [" + newPauseState + "]");
     }
 
+    @Override
     public PauseState getNewPauseState() {
         return newPauseState;
     }
