@@ -1,8 +1,8 @@
 package com.drozda.battlecity.modifierx.pausestate.byproperty;
 
 import com.drozda.battlecity.modifierx.ObjectPropertyModifierByProperty;
-import com.drozda.battlecity.playground.PlaygroundState;
 import com.drozda.battlecity.unitx.enumeration.PauseState;
+import com.drozda.battlecity.unitx.enumeration.PlaygroundState;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ObservableValue;
 

@@ -1,4 +1,4 @@
-package com.drozda.battlecity.modifierx.bondslist.byevent;
+package com.drozda.battlecity.modifierx.boundslist.byevent;
 
 import com.drozda.battlecity.eventx.IBoundsChangeEvent;
 import com.drozda.battlecity.modifierx.ListPropertyModifierByEvent;

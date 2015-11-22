@@ -2,20 +2,16 @@ package com.drozda.battlecity.unitx;
 
 import com.drozda.battlecity.eventx.IDirectionChangeEvent;
 import com.drozda.battlecity.eventx.IEngineStateChangeEvent;
-import com.drozda.battlecity.eventx.IMoveEvent;
 import com.drozda.battlecity.eventx.ISpeedChangeEvent;
-import com.drozda.battlecity.interfaces.BattleGround;
-import com.drozda.battlecity.interfacesx.DirectionModifiable;
-import com.drozda.battlecity.interfacesx.EngineStateModifiable;
-import com.drozda.battlecity.interfacesx.EventHandler;
-import com.drozda.battlecity.interfacesx.SpeedModifiable;
-import com.drozda.battlecity.modifierx.bondslist.byevent.BoundsListModifierByMoveEvent;
+import com.drozda.battlecity.interfacesx.*;
+import com.drozda.battlecity.modifierx.boundslist.byevent.SimpleBoundsListModifierByMoveEvent;
 import com.drozda.battlecity.modifierx.direction.byevent.DirectionModifierByChangeDirectionEvent;
 import com.drozda.battlecity.modifierx.enginestate.byevent.EngineStateModifierByEngineStateChangeEvent;
 import com.drozda.battlecity.modifierx.manager.SimpleObjectPropertyModifierManager;
 import com.drozda.battlecity.modifierx.speed.byevent.SpeedModifierBySpeedChangeEvent;
 import com.drozda.battlecity.unitx.enumeration.Direction;
 import com.drozda.battlecity.unitx.enumeration.EngineState;
+import com.drozda.battlecity.unitx.enumeration.MoveOnWorldBounds;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
 import java.util.EventObject;
@@ -25,41 +21,28 @@ import java.util.List;
  * Created by GFH on 21.11.2015.
  */
 public class MoveableUnitX extends GameUnitX implements DirectionModifiable, SpeedModifiable,
-        EngineStateModifiable {
+        EngineStateModifiable, Moveable {
     protected DirectionPropertyModifierManager directionPropertyModifierManager;
     protected SpeedModifierManager speedModifierManager;
     protected EngineStateModifierManager engineStateModifierManager;
-
     // must be added to correct manager
-    protected BoundsListModifierByMoveEvent boundsListModifierByMoveEvent;
-
+    protected SimpleBoundsListModifierByMoveEvent simpleBoundsListModifierByMoveEvent;
     public MoveableUnitX(BattleGround playground, Direction startDirection) {
         super(playground);
         directionPropertyModifierManager = new DirectionPropertyModifierManager(startDirection);
         speedModifierManager = new SpeedModifierManager();
         engineStateModifierManager = new EngineStateModifierManager(EngineState.DISABLED);
 
-        boundsListModifierByMoveEvent = new BoundsListModifierByMoveEvent(boundsListModifierManager
-                .readOnlyListWrapperProperty(), IMoveEvent.class, getDirectionProperty(), getEngineStateProperty(),
-                getSpeedProperty());
-
-        // must be added to correct manager
-        boundsListModifierManager.addListPropertyModifier(boundsListModifierByMoveEvent);
     }
 
     @Override
-    public ReadOnlyObjectProperty<Direction> getDirectionProperty() {
-        return directionPropertyModifierManager.getObjectProperty();
+    public MoveOnWorldBounds isMoveAllowed(boolean isInWorldBounds) {
+        return MoveOnWorldBounds.ALLOW;
     }
 
     @Override
-    public ReadOnlyObjectProperty<EngineState> getEngineStateProperty() {
-        return engineStateModifierManager.getObjectProperty();
-    }
-
-    @Override
-    public ReadOnlyObjectProperty<Integer> getSpeedProperty() {
-        return speedModifierManager.getObjectProperty();
+    public boolean canMove() {
+        return true;
     }
 
     @Override
@@ -78,6 +61,21 @@ public class MoveableUnitX extends GameUnitX implements DirectionModifiable, Spe
                 ", speedProperty=" + getSpeedProperty().get() +
                 ", engineProperty=" + getEngineStateProperty().get() +
                 "} " + super.toString();
+    }
+
+    @Override
+    public ReadOnlyObjectProperty<Direction> getDirectionProperty() {
+        return directionPropertyModifierManager.getObjectProperty();
+    }
+
+    @Override
+    public ReadOnlyObjectProperty<Integer> getSpeedProperty() {
+        return speedModifierManager.getObjectProperty();
+    }
+
+    @Override
+    public ReadOnlyObjectProperty<EngineState> getEngineStateProperty() {
+        return engineStateModifierManager.getObjectProperty();
     }
 
     class DirectionPropertyModifierManager extends SimpleObjectPropertyModifierManager<Direction> {

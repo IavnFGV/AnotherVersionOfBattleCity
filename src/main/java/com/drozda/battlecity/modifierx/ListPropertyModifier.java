@@ -13,6 +13,10 @@ public abstract class ListPropertyModifier<S> implements com.drozda.battlecity.i
 
     protected ReadOnlyListWrapper<S> listPropertyToChange;
 
+    public ListPropertyModifier(ReadOnlyListWrapper<S> listPropertyToChange) {
+        setListPropertyToChange(listPropertyToChange);
+    }
+
     @Override
     public void setListPropertyToChange(ReadOnlyListWrapper<S> listPropertyToChange) {
         this.listPropertyToChange = listPropertyToChange;

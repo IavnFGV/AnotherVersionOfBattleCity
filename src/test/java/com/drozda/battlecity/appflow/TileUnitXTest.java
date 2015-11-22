@@ -45,5 +45,8 @@ public class TileUnitXTest {
         moveableUnitX.handle(new EngineStateChangeEvent(moveableUnitX, EngineState.ENABLED));
 
         System.out.println(moveableUnitX);
+
+        PlaygroundState playgroundState = PlaygroundState.ACTIVE;
+        System.out.println(playgroundState.canTransition(PlaygroundState.PAUSED));
     }
 }

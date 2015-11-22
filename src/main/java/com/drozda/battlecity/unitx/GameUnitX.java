@@ -5,13 +5,9 @@ import com.drozda.battlecity.eventx.ChangeEvent;
 import com.drozda.battlecity.eventx.IBasicStateChangeEvent;
 import com.drozda.battlecity.eventx.IBoundsChangeEvent;
 import com.drozda.battlecity.eventx.IPauseStateChangeEvent;
-import com.drozda.battlecity.interfaces.BattleGround;
-import com.drozda.battlecity.interfacesx.BasicStatePropertyModifiable;
-import com.drozda.battlecity.interfacesx.BoundsListModifiable;
-import com.drozda.battlecity.interfacesx.EventHandler;
-import com.drozda.battlecity.interfacesx.PauseStatePropertyModifiable;
+import com.drozda.battlecity.interfacesx.*;
 import com.drozda.battlecity.modifierx.basicstate.byevent.BasicStateModifierByBasicStateChangeEvent;
-import com.drozda.battlecity.modifierx.bondslist.byevent.BoundsListModifierByChangeBoundsEvent;
+import com.drozda.battlecity.modifierx.boundslist.byevent.BoundsListModifierByChangeBoundsEvent;
 import com.drozda.battlecity.modifierx.manager.SimpleListPropertyModifierManager;
 import com.drozda.battlecity.modifierx.manager.SimpleObjectPropertyModifierManager;
 import com.drozda.battlecity.modifierx.pausestate.byevent.PauseStateModifierByPauseStateChangeEvent;
@@ -44,6 +40,15 @@ public abstract class GameUnitX implements BasicStatePropertyModifiable, PauseSt
         // initialization in constructor because
         //inner class uses playground.stateProperty() from outer class
         pauseStatePropertyModifierManager = new PauseStatePropertyModifierManager();
+    }
+
+    public Bounds getBoundsFixedToGreed() {
+        return getBoundsListProperty().get().get(0);
+    }
+
+    @Override
+    public ReadOnlyListProperty<Bounds> getBoundsListProperty() {
+        return boundsListModifierManager.getListProperty();
     }
 
     @SuppressWarnings("unchecked")
@@ -91,9 +96,8 @@ public abstract class GameUnitX implements BasicStatePropertyModifiable, PauseSt
         return pauseStatePropertyModifierManager.getObjectProperty();
     }
 
-    @Override
-    public ReadOnlyListProperty<Bounds> getBoundsListProperty() {
-        return boundsListModifierManager.getListProperty();
+    protected ReadOnlyListWrapper<Bounds> getReadOnlyBoundsListWrapper() {
+        return boundsListModifierManager.readOnlyListWrapperProperty();
     }
 
     class BasicStatePropertyModifierManager extends SimpleObjectPropertyModifierManager<BasicState> {
@@ -115,7 +119,8 @@ public abstract class GameUnitX implements BasicStatePropertyModifiable, PauseSt
 
         public PauseStatePropertyModifierManager() {
             super();
-            this.pauseStateModifierByPlaygroundStateProperty = new PauseStateModifierByPlaygroundStateProperty(playground.stateProperty());
+            this.pauseStateModifierByPlaygroundStateProperty = new PauseStateModifierByPlaygroundStateProperty(null);
+            // todo remake after refactoring battleground playground.stateProperty()
             addObjectPropertyModifier(pauseStateModifierByPauseStateChangeEvent);
             addObjectPropertyModifier(pauseStateModifierByPlaygroundStateProperty);
             readOnlyObjectWrapper.setValue(PauseState.PAUSE);
@@ -136,5 +141,4 @@ public abstract class GameUnitX implements BasicStatePropertyModifiable, PauseSt
             return super.readOnlyListWrapperProperty();
         }
     }
-
 }

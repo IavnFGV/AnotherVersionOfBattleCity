@@ -14,8 +14,8 @@ public abstract class ListPropertyModifierByEvent<S, E extends IChangeEvent> ext
     protected final Class<E> eventObjectType;
 
     public ListPropertyModifierByEvent(ReadOnlyListWrapper<S> listPropertyToChange, Class<E> eventObjectType) {
+        super(listPropertyToChange);
         this.eventObjectType = eventObjectType;
-        setListPropertyToChange(listPropertyToChange);
     }
 
     @Override
